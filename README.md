@@ -25,5 +25,6 @@ DM me on Discord rtuna#4321 if you need any help setting this up.
     ```
 ## To run:
 open your terminal, change your directory to this folder/repo and run:
-on Mac: `python soleboxaccgen.py`
-on Widnows: `py soleboxaccgen.py`
+
+-- on Mac: `python soleboxaccgen.py`
+-- on Widnows: `py soleboxaccgen.py`
