@@ -23,3 +23,7 @@ DM me on Discord rtuna#4321 if you need any help setting this up.
     jigFirstLineAddress = True #or False
     jigSecondLineAddress = True #or False
     ```
+## To run:
+open your terminal, change your directory to this folder/repo and run:
+on Mac: `python soleboxaccgen.py`
+on Widnows: `py soleboxaccgen.py`
