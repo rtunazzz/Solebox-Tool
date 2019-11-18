@@ -6,7 +6,7 @@ DM me on Discord rtuna#4321 if you need any help.
 1. Make sure you have Python (preferably 3.8.0) installed
 2. download & unzip this folder, and `cd` to here
 3. run `pip install -r requirements.txt`
-4. Setup everything in `userdata.json`
+4. Add your info into `userdata.json`
 
 5. Edit this **in the code**:
     ```python3
