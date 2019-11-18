@@ -143,6 +143,16 @@ city = userData['city']
 country_name = userData['country_name']
 country_id = getCountryId(country_name)
 
+if firstName== '' or lastName== '' or passwd == '':
+    print(Fore.RED + Style.BRIGHT + "MAKE SURE YOU HAVE EVERYTHING FILLED IN IN 'userdata.json' ;)")
+    quit()
+
+if addyFirstLine== '' or city== '' or country_name == '' or zipcode == '':
+    print(Fore.RED + Style.BRIGHT + "MAKE SURE YOU HAVE EVERYTHING FILLED IN IN 'userdata.json' ;)")
+    quit()
+if catchall == '':
+    catchall = 'gmail.com'
+
 headers = {
     'authority': 'www.solebox.com',
     'scheme': 'https',
@@ -182,7 +192,7 @@ def generateAccount():
     elif jigFirst:
         firstName = get_first_name()
     if jigPhone:
-        phoneNum = f'+420{random.randint(300,999)}{random.randint(300,999)}{random.randint(300,999)}'
+        phoneNum = f'+1{random.randint(300,999)}{random.randint(300,999)}{random.randint(300,999)}'
     if jigFirstLineAddress:
         addyFirstLine = f'{2*(chr(random.randint(97,97+25)).upper() + chr(random.randint(97,97+25)).upper())} {addyFirstLine}'
     if jigSecondLineAddress:
