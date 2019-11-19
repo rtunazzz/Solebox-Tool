@@ -322,13 +322,20 @@ if os.stat('countrydata.json').st_size == 0:
 ##########     Generating the number of accounts specified     ##########
 
 print('[STATUS] -> Account generation has started...')
+if not proxyList:
+    if how_many < 3:
+        for acc in range(how_many):
+            generateAccount()
+    else:
+        print(Fore.YELLOW + gettime() + ' [WARNING] -> You are trying to create more than 3 accounts with no proxies! Add some proxies and try again.')
 # generateAccount()
-threads = []
-for acc in range(how_many):
-    t = threading.Thread(target=generateAccount)
-    threads.append(t)
-    t.start()
-    time.sleep(1)
+else:
+    threads = []
+    for acc in range(how_many):
+        t = threading.Thread(target=generateAccount)
+        threads.append(t)
+        t.start()
+        time.sleep(1)
 
-for t in threads:
-    t.join()
+    for t in threads:
+        t.join()
