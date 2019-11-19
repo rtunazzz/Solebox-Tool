@@ -14,7 +14,7 @@ print(" • for personal use only")
 print('-------------------------------------\n')
 ####################          Settings [Feel free to modify this]          ####################
 
-how_many = 3
+how_many = 5
 jigFirstAndLast = False #or True
 jigFirst = False #or True
 jigPhone = True #or False
@@ -170,7 +170,6 @@ linetwolist = ['apt', 'apartment', 'dorm', 'suite', 'unit', 'house', 'unt', 'roo
 ####################          Main function          ####################
 def generateAccount():
     ##########     Initializing a session & getting stoken     ##########
-    print(gettime() + ' [STATUS] -> Account generation has started...')
     s = cfscrape.create_scraper()
     # s = requests.Session()
 
@@ -254,7 +253,6 @@ def generateAccount():
     time.sleep(0.5)
     print(gettime() + ' [STATUS] -> Trying to update accounts shipping details.')    
     ##########     Updating shipping address     ##########
-    s.get(url='https://www.solebox.com/en/my-address/', headers=headers)
     update_shipping_payload = {
         'stoken': stoken,
         'lang': '1',
@@ -289,7 +287,9 @@ def generateAccount():
         'deladr[oxaddress__oxstateid]': '',
         'deladr[oxaddress__oxfon]': phoneNum,
     }
+    s.get(url='https://www.solebox.com/en/my-address/', headers=headers)
     time.sleep(0.5)
+    headers['origin'] = 'https://www.solebox.com'
     update_shipping_post = s.post(url='https://www.solebox.com/index.php?lang=1&', headers=headers, json=update_shipping_payload)
     if update_shipping_post.status_code in (302,200):
         print(Fore.GREEN + Style.BRIGHT + gettime() + ' [SUCCESS] -> Successfully updated accounts shipping details.')
@@ -321,6 +321,7 @@ if os.stat('countrydata.json').st_size == 0:
     scrapeCountryIds()
 ##########     Generating the number of accounts specified     ##########
 
+print('[STATUS] -> Account generation has started...')
 # generateAccount()
 threads = []
 for acc in range(how_many):
