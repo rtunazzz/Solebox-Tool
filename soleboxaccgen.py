@@ -90,7 +90,7 @@ def getStoken(s):
             print(Fore.GREEN + Style.BRIGHT + gettime() + f' [SUCCESS] -> Successfully scraped stoken: {stoken} !')
             return stoken
         else:
-            print(Fore.RED + gettime() + ' [ERROR] -> Bad request. Satus code %d' % index_r.status_code)
+            print(Fore.RED + gettime() + ' [ERROR] -> Bad request, change proxies if this error persists.')
             return
     except:
         print(Fore.RED + gettime() + ' [ERROR] -> Unable to get stoken.')
@@ -157,7 +157,6 @@ headers = {
     'authority': 'www.solebox.com',
     'scheme': 'https',
     'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
-    'referer': 'https://www.solebox.com/en/my-account/',
     'accept-encoding': 'gzip, deflate, br',
     'accept-language': 'it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7',
     'cache-control': 'max-age=0',
@@ -174,16 +173,29 @@ def generateAccount():
     print(gettime() + ' [STATUS] -> Account generation has started...')
     s = cfscrape.create_scraper()
     # s = requests.Session()
+
+    proxy_is_bad = True
     if proxyList:
-        s.proxies = random.choice(proxyList)
-    s.get('https://www.solebox.com/', headers=headers)
-    time.sleep(1)
+        while proxy_is_bad:
+            s.proxies = random.choice(proxyList)
+            print(gettime() + ' [STATUS] -> Checking proxy...')
+            test = s.get('https://www.solebox.com/mein-konto/', headers=headers)
+            # print(test.text)
+            if test.status_code in (302, 200):
+                print(Fore.GREEN + Style.BRIGHT + gettime() + ' [SUCCESS] -> Proxy working...')
+                proxy_is_bad = False
+            else:
+                print(Fore.RED + gettime() + ' [ERROR] -> Proxy banned, rotating proxy...')
+            time.sleep(0.5)
+    time.sleep(0.5)
+    headers['referer'] = 'https://www.solebox.com/mein-konto/'
     stoken = getStoken(s)
     if stoken is None:
         return
     time.sleep(0.5)
     s.get(url='https://www.solebox.com/en/my-account/', headers=headers)
-    
+    headers['referer'] = 'https://www.solebox.com/en/my-account/'
+
     ##########     Jigging info     ##########
     global firstName, lastName, phoneNum, addyFirstLine, addySecondLine
     if jigFirstAndLast:
@@ -233,7 +245,7 @@ def generateAccount():
             'userform': ''
         }
 
-    register_post = s.post(url='https://www.solebox.com/index.php?lang=1&', headers=headers, data=register_payload)
+    register_post = s.post(url='https://www.solebox.com/index.php?lang=1&', headers=headers, json=register_payload)
     if register_post.status_code in (302, 200):
         print(Fore.GREEN + Style.BRIGHT + gettime() + ' [SUCCESS] -> Successfully created an account.')
     else:
@@ -278,7 +290,7 @@ def generateAccount():
         'deladr[oxaddress__oxfon]': phoneNum,
     }
     time.sleep(0.5)
-    update_shipping_post = s.post(url='https://www.solebox.com/index.php?lang=1&', headers=headers, data=update_shipping_payload)
+    update_shipping_post = s.post(url='https://www.solebox.com/index.php?lang=1&', headers=headers, json=update_shipping_payload)
     if update_shipping_post.status_code in (302,200):
         print(Fore.GREEN + Style.BRIGHT + gettime() + ' [SUCCESS] -> Successfully updated accounts shipping details.')
         saveEmail(email, passwd)
@@ -315,6 +327,7 @@ for acc in range(how_many):
     t = threading.Thread(target=generateAccount)
     threads.append(t)
     t.start()
+    time.sleep(1)
 
 for t in threads:
     t.join()
