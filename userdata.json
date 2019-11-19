@@ -1,13 +1,13 @@
 {
-    "firstName": "Artur",
-    "lastName": "Hnat",
-    "phoneNum": "00420604479909",
-    "catchall": "rtuna.xyz",
-    "passwd": "ArturHnat99",
-    "addyFirstLine": "U Cukrovaru",
-    "houseNum": "2393",
+    "firstName": "",
+    "lastName": "",
+    "phoneNum": "",
+    "catchall": "",
+    "passwd": "",
+    "addyFirstLine": "",
+    "houseNum": "",
     "addySecondLine": "",
-    "zipcode": "28802",
-    "city": "Nymburk",
-    "country_name": "Czech Republic"
+    "zipcode": "",
+    "city": "",
+    "country_name": ""
 }
