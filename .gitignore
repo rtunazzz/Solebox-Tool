@@ -1,5 +1,2 @@
-myuserdata.json
-userdata.json
-proxies.txt
-valid_emails.json
-no_ship_addy_emails.txt
+*.txt
+*.json
