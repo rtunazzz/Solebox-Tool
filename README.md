@@ -1,9 +1,8 @@
 # Solebox account generator
 
 This Python script creates Solebox accounts and **adds a shipping address to them**.
-Sometimes it takes a couple of tries to make it successfully generate accounts, just make sure you have working proxies and give it a couple of tries. Solebox is very strict and will temporarily ban you/you'll run into Cloudfare very often...
- 
-*For some reason, if you run more than 2 or 3 accounts at once, you'll run into errors... I will look into it.*
+
+v.1.02 released, now the script should be running way more smoothly! You can now generate more than 1 or 2 accounts at once ;)
  
 **Use of proxies is highly recommended.**
 
