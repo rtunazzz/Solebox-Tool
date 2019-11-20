@@ -92,14 +92,27 @@ def getStoken(s):
         index_r = s.get(url=index_url, headers=headers)
         if index_r.status_code == 200:
             soup = bs(index_r.text, 'lxml')
+            if recaptchaEncountered(soup):
+                return
             stoken = soup.find('input', {'name': 'stoken'})['value']
             print(Fore.GREEN + Style.BRIGHT + gettime() + f' [SUCCESS] -> Successfully scraped stoken: {stoken} !')
             return stoken
         else:
-            print(Fore.RED + gettime() + ' [ERROR] -> Bad request. Satus code %d, try to change proxies if this error persists.' % index_r.status_code)
+            print(Fore.RED + gettime() + ' [ERROR] -> Bad request. Satus code %d, unable to get stoken...' % index_r.status_code)
             return
     except:
         print(Fore.RED + gettime() + ' [ERROR] -> Unable to get stoken.')
+
+def recaptchaEncountered(soup):
+    try:
+        gcaptcha = soup.find('div', {'class' : 'g-recaptcha'})
+        if gcaptcha:
+            print(Fore.RED + gettime() + ' [ERROR] -> Encountered Cloudfare... ')
+            return True
+        else:
+            return False
+    except:
+        return False
 
 def scrapeCountryIds():
     country_data = {}
@@ -133,33 +146,71 @@ def getCountryId(country_name):
 
 
 ####################          Loading data and initializing other later used variables          ####################
+with open('useragents.txt', 'r') as f:
+    useragents = f.read()
+    useragents = useragents.split('\n')
+
 with open('userdata.json', 'r') as f:
     userData = json.loads(f.read())
 
 firstName = userData['firstName']
+if firstName == '':
+    print(gettime() + ' [ERROR] -> Check your userdata.json, you forgot to fill in your firstName!')
+    quit()
 lastName = userData['lastName']
+if lastName == '':
+    print(gettime() + ' [ERROR] -> Check your userdata.json, you forgot to fill in your lastName!')
+    quit()
 phoneNum = userData['phoneNum']
-catchall = userData['catchall']
+if phoneNum == '':
+    print(gettime() + ' [ERROR] -> Check your userdata.json, you forgot to fill in your phoneNum!')
+    quit()
 passwd = userData['passwd']
+if passwd == '':
+    print(gettime() + ' [ERROR] -> Check your userdata.json, you forgot to fill in your passwd!')
+    quit()
 addyFirstLine = userData['addyFirstLine']
+if addyFirstLine == '':
+    print(gettime() + ' [ERROR] -> Check your userdata.json, you forgot to fill in your addyFirstLine!')
+    quit()
 houseNum = userData['houseNum']
-addySecondLine = userData['addySecondLine']
+if houseNum == '':
+    print(gettime() + ' [ERROR] -> Check your userdata.json, you forgot to fill in your houseNum!')
+    quit()
 zipcode = userData['zipcode']
+if zipcode == '':
+    print(gettime() + ' [ERROR] -> Check your userdata.json, you forgot to fill in your zipcode!')
+    quit()
 city = userData['city']
+if city == '':
+    print(gettime() + ' [ERROR] -> Check your userdata.json, you forgot to fill in your city!')
+    quit()
 country_name = userData['country_name']
+if country_name == '':
+    print(gettime() + ' [ERROR] -> Check your userdata.json, you forgot to fill in your country_name!')
+    quit()
+
+addySecondLine = userData['addySecondLine']
+catchall = userData['catchall']
+if catchall == '':
+    catchall = 'gmail.com'
+if '@' in catchall:
+    catchall = catchall.replace('@', '')
+    
 country_id = getCountryId(country_name)
+if country_id == None:
+    quit()
+
 
 headers = {
     'authority': 'www.solebox.com',
     'scheme': 'https',
     'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
-    'referer': 'https://www.solebox.com/en/my-account/',
     'accept-encoding': 'gzip, deflate, br',
-    'accept-language': 'it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7',
+    'accept-language': 'n-GB,en-US;q=0.9,en;q=0.8,cs;q=0.7,de;q=0.6',
     'cache-control': 'max-age=0',
     'content-type':'application/x-www-form-urlencoded',
     'upgrade-insecure-requests': '1',
-    'user-agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_1 like Mac OS X) AppleWebKit/603.1.30 (KHTML, like Gecko) Version/10.0 Mobile/14E304 Safari/602.1'
     }
 
 linetwolist = ['apt', 'apartment', 'dorm', 'suite', 'unit', 'house', 'unt', 'room', 'floor']
@@ -168,19 +219,30 @@ linetwolist = ['apt', 'apartment', 'dorm', 'suite', 'unit', 'house', 'unt', 'roo
 ####################          Main function          ####################
 def generateAccount():
     ##########     Initializing a session & getting stoken     ##########
+    useragent = random.choice(useragents)
+    headers['useragent'] = useragent
+
     print(gettime() + ' [STATUS] -> Account generation has started...')
     s = cfscrape.create_scraper()
     # s = requests.Session()
     if proxyList:
-        s.proxies = random.choice(proxyList)
-    s.get('https://www.solebox.com/', headers=headers)
-    time.sleep(1)
+        proxy_is_bad = True
+        while proxy_is_bad:
+            s.proxies = random.choice(proxyList)
+            print(gettime() + ' [STATUS] -> Checking proxy...')
+            test = s.get('https://www.solebox.com/en/my-account/', headers=headers)
+            # print(test.text)
+            if test.status_code in (302, 200):
+                print(Fore.GREEN + Style.BRIGHT + gettime() + ' [SUCCESS] -> Proxy working...')
+                proxy_is_bad = False
+            else:
+                print(Fore.RED + gettime() + ' [ERROR] -> Proxy banned, rotating proxy...')
+            time.sleep(0.5)
     stoken = getStoken(s)
     if stoken is None:
         return
-    time.sleep(0.5)
-    s.get(url='https://www.solebox.com/en/my-account/', headers=headers)
-
+    time.sleep(1)
+    s.get(url='https://www.solebox.com/en/open-account/', headers=headers)
     ##########     Jigging info     ##########
     global firstName, lastName, phoneNum, addyFirstLine, addySecondLine
     if jigFirstAndLast:
@@ -189,11 +251,12 @@ def generateAccount():
     elif jigFirst:
         firstName = get_first_name()
     if jigPhone:
-        phoneNum = f'+420{random.randint(300,999)}{random.randint(300,999)}{random.randint(300,999)}'
+        phoneNum = f'+1{random.randint(300,999)}{random.randint(300,999)}{random.randint(300,999)}'
     if jigFirstLineAddress:
         addyFirstLine = f'{2*(chr(random.randint(97,97+25)).upper() + chr(random.randint(97,97+25)).upper())} {addyFirstLine}'
     if jigSecondLineAddress:
         addySecondLine = f'{random.choice(linetwolist)} {random.randint(1,20)}{chr(random.randint(97,97+25)).upper()}'
+
     email = f'{get_first_name()}{random.randint(1,9999999)}@{catchall}'
     time.sleep(0.5)
     print(gettime() + ' [STATUS] -> Trying to create an account...')
@@ -202,11 +265,14 @@ def generateAccount():
             'stoken': stoken,
             'lang': '1',
             'listtype': '',
-            'actcontrol': 'account',
-            'cl': 'user',
-            'fnc': 'createuser',
+            'actcontrol': 'register',
+            'fnc': 'registeruser',
+            'cl': 'register',
+            'lgn_cook' : 0,
             'reloadaddress': '',
-            'blshowshipaddress': '1',
+            'blshowshipaddress': 1,
+            'reloadaddress' : '',
+            'option' : 3,
             'invadr[oxuser__oxsal]': random.choice(['MR', 'MRS']),  # MR OR MRS
             'invadr[oxuser__oxfname]': firstName,
             'invadr[oxuser__oxlname]': lastName,
@@ -217,24 +283,22 @@ def generateAccount():
             'invadr[oxuser__oxcity]': city,
             'invadr[oxuser__oxcountryid]': country_id,
             'invadr[oxuser__oxstateid]': '',
-            # 'invadr[oxuser__oxbirthdate][day]': random.randint(0, 31),
-            'invadr[oxuser__oxbirthdate][day]': '',
-            # 'invadr[oxuser__oxbirthdate][month]': random.randint(0, 12),
-            'invadr[oxuser__oxbirthdate][month]': '',
-            # 'invadr[oxuser__oxbirthdate][year]': random.randint(1950, 2003),
-            'invadr[oxuser__oxbirthdate][year]': '',
+            'invadr[oxuser__oxbirthdate][day]': random.randint(0, 31),
+            'invadr[oxuser__oxbirthdate][month]': random.randint(0, 12),
+            'invadr[oxuser__oxbirthdate][year]': random.randint(1950, 2003),
             'invadr[oxuser__oxfon]': phoneNum,
             'lgn_usr': email,
             'lgn_pwd': passwd,
             'lgn_pwd2': passwd,
-            'userform': ''
+            'save' : 'Save',
         }
+
 
     register_post = s.post(url='https://www.solebox.com/index.php?lang=1&', headers=headers, data=register_payload, allow_redirects=True)
     if register_post.status_code in (302, 200):
         print(Fore.GREEN + Style.BRIGHT + gettime() + ' [SUCCESS] -> Successfully created an account.')
     else:
-        print(Fore.RED + gettime() + ' [ERROR] -> ERROR occured: Unable to create an account.')
+        print(Fore.RED + gettime() + ' [ERROR] -> ERROR %d occurred: Unable to create an account.' % register_post.status_code)
         return
     time.sleep(0.5)
     print(gettime() + ' [STATUS] -> Trying to update accounts shipping details.')    
@@ -280,7 +344,7 @@ def generateAccount():
         print(Fore.GREEN + Style.BRIGHT + gettime() + ' [SUCCESS] -> Successfully updated accounts shipping details.')
         saveEmail(email, passwd)
     else:
-        print(Fore.RED + gettime() + ' [ERROR] -> ERROR occured: Unable to edit shipping details.')
+        print(Fore.RED + gettime() + ' [ERROR] -> ERROR occurred: Unable to edit shipping details.')
         saveNoShipEmail(email, passwd)
 
 
@@ -321,8 +385,9 @@ else:
         t = threading.Thread(target=generateAccount)
         threads.append(t)
         t.start()
-        time.sleep(1)
+        time.sleep(3)
 
     for t in threads:
         t.join()
         
+input()
