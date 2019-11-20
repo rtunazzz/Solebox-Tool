@@ -1,3 +1,4 @@
+# Currently not working, for some reason it says an account was generated when it wasn't... Working on fix!
 # SoleboxAccountGenerator
 
 This Python script creates Solebox accounts and **adds a shipping address to them**.
