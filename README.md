@@ -1,8 +1,6 @@
 # Solebox account generator
 
 This Python script creates Solebox accounts and **adds a shipping address to them**.
-
-v.1.02 released, now the script should be running way more smoothly! You can now generate more than 1 or 2 accounts at once ;)
  
 **Use of proxies is highly recommended.**
 
