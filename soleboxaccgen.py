@@ -55,8 +55,8 @@ def gettime():
 
 def loadProxyUserPass(filename):
     global proxyList
-    with open(filename + '.txt') as file:
-        file_content = file.read()
+    with open(filename + '.txt') as f:
+        file_content = f.read()
     file_rows = file_content.split('\n')
     for i in range(0, len(file_rows)):
         if ':' in file_rows[i]:
@@ -67,8 +67,8 @@ def loadProxyUserPass(filename):
             proxyList.append(proxies)
 
 def loadProxyIpAuth(filename):
-    with open(filename + '.txt') as file:
-        file_content = file.read()
+    with open(filename + '.txt') as f:
+        file_content = f.read()
 
     tmp = file_content.split('\n')
     for n in range(0, len(tmp)):
@@ -78,12 +78,12 @@ def loadProxyIpAuth(filename):
             proxyList.append(proxies)
 
 def saveEmail(email, passwd):
-    with open('valid_emails.txt', 'a') as file:
-        file.write(f'{email}:{passwd}\n')
+    with open('valid_emails.txt', 'a') as f:
+        f.write(f'{email}:{passwd}\n')
 
 def saveNoShipEmail(email, passwd):
-    with open('no_ship_addy_emails.txt', 'a') as file:
-        file.write(f'{email}:{passwd}\n')
+    with open('no_ship_addy_emails.txt', 'a') as f:
+        f.write(f'{email}:{passwd}\n')
 
 def getStoken(s):
     try:
@@ -192,7 +192,7 @@ if country_name == '':
 
 stateUS = userData['stateUS']
 if len(stateUS) > 2:
-    print(Fore.YELLOW + gettime() + ' [WARNING] -> Wrong US state formatting! Correct format example: "NY" (for New York).')
+    print(Fore.YELLOW + gettime() + ' [WARNING] -> Wrong US state formatting! example: Use "NY" instead of "New York"')
 
 addySecondLine = userData['addySecondLine']
 catchall = userData['catchall']
@@ -230,15 +230,18 @@ def generateAccount():
     s = cfscrape.create_scraper()
     # s = requests.Session()
     if proxyList:
-        s.proxies = random.choice(proxyList)
-        print(gettime() + ' [STATUS] -> Checking proxy...')
-        test = s.get('https://www.solebox.com/en/Apparel/', headers=headers)
-        # print(test.text)
-        if test.status_code in (302, 200):
-            print(Fore.GREEN + Style.BRIGHT + gettime() + ' [SUCCESS] -> Proxy working...')
-        else:
-            print(Fore.RED + gettime() + ' [ERROR] -> Proxy banned...')
-        time.sleep(0.5)
+        proxy_is_bad = True
+        while proxy_is_bad:
+            s.proxies = random.choice(proxyList)
+            print(gettime() + ' [STATUS] -> Checking proxy...')
+            test = s.get('https://www.solebox.com/en/my-account/', headers=headers)
+            # print(test.text)
+            if test.status_code in (302, 200):
+                print(Fore.GREEN + Style.BRIGHT + gettime() + ' [SUCCESS] -> Proxy working...')
+                proxy_is_bad = False
+            else:
+                print(Fore.RED + gettime() + ' [ERROR] -> Proxy banned, rotating proxy...')
+            time.sleep(0.5)
     stoken = getStoken(s)
     if stoken is None:
         return
@@ -254,19 +257,17 @@ def generateAccount():
     if jigPhone:
         phoneNum = f'+1{random.randint(300,999)}{random.randint(300,999)}{random.randint(300,999)}'
     if jigFirstLineAddress:
-        jiggedFirstLineAddress = f'{2*(chr(random.randint(97,97+25)).upper() + chr(random.randint(97,97+25)).upper())} {jiggedFirstLineAddress}'
+        jiggedFirstLineAddress = f'{2*(chr(random.randint(97,97+25)).upper() + chr(random.randint(97,97+25)).upper())} {addyFirstLine}'
     else:
         jiggedFirstLineAddress = addyFirstLine
     if jigSecondLineAddress:
         jiggedSecondLineAddress = f'{random.choice(linetwolist)} {random.randint(1,20)}{chr(random.randint(97,97+25)).upper()}'
     else:
         jiggedSecondLineAddress = addySecondLine
-
     email = f'{get_first_name()}{random.randint(1,9999999)}@{catchall}'
     time.sleep(0.5)
     print(gettime() + ' [STATUS] -> Trying to create an account...')
     ##########     Configuring payload for registering and POSTing it to create an account     ##########
-    mr_mrs = random.choice(['MR', 'MRS'])
     register_payload = {
             'stoken': stoken,
             'lang': '1',
@@ -278,7 +279,7 @@ def generateAccount():
             'reloadaddress': '',
             'blshowshipaddress': 1,
             'option' : 3,
-            'invadr[oxuser__oxsal]': mr_mrs,  # MR OR MRS
+            'invadr[oxuser__oxsal]': random.choice(['MR', 'MRS']),  # MR OR MRS
             'invadr[oxuser__oxfname]': firstName,
             'invadr[oxuser__oxlname]': lastName,
             'invadr[oxuser__oxstreet]': jiggedFirstLineAddress,
@@ -318,7 +319,7 @@ def generateAccount():
         'cl': 'account_user',
         'CustomError': 'user',
         'blshowshipaddress': '1',
-        'invadr[oxuser__oxsal]': mr_mrs,  # MR OR MRS
+        'invadr[oxuser__oxsal]': random.choice(['MR', 'MRS']),  # MR OR MRS
         'invadr[oxuser__oxfname]': firstName,
         'invadr[oxuser__oxlname]': lastName,
         'invadr[oxuser__oxstreet]': jiggedFirstLineAddress,
@@ -327,10 +328,10 @@ def generateAccount():
         'invadr[oxuser__oxzip]': zipcode,
         'invadr[oxuser__oxcity]': city,
         'invadr[oxuser__oxcountryid]': country_id,
-        'invadr[oxuser__oxstateid]': '',
+        'invadr[oxuser__oxstateid]': stateUS,
         'changeClass': 'account_user',
         'oxaddressid': '-1',
-        'deladr[oxaddress__oxsal]': mr_mrs,  # MR OR MRS
+        'deladr[oxaddress__oxsal]': random.choice(['MR', 'MRS']),  # MR OR MRS
         'deladr[oxaddress__oxfname]': firstName,
         'deladr[oxaddress__oxlname]': lastName,
         'deladr[oxaddress__oxcompany]': '',
@@ -390,7 +391,7 @@ else:
         t = threading.Thread(target=generateAccount)
         threads.append(t)
         t.start()
-        time.sleep(0.1)
+        time.sleep(1)
 
     for t in threads:
         t.join()
