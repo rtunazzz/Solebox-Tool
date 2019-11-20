@@ -193,7 +193,7 @@ if country_name == '':
 stateUS = userData['stateUS']
 if len(stateUS) > 2:
     print(gettime() + ' [ERROR] -> Check your State settings! Correct formatting: "NY" or "TX"')
-    
+
 addySecondLine = userData['addySecondLine']
 catchall = userData['catchall']
 if catchall == '':
