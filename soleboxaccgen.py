@@ -24,7 +24,7 @@ while not how_many:
 jigFirstAndLast = False #or True
 jigFirst = False #or True
 jigPhone = True #or False
-jigFirstLineAddress = False #or False
+jigFirstLineAddress = True #or False
 jigSecondLineAddress = True #or False
 #TODO Also make sure you fill in everything in the userdata.json file.
 
@@ -192,8 +192,8 @@ if country_name == '':
 
 stateUS = userData['stateUS']
 if len(stateUS) > 2:
-    print(Fore.YELLOW + gettime() + ' [WARNING] -> Wrong US state formatting! example: Use "NY" instead of "New York"')
-
+    print(gettime() + ' [ERROR] -> Check your State settings! Correct formatting: "NY" or "TX"')
+    
 addySecondLine = userData['addySecondLine']
 catchall = userData['catchall']
 if catchall == '':
