@@ -13,9 +13,8 @@ DM me on Discord rtuna#4321 if you need any help setting this up.
 3. run `pip install -r requirements.txt`
 4. Add your info into `userdata.json`
 
-5. Edit this **in the code**:
+5. (ADVANCED) Feel free to edit this **in the code**:
     ```python3
-    how_many = 3
     jigFirstAndLast = False #or True
     jigFirst = False #or True
     jigPhone = True #or False
