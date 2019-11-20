@@ -25,9 +25,9 @@ DM me on Discord rtuna#4321 if you need any help setting this up.
 ## To run:
 open your terminal, change your directory to this folder/repo and run:
 
-- on Mac: `python soleboxaccgen.py`
+- on Mac: `python3 soleboxaccgen.py`
 
-- on Widnows: `py soleboxaccgen.py`
+- on Widnows: `py3 soleboxaccgen.py`
 
 ## Where do I find generated accounts?
 - If everything goes smoothly, accounts should be in `valid_emails.txt`
