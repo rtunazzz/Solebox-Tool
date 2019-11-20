@@ -38,3 +38,14 @@ This is how it should look like when you run it:
 
 ## Notes:
 - If you don't have a catchall, feel free to leave the catchall field blank but you won't get confirmation emails (it will just create an account with a random gmail)
+
+## FAQ:
+- What is `cd` and how do I use it?
+    - From [wikipedia](https://en.wikipedia.org/wiki/Cd_(command)): "the `cd` command is a command-line shell command used to change the current working directory" -  so what you need to do is change your working directory, to the Folder (or directory) of this script.
+- How do I install Python?
+    - [This should help you](https://realpython.com/installing-python/)
+- My terminal/cmd is saying something about `pip` not being installed / Command not found, what should I do?
+    - on Mac, run `python get-pip.py`
+    - on Windows run `sudo easy_install pip`
+- I am getting `[ERROR] -> Bad request. Satus code 403` all the time, what do I do?
+    - Keep trying and or switch proxies. This also happens frequently when the site is under a heavy load (When a restock/drop happens etc.)
