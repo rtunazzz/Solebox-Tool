@@ -14,7 +14,13 @@ print(" • for personal use only")
 print('-------------------------------------\n')
 ####################          Settings [Feel free to modify this]          ####################
 
-how_many = 5
+# how_many = None
+how_many = 1
+while not how_many:
+    try:
+        how_many = int(input("How many accounts would you like to create?\n"))
+    except ValueError:
+        print("This is not an integer. Try again...")
 jigFirstAndLast = False #or True
 jigFirst = False #or True
 jigPhone = True #or False
@@ -90,7 +96,7 @@ def getStoken(s):
             print(Fore.GREEN + Style.BRIGHT + gettime() + f' [SUCCESS] -> Successfully scraped stoken: {stoken} !')
             return stoken
         else:
-            print(Fore.RED + gettime() + ' [ERROR] -> Bad request, change proxies if this error persists.')
+            print(Fore.RED + gettime() + ' [ERROR] -> Bad request. Satus code %d, try to change proxies if this error persists.' % index_r.status_code)
             return
     except:
         print(Fore.RED + gettime() + ' [ERROR] -> Unable to get stoken.')
@@ -111,7 +117,7 @@ def scrapeCountryIds():
             country_id = val['value']
             country_name = val.text
             country_data[country_name] = country_id
-    
+
     with open('countrydata.json', 'w') as f:
         json.dump(country_data, f)
     print(Fore.GREEN + Style.BRIGHT + gettime() + ' [SUCCESS] -> Country IDs scraped!')
@@ -143,20 +149,11 @@ city = userData['city']
 country_name = userData['country_name']
 country_id = getCountryId(country_name)
 
-if firstName== '' or lastName== '' or passwd == '':
-    print(Fore.RED + Style.BRIGHT + "MAKE SURE YOU HAVE EVERYTHING FILLED IN IN 'userdata.json' ;)")
-    quit()
-
-if addyFirstLine== '' or city== '' or country_name == '' or zipcode == '':
-    print(Fore.RED + Style.BRIGHT + "MAKE SURE YOU HAVE EVERYTHING FILLED IN IN 'userdata.json' ;)")
-    quit()
-if catchall == '':
-    catchall = 'gmail.com'
-
 headers = {
     'authority': 'www.solebox.com',
     'scheme': 'https',
     'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
+    'referer': 'https://www.solebox.com/en/my-account/',
     'accept-encoding': 'gzip, deflate, br',
     'accept-language': 'it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7',
     'cache-control': 'max-age=0',
@@ -164,36 +161,25 @@ headers = {
     'upgrade-insecure-requests': '1',
     'user-agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_1 like Mac OS X) AppleWebKit/603.1.30 (KHTML, like Gecko) Version/10.0 Mobile/14E304 Safari/602.1'
     }
+
 linetwolist = ['apt', 'apartment', 'dorm', 'suite', 'unit', 'house', 'unt', 'room', 'floor']
 
 
 ####################          Main function          ####################
 def generateAccount():
     ##########     Initializing a session & getting stoken     ##########
+    print(gettime() + ' [STATUS] -> Account generation has started...')
     s = cfscrape.create_scraper()
     # s = requests.Session()
-
-    proxy_is_bad = True
     if proxyList:
-        while proxy_is_bad:
-            s.proxies = random.choice(proxyList)
-            print(gettime() + ' [STATUS] -> Checking proxy...')
-            test = s.get('https://www.solebox.com/mein-konto/', headers=headers)
-            # print(test.text)
-            if test.status_code in (302, 200):
-                print(Fore.GREEN + Style.BRIGHT + gettime() + ' [SUCCESS] -> Proxy working...')
-                proxy_is_bad = False
-            else:
-                print(Fore.RED + gettime() + ' [ERROR] -> Proxy banned, rotating proxy...')
-            time.sleep(0.5)
-    time.sleep(0.5)
-    headers['referer'] = 'https://www.solebox.com/mein-konto/'
+        s.proxies = random.choice(proxyList)
+    s.get('https://www.solebox.com/', headers=headers)
+    time.sleep(1)
     stoken = getStoken(s)
     if stoken is None:
         return
     time.sleep(0.5)
     s.get(url='https://www.solebox.com/en/my-account/', headers=headers)
-    headers['referer'] = 'https://www.solebox.com/en/my-account/'
 
     ##########     Jigging info     ##########
     global firstName, lastName, phoneNum, addyFirstLine, addySecondLine
@@ -203,7 +189,7 @@ def generateAccount():
     elif jigFirst:
         firstName = get_first_name()
     if jigPhone:
-        phoneNum = f'+1{random.randint(300,999)}{random.randint(300,999)}{random.randint(300,999)}'
+        phoneNum = f'+420{random.randint(300,999)}{random.randint(300,999)}{random.randint(300,999)}'
     if jigFirstLineAddress:
         addyFirstLine = f'{2*(chr(random.randint(97,97+25)).upper() + chr(random.randint(97,97+25)).upper())} {addyFirstLine}'
     if jigSecondLineAddress:
@@ -244,7 +230,7 @@ def generateAccount():
             'userform': ''
         }
 
-    register_post = s.post(url='https://www.solebox.com/index.php?lang=1&', headers=headers, json=register_payload)
+    register_post = s.post(url='https://www.solebox.com/index.php?lang=1&', headers=headers, data=register_payload, allow_redirects=True)
     if register_post.status_code in (302, 200):
         print(Fore.GREEN + Style.BRIGHT + gettime() + ' [SUCCESS] -> Successfully created an account.')
     else:
@@ -253,6 +239,7 @@ def generateAccount():
     time.sleep(0.5)
     print(gettime() + ' [STATUS] -> Trying to update accounts shipping details.')    
     ##########     Updating shipping address     ##########
+    s.get(url='https://www.solebox.com/en/my-address/', headers=headers)
     update_shipping_payload = {
         'stoken': stoken,
         'lang': '1',
@@ -287,17 +274,15 @@ def generateAccount():
         'deladr[oxaddress__oxstateid]': '',
         'deladr[oxaddress__oxfon]': phoneNum,
     }
-    s.get(url='https://www.solebox.com/en/my-address/', headers=headers)
     time.sleep(0.5)
-    headers['origin'] = 'https://www.solebox.com'
-    update_shipping_post = s.post(url='https://www.solebox.com/index.php?lang=1&', headers=headers, json=update_shipping_payload)
+    update_shipping_post = s.post(url='https://www.solebox.com/index.php?lang=1&', headers=headers, data=update_shipping_payload)
     if update_shipping_post.status_code in (302,200):
         print(Fore.GREEN + Style.BRIGHT + gettime() + ' [SUCCESS] -> Successfully updated accounts shipping details.')
         saveEmail(email, passwd)
     else:
         print(Fore.RED + gettime() + ' [ERROR] -> ERROR occured: Unable to edit shipping details.')
         saveNoShipEmail(email, passwd)
- 
+
 
 ####################          Loading proxies          ####################
 proxyList = []
@@ -321,6 +306,7 @@ if os.stat('countrydata.json').st_size == 0:
     scrapeCountryIds()
 ##########     Generating the number of accounts specified     ##########
 
+# generateAccount()
 print('[STATUS] -> Account generation has started...')
 if not proxyList:
     if how_many < 3:
@@ -339,3 +325,4 @@ else:
 
     for t in threads:
         t.join()
+        
