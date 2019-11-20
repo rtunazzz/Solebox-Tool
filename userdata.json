@@ -9,5 +9,6 @@
     "addySecondLine": "",
     "zipcode": "",
     "city": "",
-    "country_name": " "
+    "country_name": "",
+    "stateUS": ""
 }

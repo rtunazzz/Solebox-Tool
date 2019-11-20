@@ -24,7 +24,7 @@ while not how_many:
 jigFirstAndLast = False #or True
 jigFirst = False #or True
 jigPhone = True #or False
-jigFirstLineAddress = True #or False
+jigFirstLineAddress = False #or False
 jigSecondLineAddress = True #or False
 #TODO Also make sure you fill in everything in the userdata.json file.
 
@@ -55,8 +55,8 @@ def gettime():
 
 def loadProxyUserPass(filename):
     global proxyList
-    with open(filename + '.txt') as f:
-        file_content = f.read()
+    with open(filename + '.txt') as file:
+        file_content = file.read()
     file_rows = file_content.split('\n')
     for i in range(0, len(file_rows)):
         if ':' in file_rows[i]:
@@ -67,8 +67,8 @@ def loadProxyUserPass(filename):
             proxyList.append(proxies)
 
 def loadProxyIpAuth(filename):
-    with open(filename + '.txt') as f:
-        file_content = f.read()
+    with open(filename + '.txt') as file:
+        file_content = file.read()
 
     tmp = file_content.split('\n')
     for n in range(0, len(tmp)):
@@ -78,12 +78,12 @@ def loadProxyIpAuth(filename):
             proxyList.append(proxies)
 
 def saveEmail(email, passwd):
-    with open('valid_emails.txt', 'a') as f:
-        f.write(f'{email}:{passwd}\n')
+    with open('valid_emails.txt', 'a') as file:
+        file.write(f'{email}:{passwd}\n')
 
 def saveNoShipEmail(email, passwd):
-    with open('no_ship_addy_emails.txt', 'a') as f:
-        f.write(f'{email}:{passwd}\n')
+    with open('no_ship_addy_emails.txt', 'a') as file:
+        file.write(f'{email}:{passwd}\n')
 
 def getStoken(s):
     try:
@@ -190,6 +190,10 @@ if country_name == '':
     print(gettime() + ' [ERROR] -> Check your userdata.json, you forgot to fill in your country_name!')
     quit()
 
+stateUS = userData['stateUS']
+if len(stateUS) > 2:
+    print(Fore.YELLOW + gettime() + ' [WARNING] -> Wrong US state formatting! Correct format example: "NY" (for New York).')
+
 addySecondLine = userData['addySecondLine']
 catchall = userData['catchall']
 if catchall == '':
@@ -226,25 +230,22 @@ def generateAccount():
     s = cfscrape.create_scraper()
     # s = requests.Session()
     if proxyList:
-        proxy_is_bad = True
-        while proxy_is_bad:
-            s.proxies = random.choice(proxyList)
-            print(gettime() + ' [STATUS] -> Checking proxy...')
-            test = s.get('https://www.solebox.com/en/my-account/', headers=headers)
-            # print(test.text)
-            if test.status_code in (302, 200):
-                print(Fore.GREEN + Style.BRIGHT + gettime() + ' [SUCCESS] -> Proxy working...')
-                proxy_is_bad = False
-            else:
-                print(Fore.RED + gettime() + ' [ERROR] -> Proxy banned, rotating proxy...')
-            time.sleep(0.5)
+        s.proxies = random.choice(proxyList)
+        print(gettime() + ' [STATUS] -> Checking proxy...')
+        test = s.get('https://www.solebox.com/en/Apparel/', headers=headers)
+        # print(test.text)
+        if test.status_code in (302, 200):
+            print(Fore.GREEN + Style.BRIGHT + gettime() + ' [SUCCESS] -> Proxy working...')
+        else:
+            print(Fore.RED + gettime() + ' [ERROR] -> Proxy banned...')
+        time.sleep(0.5)
     stoken = getStoken(s)
     if stoken is None:
         return
     time.sleep(1)
     s.get(url='https://www.solebox.com/en/open-account/', headers=headers)
     ##########     Jigging info     ##########
-    global firstName, lastName, phoneNum, addyFirstLine, addySecondLine
+    global firstName, lastName, phoneNum, jiggedFirstLineAddress, jiggedSecondLineAddress
     if jigFirstAndLast:
         firstName = get_first_name()
         lastName = get_last_name()
@@ -253,9 +254,13 @@ def generateAccount():
     if jigPhone:
         phoneNum = f'+1{random.randint(300,999)}{random.randint(300,999)}{random.randint(300,999)}'
     if jigFirstLineAddress:
-        addyFirstLine = f'{2*(chr(random.randint(97,97+25)).upper() + chr(random.randint(97,97+25)).upper())} {addyFirstLine}'
+        jiggedFirstLineAddress = f'{2*(chr(random.randint(97,97+25)).upper() + chr(random.randint(97,97+25)).upper())} {jiggedFirstLineAddress}'
+    else:
+        jiggedFirstLineAddress = addyFirstLine
     if jigSecondLineAddress:
-        addySecondLine = f'{random.choice(linetwolist)} {random.randint(1,20)}{chr(random.randint(97,97+25)).upper()}'
+        jiggedSecondLineAddress = f'{random.choice(linetwolist)} {random.randint(1,20)}{chr(random.randint(97,97+25)).upper()}'
+    else:
+        jiggedSecondLineAddress = addySecondLine
 
     email = f'{get_first_name()}{random.randint(1,9999999)}@{catchall}'
     time.sleep(0.5)
@@ -276,13 +281,13 @@ def generateAccount():
             'invadr[oxuser__oxsal]': random.choice(['MR', 'MRS']),  # MR OR MRS
             'invadr[oxuser__oxfname]': firstName,
             'invadr[oxuser__oxlname]': lastName,
-            'invadr[oxuser__oxstreet]': addyFirstLine,
+            'invadr[oxuser__oxstreet]': jiggedFirstLineAddress,
             'invadr[oxuser__oxstreetnr]': houseNum,
-            'invadr[oxuser__oxaddinfo]': addySecondLine,
+            'invadr[oxuser__oxaddinfo]': jiggedSecondLineAddress,
             'invadr[oxuser__oxzip]': zipcode,
             'invadr[oxuser__oxcity]': city,
             'invadr[oxuser__oxcountryid]': country_id,
-            'invadr[oxuser__oxstateid]': '',
+            'invadr[oxuser__oxstateid]': stateUS,
             'invadr[oxuser__oxbirthdate][day]': random.randint(0, 31),
             'invadr[oxuser__oxbirthdate][month]': random.randint(0, 12),
             'invadr[oxuser__oxbirthdate][year]': random.randint(1950, 2003),
@@ -316,9 +321,9 @@ def generateAccount():
         'invadr[oxuser__oxsal]': random.choice(['MR', 'MRS']),  # MR OR MRS
         'invadr[oxuser__oxfname]': firstName,
         'invadr[oxuser__oxlname]': lastName,
-        'invadr[oxuser__oxstreet]': addyFirstLine,
+        'invadr[oxuser__oxstreet]': jiggedFirstLineAddress,
         'invadr[oxuser__oxstreetnr]': houseNum,
-        'invadr[oxuser__oxaddinfo]': addySecondLine,
+        'invadr[oxuser__oxaddinfo]': jiggedSecondLineAddress,
         'invadr[oxuser__oxzip]': zipcode,
         'invadr[oxuser__oxcity]': city,
         'invadr[oxuser__oxcountryid]': country_id,
@@ -329,13 +334,13 @@ def generateAccount():
         'deladr[oxaddress__oxfname]': firstName,
         'deladr[oxaddress__oxlname]': lastName,
         'deladr[oxaddress__oxcompany]': '',
-        'deladr[oxaddress__oxstreet]': addyFirstLine,
+        'deladr[oxaddress__oxstreet]': jiggedFirstLineAddress,
         'deladr[oxaddress__oxstreetnr]': houseNum,
-        'deladr[oxaddress__oxaddinfo]': addySecondLine,
+        'deladr[oxaddress__oxaddinfo]': jiggedSecondLineAddress,
         'deladr[oxaddress__oxzip]': zipcode,
         'deladr[oxaddress__oxcity]': city,
         'deladr[oxaddress__oxcountryid]': country_id,
-        'deladr[oxaddress__oxstateid]': '',
+        'deladr[oxaddress__oxstateid]': stateUS,
         'deladr[oxaddress__oxfon]': phoneNum,
     }
     time.sleep(0.5)
@@ -385,9 +390,7 @@ else:
         t = threading.Thread(target=generateAccount)
         threads.append(t)
         t.start()
-        time.sleep(3)
+        time.sleep(0.1)
 
     for t in threads:
         t.join()
-        
-input()
