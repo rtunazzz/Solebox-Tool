@@ -14,8 +14,8 @@ print(" • for personal use only")
 print('-------------------------------------\n')
 ####################          Settings [Feel free to modify this]          ####################
 
-# how_many = None
-how_many = 1
+how_many = None
+# how_many = 1
 while not how_many:
     try:
         how_many = int(input("How many accounts would you like to create?\n"))
