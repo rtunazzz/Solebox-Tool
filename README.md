@@ -29,5 +29,13 @@ open your terminal, change your directory to this folder/repo and run:
 
 - on Widnows: `py soleboxaccgen.py`
 
+## Where do I find generated accounts?
+- If everything goes smoothly, accounts should be in `valid_emails.txt`
+- if an error occurs when trying to update a shipping address, they'll be in `no_ship_addy_emails.txt` and you'll need to update shipping address manually (or just gen new ones 😝)
+
 This is how it should look like when you run it:
 ![How it should look like](https://i.imgur.com/hc8UXS5.png)
+
+
+## Notes:
+- If you don't have a catchall, feel free to leave the catchall field blank but you won't get confirmation emails (it will just create an account with a random gmail)
