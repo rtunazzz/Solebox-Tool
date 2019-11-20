@@ -1,0 +1,6 @@
+requests==2.20.1
+names==0.3.0
+lxml==4.4.1
+colorama==0.4.1
+cfscrape==2.0.8
+beautifulsoup4==4.8.1
