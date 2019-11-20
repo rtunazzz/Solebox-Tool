@@ -25,6 +25,8 @@ jigFirstAndLast = False #or True
 jigFirst = False #or True
 jigPhone = True #or False
 jigFirstLineAddress = True #or False
+#TODO ^for some reason if you set this to False, the account generation stops working (Fake Success)
+
 jigSecondLineAddress = True #or False
 #TODO Also make sure you fill in everything in the userdata.json file.
 
