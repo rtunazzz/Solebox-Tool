@@ -266,6 +266,7 @@ def generateAccount():
     time.sleep(0.5)
     print(gettime() + ' [STATUS] -> Trying to create an account...')
     ##########     Configuring payload for registering and POSTing it to create an account     ##########
+    mr_mrs = random.choice(['MR', 'MRS'])
     register_payload = {
             'stoken': stoken,
             'lang': '1',
@@ -276,9 +277,8 @@ def generateAccount():
             'lgn_cook' : 0,
             'reloadaddress': '',
             'blshowshipaddress': 1,
-            'reloadaddress' : '',
             'option' : 3,
-            'invadr[oxuser__oxsal]': random.choice(['MR', 'MRS']),  # MR OR MRS
+            'invadr[oxuser__oxsal]': mr_mrs,  # MR OR MRS
             'invadr[oxuser__oxfname]': firstName,
             'invadr[oxuser__oxlname]': lastName,
             'invadr[oxuser__oxstreet]': jiggedFirstLineAddress,
@@ -288,8 +288,8 @@ def generateAccount():
             'invadr[oxuser__oxcity]': city,
             'invadr[oxuser__oxcountryid]': country_id,
             'invadr[oxuser__oxstateid]': stateUS,
-            'invadr[oxuser__oxbirthdate][day]': random.randint(0, 31),
-            'invadr[oxuser__oxbirthdate][month]': random.randint(0, 12),
+            'invadr[oxuser__oxbirthdate][day]': random.randint(1, 31),
+            'invadr[oxuser__oxbirthdate][month]': random.randint(1, 12),
             'invadr[oxuser__oxbirthdate][year]': random.randint(1950, 2003),
             'invadr[oxuser__oxfon]': phoneNum,
             'lgn_usr': email,
@@ -318,7 +318,7 @@ def generateAccount():
         'cl': 'account_user',
         'CustomError': 'user',
         'blshowshipaddress': '1',
-        'invadr[oxuser__oxsal]': random.choice(['MR', 'MRS']),  # MR OR MRS
+        'invadr[oxuser__oxsal]': mr_mrs,  # MR OR MRS
         'invadr[oxuser__oxfname]': firstName,
         'invadr[oxuser__oxlname]': lastName,
         'invadr[oxuser__oxstreet]': jiggedFirstLineAddress,
@@ -330,7 +330,7 @@ def generateAccount():
         'invadr[oxuser__oxstateid]': '',
         'changeClass': 'account_user',
         'oxaddressid': '-1',
-        'deladr[oxaddress__oxsal]': random.choice(['MR', 'MRS']),  # MR OR MRS
+        'deladr[oxaddress__oxsal]': mr_mrs,  # MR OR MRS
         'deladr[oxaddress__oxfname]': firstName,
         'deladr[oxaddress__oxlname]': lastName,
         'deladr[oxaddress__oxcompany]': '',
