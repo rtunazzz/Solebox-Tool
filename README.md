@@ -1,5 +1,7 @@
 # Solebox account generator
 
+### Solebox has been pretty strict with their security. You'll get a lot of 403 and Cloudfare errors. That's fine, just let it run or run it a couple of times.
+
 This Python script creates Solebox accounts and **adds a shipping address to them**.
  
 **Use of proxies is highly recommended.**
@@ -25,14 +27,14 @@ open your terminal, change your directory to this folder/repo and run:
 
 - on Mac: `python3 soleboxaccgen.py`
 
-- on Widnows: `py3 soleboxaccgen.py`
+- on Widnows: `py soleboxaccgen.py`
 
 ## Where do I find generated accounts?
 - If everything goes smoothly, accounts should be in `valid_emails.txt`
 - if an error occurs when trying to update a shipping address, they'll be in `no_ship_addy_emails.txt` and you'll need to update shipping address manually (or just gen new ones 😝)
 
 This is how it should look like when you run it:
-![How it should look like](https://i.imgur.com/hc8UXS5.png)
+![How it should look like](https://i.imgur.com/Tc0GxtO.png)
 
 
 ## Notes:

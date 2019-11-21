@@ -209,8 +209,6 @@ if country_id == None:
 
 
 headers = {
-    'authority': 'www.solebox.com',
-    'scheme': 'https',
     'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
     'accept-encoding': 'gzip, deflate, br',
     'accept-language': 'n-GB,en-US;q=0.9,en;q=0.8,cs;q=0.7,de;q=0.6',
