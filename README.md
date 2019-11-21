@@ -32,7 +32,7 @@ open your terminal, change your directory to this folder/repo and run:
 - if an error occurs when trying to update a shipping address, they'll be in `no_ship_addy_emails.txt` and you'll need to update shipping address manually (or just gen new ones 😝)
 
 This is how it should look like when you run it:
-![How it should look like](https://i.imgur.com/hc8UXS5.png)
+![How it should look like](https://i.imgur.com/Tc0GxtO.png)
 
 
 ## Notes:
