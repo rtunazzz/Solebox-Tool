@@ -1,5 +1,7 @@
 # Solebox account generator
 
+### Solebox has been pretty strict with their security. You'll get a lot of 403 and Cloudfare errors. That's fine, just let it run or run it a couple of times.
+
 This Python script creates Solebox accounts and **adds a shipping address to them**.
  
 **Use of proxies is highly recommended.**
