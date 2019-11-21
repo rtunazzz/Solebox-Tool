@@ -108,10 +108,11 @@ def getStoken(s):
         print(gettime() + ' [STATUS] -> Trying to scrape stoken...')
         index_url = 'https://www.solebox.com/en/my-account/'
         index_r = s.get(url=index_url, headers=headers)
+        if 'captcha.js' in index_r.text:
+            print(Fore.RED + gettime() + ' [ERROR] -> Ecnountered CloudFare.')
+            return
         if index_r.status_code == 200:
             soup = bs(index_r.text, 'lxml')
-            if recaptchaEncountered(soup):
-                return
             stoken = soup.find('input', {'name': 'stoken'})['value']
             print(Fore.GREEN + Style.BRIGHT + gettime() + f' [SUCCESS] -> Successfully scraped stoken: {stoken} !')
             return stoken
@@ -120,17 +121,6 @@ def getStoken(s):
             return
     except:
         print(Fore.RED + gettime() + ' [ERROR] -> Unable to get stoken.')
-
-def recaptchaEncountered(soup):
-    try:
-        gcaptcha = soup.find('div', {'class' : 'g-recaptcha'})
-        if gcaptcha:
-            print(Fore.RED + gettime() + ' [ERROR] -> Encountered Cloudfare... ')
-            return True
-        else:
-            return False
-    except:
-        return False
 
 def scrapeCountryIds():
     country_data = {}
@@ -262,6 +252,8 @@ def generateAccount():
             if test.status_code in (302, 200):
                 print(Fore.GREEN + Style.BRIGHT + gettime() + ' [SUCCESS] -> Proxy working...')
                 proxy_is_bad = False
+            elif 'captcha.js' in test.text:
+                print(Fore.RED + gettime() + ' [ERROR] -> Ecnountered CloudFare, rotating proxy...')
             else:
                 print(Fore.RED + gettime() + ' [ERROR] -> Proxy banned, rotating proxy...')
             time.sleep(0.5)
