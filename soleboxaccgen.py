@@ -25,6 +25,8 @@ jigFirstAndLast = False #or True
 jigFirst = False #or True
 jigPhone = True #or False
 jigFirstLineAddress = True #or False
+#TODO ^for some reason if you set this to False, the account generation stops working (Fake Success)
+
 jigSecondLineAddress = True #or False
 #TODO Also make sure you fill in everything in the userdata.json file.
 
@@ -219,20 +221,24 @@ headers = {
 
 linetwolist = ['apt', 'apartment', 'dorm', 'suite', 'unit', 'house', 'unt', 'room', 'floor']
 
-
+count=0
 ####################          Main function          ####################
 def generateAccount():
     ##########     Initializing a session & getting stoken     ##########
     useragent = random.choice(useragents)
-    headers['useragent'] = useragent
+    headers['user-agent'] = useragent
 
     print(gettime() + ' [STATUS] -> Account generation has started...')
     s = cfscrape.create_scraper()
     # s = requests.Session()
+    global count
     if proxyList:
         proxy_is_bad = True
         while proxy_is_bad:
+            if count > len(proxyList):
+                return
             s.proxies = random.choice(proxyList)
+            count += 1
             print(gettime() + ' [STATUS] -> Checking proxy...')
             test = s.get('https://www.solebox.com/en/my-account/', headers=headers)
             # print(test.text)
@@ -300,7 +306,7 @@ def generateAccount():
         }
 
 
-    register_post = s.post(url='https://www.solebox.com/index.php?lang=1&', headers=headers, data=register_payload, allow_redirects=True)
+    register_post = s.post(url='https://www.solebox.com/index.php?lang=1&', headers=headers, data=register_payload, allow_redirects=False)
     if register_post.status_code in (302, 200):
         print(Fore.GREEN + Style.BRIGHT + gettime() + ' [SUCCESS] -> Successfully created an account.')
     else:
