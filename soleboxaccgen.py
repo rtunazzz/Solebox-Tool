@@ -44,6 +44,7 @@ import cfscrape
 import json
 import os
 from colorama import Fore, Style, init
+from dhooks import Webhook, Embed
 
 init(autoreset=True)
 ####################          Defining non-account specific functions          ####################
@@ -54,6 +55,21 @@ def gettime():
     threadname = str(threadname).replace('Thread', 'Task')
     now = '[' + str(now) + ']' + ' ' + '[' + str(threadname) + ']'
     return now
+
+def send_webhook(webhook_url, email, passwd):
+    hook = Webhook(url=webhook_url, username="rTuna's Solebox Gen", avatar_url='https://avatars1.githubusercontent.com/u/38296319?s=460&v=4')
+    color=15957463
+
+    embed = Embed(
+        title = 'Account successfully created!',
+        color=color,
+    )
+
+    embed.set_footer(text=f'BONZAY Solebox • {datetime.datetime.now().strftime("%Y-%m-%d %H:%M")}',icon_url='https://cdn.discordapp.com/attachments/527830358767566848/622854816120569887/Bonzay.png')
+    embed.add_field('Username', f'{email}')
+    embed.add_field('Password', f'||{passwd}||', inline=False)
+    hook.send(embed=embed)
+
 
 def loadProxyUserPass(filename):
     global proxyList
@@ -155,6 +171,7 @@ with open('useragents.txt', 'r') as f:
 with open('userdata.json', 'r') as f:
     userData = json.loads(f.read())
 
+webhook_url = userData['webhook_url']
 firstName = userData['firstName']
 if firstName == '':
     print(gettime() + ' [ERROR] -> Check your userdata.json, you forgot to fill in your firstName!')
@@ -215,6 +232,8 @@ headers = {
     'cache-control': 'max-age=0',
     'content-type':'application/x-www-form-urlencoded',
     'upgrade-insecure-requests': '1',
+    'sec-fetch-mode': 'navigate',
+    'sec-fetch-site': 'none',
     }
 
 linetwolist = ['apt', 'apartment', 'dorm', 'suite', 'unit', 'house', 'unt', 'room', 'floor']
@@ -238,7 +257,7 @@ def generateAccount():
             s.proxies = random.choice(proxyList)
             count += 1
             print(gettime() + ' [STATUS] -> Checking proxy...')
-            test = s.get('https://www.solebox.com/en/my-account/', headers=headers)
+            test = s.get('https://www.solebox.com/', headers=headers)
             # print(test.text)
             if test.status_code in (302, 200):
                 print(Fore.GREEN + Style.BRIGHT + gettime() + ' [SUCCESS] -> Proxy working...')
@@ -353,6 +372,8 @@ def generateAccount():
     if update_shipping_post.status_code in (302,200):
         print(Fore.GREEN + Style.BRIGHT + gettime() + ' [SUCCESS] -> Successfully updated accounts shipping details.')
         saveEmail(email, passwd)
+        if webhook_url:
+            send_webhook(webhook_url, email, passwd)
     else:
         print(Fore.RED + gettime() + ' [ERROR] -> ERROR occurred: Unable to edit shipping details.')
         saveNoShipEmail(email, passwd)
