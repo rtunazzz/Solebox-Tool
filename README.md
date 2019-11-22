@@ -47,6 +47,6 @@ This is how it should look like when you run it:
     - [This should help you](https://realpython.com/installing-python/)
 - My terminal/cmd is saying something about `pip` not being installed / Command not found, what should I do?
     - on Mac, run `python get-pip.py`
-    - on Windows run `sudo easy_install pip`
+    - on Windows run `py -3 -m ensurepip`
 - I am getting `[ERROR] -> Bad request. Satus code 403` all the time, what do I do?
     - Keep trying and or switch proxies. This also happens frequently when the site is under a heavy load (When a restock/drop happens etc.)
