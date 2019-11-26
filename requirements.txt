@@ -4,4 +4,4 @@ lxml==4.4.1
 colorama==0.4.1
 cfscrape==2.0.8
 beautifulsoup4==4.8.1
-dhooks==1.1.0
+discord-webhook==0.5.0
