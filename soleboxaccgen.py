@@ -34,18 +34,25 @@ jigSecondLineAddress = True #or False
 
 
 ####################          Importing necessary libraries          ####################
-import requests
-from bs4 import BeautifulSoup as bs
-from names import get_first_name, get_last_name
-import random
-import time
-import datetime
-import threading
-import cfscrape
-import json
-import os
-from colorama import Fore, Style, init
-from discord_webhook import DiscordWebhook, DiscordEmbed
+
+try:
+    import requests
+    from bs4 import BeautifulSoup as bs
+    from names import get_first_name, get_last_name
+    import random
+    import time
+    import datetime
+    import threading
+    import cfscrape
+    import json
+    import os
+    from colorama import Fore, Style, init
+    from discord_webhook import DiscordWebhook, DiscordEmbed
+
+except:
+    print('[FATAL ERROR] -> "Some dependencies are not installed."')
+    input()
+    quit()
 
 init(autoreset=True)
 
@@ -166,7 +173,8 @@ def getCountryId(country_name):
 
 
 ####################          Loading data and initializing other later used variables          ####################
-with open('useragents.txt', 'r') as f:
+# with open('useragents.txt', 'r') as f:
+with open('commonagents.txt', 'r') as f:
     useragents = f.read()
     useragents = useragents.split('\n')
 
@@ -178,46 +186,55 @@ firstName = userData['firstName']
 if firstName == '':
     with logger.print_lock:
         print(gettime() + ' [ERROR] -> Check your userdata.json, you forgot to fill in your firstName!')
+    input()
     quit()
 lastName = userData['lastName']
 if lastName == '':
     with logger.print_lock:
         print(gettime() + ' [ERROR] -> Check your userdata.json, you forgot to fill in your lastName!')
+    input()
     quit()
 phoneNum = userData['phoneNum']
 if phoneNum == '':
     with logger.print_lock:
         print(gettime() + ' [ERROR] -> Check your userdata.json, you forgot to fill in your phoneNum!')
+    input()
     quit()
 passwd = userData['passwd']
 if passwd == '':
     with logger.print_lock:
         print(gettime() + ' [ERROR] -> Check your userdata.json, you forgot to fill in your passwd!')
+    input()
     quit()
 addyFirstLine = userData['addyFirstLine']
 if addyFirstLine == '':
     with logger.print_lock:
         print(gettime() + ' [ERROR] -> Check your userdata.json, you forgot to fill in your addyFirstLine!')
+    input()
     quit()
 houseNum = userData['houseNum']
 if houseNum == '':
     with logger.print_lock:
         print(gettime() + ' [ERROR] -> Check your userdata.json, you forgot to fill in your houseNum!')
+    input()
     quit()
 zipcode = userData['zipcode']
 if zipcode == '':
     with logger.print_lock:
         print(gettime() + ' [ERROR] -> Check your userdata.json, you forgot to fill in your zipcode!')
+    input()
     quit()
 city = userData['city']
 if city == '':
     with logger.print_lock:
         print(gettime() + ' [ERROR] -> Check your userdata.json, you forgot to fill in your city!')
+    input()
     quit()
 country_name = userData['country_name']
 if country_name == '':
     with logger.print_lock:
         print(gettime() + ' [ERROR] -> Check your userdata.json, you forgot to fill in your country_name!')
+    input()
     quit()
 
 stateUS = userData['stateUS']
@@ -234,6 +251,7 @@ if '@' in catchall:
     
 country_id = getCountryId(country_name)
 if country_id == None:
+    input()
     quit()
 
 
@@ -334,6 +352,7 @@ def generateAccount():
             'lgn_pwd2': passwd,
             'save' : 'Save',
         }
+    return 0
 
 
     register_post = s.post(url='https://www.solebox.com/index.php?lang=1&', headers=headers, data=register_payload, allow_redirects=False)
@@ -422,6 +441,20 @@ if os.stat('countrydata.json').st_size == 0:
     scrapeCountryIds()
 ##########     Generating the number of accounts specified     ##########
 
+def gen(num_threads):
+    active_threads = []
+    for _ in range(num_threads):
+        try:
+            t = threading.Thread(target=generateAccount)
+            active_threads.append(t)
+            t.start()
+            time.sleep(0.5)
+        except:
+            print(Fore.RED + gettime() + ' [ERROR] -> Unexpected ERROR has occured.')
+
+    for t in active_threads:
+        t.join()
+
 # generateAccount()
 with logger.print_lock:
     print('[STATUS] -> Account generation has started...')
@@ -429,17 +462,28 @@ if not proxyList:
     if how_many < 3:
         for acc in range(how_many):
             generateAccount()
+            time.sleep(10)
     else:
         with logger.print_lock:
             print(Fore.YELLOW + gettime() + ' [WARNING] -> You are trying to create more than 3 accounts with no proxies! Add some proxies and try again.')
 # generateAccount()
 else:
     threads = []
-    for acc in range(how_many):
-        t = threading.Thread(target=generateAccount)
-        threads.append(t)
-        t.start()
-        time.sleep(0.5)
-
-    for t in threads:
-        t.join()
+    while (how_many / 10) >= 1:
+        gen(10)
+        with logger.print_lock:
+            print('[STATUS] -> Sleeping for 60 sec before generating more accounts...')
+        how_many -= 10
+        time.sleep(60)
+    if how_many != 0:
+        threads = []
+        for _ in range(how_many):
+            try:
+                t = threading.Thread(target=generateAccount)
+                threads.append(t)
+                t.start()
+                time.sleep(0.5)
+            except:
+                print(Fore.RED + gettime() + ' [ERROR] -> Unexpected ERROR has occured.')
+        for t in threads:
+            t.join()
