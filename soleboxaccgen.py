@@ -441,49 +441,22 @@ if os.stat('countrydata.json').st_size == 0:
     scrapeCountryIds()
 ##########     Generating the number of accounts specified     ##########
 
-def gen(num_threads):
-    active_threads = []
-    for _ in range(num_threads):
-        try:
-            t = threading.Thread(target=generateAccount)
-            active_threads.append(t)
-            t.start()
-            time.sleep(0.5)
-        except:
-            print(Fore.RED + gettime() + ' [ERROR] -> Unexpected ERROR has occured.')
-
-    for t in active_threads:
-        t.join()
-
-# generateAccount()
-with logger.print_lock:
-    print('[STATUS] -> Account generation has started...')
+print('[STATUS] -> Account generation has started...')
 if not proxyList:
     if how_many < 3:
         for acc in range(how_many):
             generateAccount()
-            time.sleep(10)
     else:
         with logger.print_lock:
             print(Fore.YELLOW + gettime() + ' [WARNING] -> You are trying to create more than 3 accounts with no proxies! Add some proxies and try again.')
 # generateAccount()
 else:
     threads = []
-    while (how_many / 10) >= 1:
-        gen(10)
-        with logger.print_lock:
-            print('[STATUS] -> Sleeping for 60 sec before generating more accounts...')
-        how_many -= 10
-        time.sleep(60)
-    if how_many != 0:
-        threads = []
-        for _ in range(how_many):
-            try:
-                t = threading.Thread(target=generateAccount)
-                threads.append(t)
-                t.start()
-                time.sleep(0.5)
-            except:
-                print(Fore.RED + gettime() + ' [ERROR] -> Unexpected ERROR has occured.')
-        for t in threads:
-            t.join()
+    for acc in range(how_many):
+        t = threading.Thread(target=generateAccount)
+        threads.append(t)
+        t.start()
+        time.sleep(1)
+
+    for t in threads:
+        t.join()
