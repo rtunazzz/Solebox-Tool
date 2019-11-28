@@ -176,7 +176,6 @@ def getCountryId(country_name):
 
 ####################          Loading data and initializing other later used variables          ####################
 with open('useragents.txt', 'r') as f:
-# with open('commonagents.txt', 'r') as f:
     useragents = f.read()
     useragents = useragents.split('\n')
 
@@ -468,7 +467,6 @@ if not proxyList:
         with logger.print_lock:
             print(Fore.YELLOW + gettime() + ' [WARNING] -> You are trying to create more than 3 accounts with no proxies! Add some proxies and try again.')
 # generateAccount()
-
 else:
     threads = []
     while (how_many / 10 >= 1):
