@@ -10,7 +10,7 @@ DM me on Discord rtuna#4321 if you need any help setting this up. **BEFORE DMing
 
 ## Before running:
 1. Make sure you have Python (preferably 3.8.0) installed
-2. download & unzip this folder, and `cd` to here
+2. download & unzip this the zip you donwloaded, open your CMD/Terminal and `cd` to this folder.
 3. run `pip install -r requirements.txt`
 4. Add your info into `userdata.json`
 
