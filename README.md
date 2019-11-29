@@ -25,7 +25,7 @@ DM me on Discord rtuna#4321 if you need any help setting this up. **BEFORE DMing
 
 ## Common errors:
 1. The script closes itself after you input the number of accounts you want to generate? YOU DIDN'T FOLLOW THE INSTURCTIONS AND YOU'RE RUNNING IT THE WRONG WAY, FOLLOW [THESE STEPS](https://github.com/rtunaboss/SoleboxAccountGenerator#before-running)
-2. `[FATAL ERROR] -> "Some dependencies are not installed."` = you don't have all of the dependencies installed. Make sure you did everything in [Before running](https://github.com/rtunaboss/SoleboxAccountGenerator#before-running). If that doesn't fix it, try running:
+2. `[FATAL ERROR] -> "Some dependencies are not installed."` = you don't have any of the dependencies installed. Make sure you did everything in [Before running](https://github.com/rtunaboss/SoleboxAccountGenerator#before-running). If that doesn't fix it, try running:
      - on Windows `py -m pip install -r requirements.txt`
      - on Mac `python3 -m pip install -r requirements.txt`
      
