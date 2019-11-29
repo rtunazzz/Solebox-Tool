@@ -6,7 +6,7 @@ This Python script creates Solebox accounts and **adds a shipping address to the
  
 **Use of proxies is highly recommended.**
 
-DM me on Discord rtuna#4321 if you need any help setting this up.
+DM me on Discord rtuna#4321 if you need any help setting this up. **BEFORE DMing ME, READ THROUGH THIS FILE**
 
 ## Before running:
 1. Make sure you have Python (preferably 3.8.0) installed
@@ -22,6 +22,17 @@ DM me on Discord rtuna#4321 if you need any help setting this up.
     jigFirstLineAddress = True #or False
     jigSecondLineAddress = True #or False
     ```
+
+## Common errors:
+1. The script closes itself after you input the number of accounts you want to generate? YOU DIDN'T FOLLOW THE INSTURCTIONS AND YOU'RE RUNNING IT THE WRONG WAY, FOLLOW [THESE STEPS](https://github.com/rtunaboss/SoleboxAccountGenerator#before-running)
+2. `[FATAL ERROR] -> "Some dependencies are not installed."` = you don't have all of the dependencies installed. Make sure you did everything in [Before running](https://github.com/rtunaboss/SoleboxAccountGenerator#before-running). If that doesn't fix it, try running:
+     - on Windows `py -m pip install -r requirements.txt`
+     - on Mac `python3 -m pip install -r requirements.txt`
+     
+3. `'pip' is not recognized as an internal or external command, operable program or batch file.` or anything related to this -> either you don't have Python in Path (`setx PATH "%PATH%;C:\Python38\Scripts"` - ONLY IF YOU'RE ON WINDOWS). If that doesn't help, try running:
+     - on Windows `py -m pip install -r requirements.txt`
+     - on Mac `python3 -m pip install -r requirements.txt`
+
 ## To run:
 open your terminal, change your directory to this folder/repo and run:
 
@@ -45,8 +56,5 @@ This is how it should look like when you run it:
     - From [wikipedia](https://en.wikipedia.org/wiki/Cd_(command)): "the `cd` command is a command-line shell command used to change the current working directory" -  so what you need to do is change your working directory, to the Folder (or directory) of this script.
 - How do I install Python?
     - [This should help you](https://realpython.com/installing-python/)
-- My terminal/cmd is saying something about `pip` not being installed / Command not found, what should I do?
-    - on Mac, run `python get-pip.py`
-    - on Windows run `py -3 -m ensurepip`
-- I am getting `[ERROR] -> Bad request. Satus code 403` all the time, what do I do?
+- I am getting `[ERROR] -> Bad request. Satus code 403` or `[ERROR] -> Encountered CloudFare...` all the time, what do I do?
     - Keep trying and or switch proxies. This also happens frequently when the site is under a heavy load (When a restock/drop happens etc.)
