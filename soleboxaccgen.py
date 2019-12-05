@@ -173,8 +173,8 @@ def getCountryId(country_name):
 
 
 ####################          Loading data and initializing other later used variables          ####################
-# with open('useragents.txt', 'r') as f:
-with open('commonagents.txt', 'r') as f:
+with open('useragents.txt', 'r') as f:
+# with open('commonagents.txt', 'r') as f:
     useragents = f.read()
     useragents = useragents.split('\n')
 
@@ -452,6 +452,7 @@ if not proxyList:
 # generateAccount()
 else:
     threads = []
+<<<<<<< HEAD
     for acc in range(how_many):
         t = threading.Thread(target=generateAccount)
         threads.append(t)
@@ -460,3 +461,23 @@ else:
 
     for t in threads:
         t.join()
+=======
+    while (how_many / 10) >= 1:
+        gen(10)
+        with logger.print_lock:
+            print('[STATUS] -> Sleeping for 60 sec before generating more accounts...')
+        how_many -= 10
+        time.sleep(60)
+    if how_many != 0:
+        threads = []
+        for _ in range(how_many):
+            try:
+                t = threading.Thread(target=generateAccount)
+                threads.append(t)
+                t.start()
+                time.sleep(0.5)
+            except:
+                print(Fore.RED + gettime() + ' [ERROR] -> Unexpected ERROR has occured.')
+        for t in threads:
+            t.join()
+>>>>>>> 7bd9a19... Update soleboxaccgen.py
