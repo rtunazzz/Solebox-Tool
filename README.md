@@ -32,6 +32,24 @@ DM me on Discord rtuna#4321 if you need any help setting this up. **BEFORE DMing
 3. `'pip' is not recognized as an internal or external command, operable program or batch file.` or anything related to this -> either you don't have Python in Path (`setx PATH "%PATH%;C:\Python38\Scripts"` - ONLY IF YOU'RE ON WINDOWS). If that doesn't help, try running:
      - on Windows `py -m pip install -r requirements.txt`
      - on Mac `python3 -m pip install -r requirements.txt`
+4. I keep getting `keyerror firstname` = you replaced something you weren't supposed to replace in the `userdata.json` file. Make sure it's filled in like this:
+```json
+{
+    "firstName": "John",
+    "lastName": "Doe",
+    "phoneNum": "123456789",
+    "catchall": "catchall.com",
+    "passwd": "myPassword",
+    "addyFirstLine": "Oxford Streed",
+    "houseNum": "33",
+    "addySecondLine": "apt 6",
+    "zipcode": "FA6 S2C",
+    "city": "London",
+    "country_name": "United Kingdom",
+    "stateUS": "",
+    "webhook_url" : "https://discordapp.com/api/webhooks/..."
+}
+```
 
 ## To run:
 open your terminal, change your directory to this folder/repo and run:
