@@ -25,10 +25,7 @@ jigFirstAndLast = False #or True
 jigFirst = False #or True
 jigPhone = True #or False
 jigFirstLineAddress = True #or False
-#TODO ^for some reason if you set this to False, the account generation stops working (Fake Success)
-
 jigSecondLineAddress = True #or False
-#TODO Also make sure you fill in everything in the userdata.json file.
 
 #-------------------------------- DO NOT MODIFY THE CODE BELOW UNLESS YOU KNOW WHAT YOU'RE DOING --------------------------------#
 
@@ -390,6 +387,39 @@ def generateAccount():
         print(gettime() + ' [STATUS] -> Trying to update accounts shipping details.')    
     ##########     Updating shipping address     ##########
     s.get(url='https://www.solebox.com/en/my-address/', headers=headers)
+    # update_shipping_payload = {
+    #     'stoken': stoken,
+    #     'lang': '1',
+    #     'listtype': '',
+    #     'actcontrol': 'account_user',
+    #     'fnc': 'changeuser_testvalues',
+    #     'cl': 'account_user',
+    #     'CustomError': 'user',
+    #     'blshowshipaddress': '1',
+    #     'invadr[oxuser__oxsal]': random.choice(['MR', 'MRS']),  # MR OR MRS
+    #     'invadr[oxuser__oxfname]': firstName,
+    #     'invadr[oxuser__oxlname]': lastName,
+    #     'invadr[oxuser__oxstreet]': jiggedFirstLineAddress,
+    #     'invadr[oxuser__oxstreetnr]': houseNum,
+    #     'invadr[oxuser__oxaddinfo]': jiggedSecondLineAddress,
+    #     'invadr[oxuser__oxzip]': zipcode,
+    #     'invadr[oxuser__oxcity]': city,
+    #     'invadr[oxuser__oxcountryid]': country_id,
+    #     'invadr[oxuser__oxstateid]': stateUS,
+    #     'changeClass': 'account_user',
+    #     'deladr[oxaddress__oxsal]': random.choice(['MR', 'MRS']),  # MR OR MRS
+    #     'deladr[oxaddress__oxfname]': firstName,
+    #     'deladr[oxaddress__oxlname]': lastName,
+    #     'deladr[oxaddress__oxcompany]': '',
+    #     'deladr[oxaddress__oxstreet]': jiggedFirstLineAddress,
+    #     'deladr[oxaddress__oxstreetnr]': houseNum,
+    #     'deladr[oxaddress__oxaddinfo]': jiggedSecondLineAddress,
+    #     'deladr[oxaddress__oxzip]': zipcode,
+    #     'deladr[oxaddress__oxcity]': city,
+    #     'deladr[oxaddress__oxcountryid]': country_id,
+    #     'deladr[oxaddress__oxstateid]': stateUS,
+    #     'deladr[oxaddress__oxfon]': phoneNum,
+    # }
     update_shipping_payload = {
         'stoken': stoken,
         'lang': '1',
@@ -404,12 +434,13 @@ def generateAccount():
         'invadr[oxuser__oxlname]': lastName,
         'invadr[oxuser__oxstreet]': jiggedFirstLineAddress,
         'invadr[oxuser__oxstreetnr]': houseNum,
-        'invadr[oxuser__oxaddinfo]': jiggedSecondLineAddress,
         'invadr[oxuser__oxzip]': zipcode,
         'invadr[oxuser__oxcity]': city,
         'invadr[oxuser__oxcountryid]': country_id,
         'invadr[oxuser__oxstateid]': stateUS,
+        'invadr[oxuser__oxfon]': phoneNum,
         'changeClass': 'account_user',
+        'oxaddressid': '-1',
         'deladr[oxaddress__oxsal]': random.choice(['MR', 'MRS']),  # MR OR MRS
         'deladr[oxaddress__oxfname]': firstName,
         'deladr[oxaddress__oxlname]': lastName,
@@ -423,6 +454,7 @@ def generateAccount():
         'deladr[oxaddress__oxstateid]': stateUS,
         'deladr[oxaddress__oxfon]': phoneNum,
     }
+
 
     time.sleep(1)
     update_shipping_post = s.post(url='https://www.solebox.com/index.php?lang=1&', headers=headers, data=update_shipping_payload)
