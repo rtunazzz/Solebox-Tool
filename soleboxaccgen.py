@@ -36,6 +36,8 @@ print(r'''
 ''')
 print(" • made by: rtuna#4321 | @rTunaboss")
 print(" • for personal use only")
+print('-------------------------------------')
+print('!!! IF SOMETHING ISN\'T WORKING, MAKE SURE YOU CHECK IF THERE AREN\'T ANY UPDATES AVAILABLE !!!' )
 print('-------------------------------------\n')
 ####################          Settings [Feel free to modify this]          ####################
 
