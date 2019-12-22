@@ -254,7 +254,6 @@ if country_id == None:
     quit()
 
 
-
 headers = {
     'authority': 'www.solebox.com',
     'method': 'GET',
@@ -264,7 +263,7 @@ headers = {
     'accept-encoding': 'gzip, deflate, br',
     'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8,cs;q=0.7,de;q=0.6',
     # 'cache-control': 'no-cache',
-    'referer': 'http://www.solebox.com/',
+    # 'referer': 'http://www.solebox.com/',
     'sec-fetch-mode': 'navigate',
     'sec-fetch-site': 'cross-site',
     'upgrade-insecure-requests': '1',
