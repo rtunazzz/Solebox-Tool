@@ -492,26 +492,11 @@ if not proxyList:
             print(Fore.YELLOW + gettime() + ' [WARNING] -> You are trying to create more than 3 accounts with no proxies! Add some proxies and try again.')
 # generateAccount()
 else:
-    threads = []
-    while (how_many / 10 >= 1):
-        for acc in range(10):
-            t = threading.Thread(target=generateAccount)
-            threads.append(t)
-            t.start()
-            how_many -= 10
-            time.sleep(0.5)
-        print('[STATUS] -> Sleeping for 60sec...')
-        time.sleep(60)
-
-        for t in threads:
-            t.join()
-
-    if (how_many != 0):
-        for acc in range(how_many):
-            t = threading.Thread(target=generateAccount)
-            threads.append(t)
-            t.start()
-            time.sleep(0.5)
+    for acc in range(how_many):
+        t = threading.Thread(target=generateAccount)
+        threads.append(t)
+        t.start()
+        time.sleep(0.5)
             
     for t in threads:
         t.join()
