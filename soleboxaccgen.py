@@ -482,6 +482,7 @@ if os.stat('countrydata.json').st_size == 0:
     scrapeCountryIds()
 ##########     Generating the number of accounts specified     ##########
 
+threads = []
 print('[STATUS] -> Account generation has started...')
 if not proxyList:
     if how_many < 3:
