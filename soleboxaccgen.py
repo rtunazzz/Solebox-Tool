@@ -20,7 +20,7 @@ try:
 except:
     print('[FATAL ERROR] -> "Some dependencies are not installed."')
     print('!!! Make sure you read and do EVERYTHING in the "Before running" section of the README.md file on Github !!!')
-    print('Available from:\thttps://github.com/rtunaboss/SoleboxAccountGenerator')
+    print('• Available from:\thttps://github.com/rtunaboss/SoleboxAccountGenerator')
     input()
     quit()
 
@@ -37,7 +37,8 @@ print(r'''
 print(" • made by: rtuna#4321 | @rTunaboss")
 print(" • for personal use only")
 print('-------------------------------------')
-print('!!! IF SOMETHING ISN\'T WORKING, MAKE SURE YOU CHECK IF THERE AREN\'T ANY UPDATES AVAILABLE !!!' )
+print(Fore.YELLOW + '!!! IF YOU GET A LOT OF CLOUDFARE ERRORS, MAKE SURE YOU ARE ON THE LATEST VERSION !!!' )
+print('https://github.com/rtunaboss/SoleboxAccountGenerator')
 print('-------------------------------------\n')
 ####################          Settings [Feel free to modify this]          ####################
 
