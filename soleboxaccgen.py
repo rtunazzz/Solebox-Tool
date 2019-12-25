@@ -258,18 +258,19 @@ if country_id == None:
 
 
 headers = {
-    'authority': 'www.solebox.com',
-    'method': 'GET',
-    'path': '/',
-    'scheme': 'https',
-    'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-    'accept-encoding': 'gzip, deflate, br',
-    'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8,cs;q=0.7,de;q=0.6',
+    # 'authority': 'www.solebox.com',
+    # 'method': 'GET',
+    # 'path': '/',
+    # 'scheme': 'https',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept-Encoding': 'gzip, deflate, br',
+    'Accept-Language': 'en-us',
+    'Connection': 'keep-alive',
     # 'cache-control': 'no-cache',
     # 'referer': 'http://www.solebox.com/',
-    'sec-fetch-mode': 'navigate',
-    'sec-fetch-site': 'cross-site',
-    'upgrade-insecure-requests': '1',
+    # 'sec-fetch-mode': 'navigate',
+    # 'sec-fetch-site': 'cross-site',
+    # 'upgrade-insecure-requests': '1',
 }
 
 
@@ -313,8 +314,8 @@ def generateAccount():
     # headers['user-agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36'
     with logger.print_lock:
         print(gettime() + ' [STATUS] -> Account generation has started...')
-    # s = cfscrape.create_scraper()
-    s = requests.Session()
+    s = cfscrape.create_scraper()
+    # s = requests.Session()
     if proxyList:
         proxy_is_bad = True
         while proxy_is_bad:
@@ -360,35 +361,62 @@ def generateAccount():
     with logger.print_lock:
         print(gettime() + ' [STATUS] -> Trying to create an account...')
     ##########     Configuring payload for registering and POSTing it to create an account     ##########
+    # register_payload = {
+    #         'stoken': stoken,
+    #         'lang': 1,
+    #         'listtype': '',
+    #         'actcontrol': 'register',
+    #         'fnc': 'registeruser',
+    #         'cl': 'register',
+    #         'lgn_cook' : 0,
+    #         'reloadaddress': '',
+    #         'blshowshipaddress': 1,
+    #         'option' : 3,
+    #         'invadr[oxuser__oxsal]': random.choice(['MR', 'MRS']),  # MR OR MRS
+    #         'invadr[oxuser__oxfname]': firstName,
+    #         'invadr[oxuser__oxlname]': lastName,
+    #         'invadr[oxuser__oxstreet]': jiggedFirstLineAddress,
+    #         'invadr[oxuser__oxstreetnr]': houseNum,
+    #         'invadr[oxuser__oxaddinfo]': jiggedSecondLineAddress,
+    #         'invadr[oxuser__oxzip]': zipcode,
+    #         'invadr[oxuser__oxcity]': city,
+    #         'invadr[oxuser__oxcountryid]': country_id,
+    #         'invadr[oxuser__oxstateid]': stateUS,
+    #         'invadr[oxuser__oxbirthdate][day]': random.randint(1, 31),
+    #         'invadr[oxuser__oxbirthdate][month]': random.randint(1, 12),
+    #         'invadr[oxuser__oxbirthdate][year]': random.randint(1950, 2003),
+    #         'invadr[oxuser__oxfon]': phoneNum,
+    #         'lgn_usr': email,
+    #         'lgn_pwd': passwd,
+    #         'lgn_pwd2': passwd,
+    #     }
+
     register_payload = {
-            'stoken': stoken,
-            'lang': '1',
-            'listtype': '',
-            'actcontrol': 'register',
-            'fnc': 'registeruser',
-            'cl': 'register',
-            'lgn_cook' : 0,
-            'reloadaddress': '',
-            'blshowshipaddress': 1,
-            'option' : 3,
-            'invadr[oxuser__oxsal]': random.choice(['MR', 'MRS']),  # MR OR MRS
-            'invadr[oxuser__oxfname]': firstName,
-            'invadr[oxuser__oxlname]': lastName,
-            'invadr[oxuser__oxstreet]': jiggedFirstLineAddress,
-            'invadr[oxuser__oxstreetnr]': houseNum,
-            'invadr[oxuser__oxaddinfo]': jiggedSecondLineAddress,
-            'invadr[oxuser__oxzip]': zipcode,
-            'invadr[oxuser__oxcity]': city,
-            'invadr[oxuser__oxcountryid]': country_id,
-            'invadr[oxuser__oxstateid]': stateUS,
-            'invadr[oxuser__oxbirthdate][day]': random.randint(1, 31),
-            'invadr[oxuser__oxbirthdate][month]': random.randint(1, 12),
-            'invadr[oxuser__oxbirthdate][year]': random.randint(1950, 2003),
-            'invadr[oxuser__oxfon]': phoneNum,
-            'lgn_usr': email,
-            'lgn_pwd': passwd,
-            'lgn_pwd2': passwd,
-            'save' : 'Save',
+        'stoken': stoken,
+        'lang': 1,
+        'listtype': '',
+        'actcontrol': 'account',
+        'cl': 'user',
+        'fnc': 'createuser',
+        'reloadaddress': '',
+        'blshowshipaddress': 1,
+        'invadr[oxuser__oxsal]': random.choice(['MR', 'MRS']),  # MR OR MRS
+        'invadr[oxuser__oxfname]': firstName,
+        'invadr[oxuser__oxlname]': lastName,
+        'invadr[oxuser__oxstreet]': jiggedFirstLineAddress,
+        'invadr[oxuser__oxstreetnr]': houseNum,
+        'invadr[oxuser__oxaddinfo]': jiggedSecondLineAddress,
+        'invadr[oxuser__oxzip]': zipcode,
+        'invadr[oxuser__oxcity]': city,
+        'invadr[oxuser__oxcountryid]': country_id,
+        'invadr[oxuser__oxstateid]': stateUS,
+        'invadr[oxuser__oxbirthdate][day]': random.randint(1, 31),
+        'invadr[oxuser__oxbirthdate][month]': random.randint(1, 12),
+        'invadr[oxuser__oxbirthdate][year]': random.randint(1950, 2003),
+        'invadr[oxuser__oxfon]': phoneNum,
+        'lgn_usr': email,
+        'lgn_pwd': passwd,
+        'lgn_pwd2': passwd,
         }
 
     register_post = s.post(url='https://www.solebox.com/index.php?lang=1&', headers=headers, data=register_payload)
