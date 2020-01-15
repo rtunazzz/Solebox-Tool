@@ -317,7 +317,7 @@ def generateAccount():
         jiggedFirstLineAddress = f'{2*(chr(random.randint(97,97+25)).upper() + chr(random.randint(97,97+25)).upper())} {addyFirstLine}'
     else:
         jiggedFirstLineAddress = addyFirstLine
-    if jigSecondLineAddress:
+    if addySecondLine == '' and jigSecondLineAddress:
         jiggedSecondLineAddress = f'{random.choice(linetwolist)} {random.randint(1,20)}{chr(random.randint(97,97+25)).upper()}'
     else:
         jiggedSecondLineAddress = addySecondLine
@@ -326,34 +326,6 @@ def generateAccount():
     with logger.print_lock:
         print(gettime() + ' [STATUS] -> Trying to create an account...')
     ##########     Configuring payload for registering and POSTing it to create an account     ##########
-
-    # register_payload = {
-    #     'stoken': stoken,
-    #     'lang': 1,
-    #     'listtype': '',
-    #     'actcontrol': 'account',
-    #     'cl': 'user',
-    #     'fnc': 'createuser',
-    #     'reloadaddress': '',
-    #     'blshowshipaddress': 1,
-        # 'invadr[oxuser__oxsal]': random.choice(['MR', 'MRS']),  # MR OR MRS
-        # 'invadr[oxuser__oxfname]': firstName,
-        # 'invadr[oxuser__oxlname]': lastName,
-        # 'invadr[oxuser__oxstreet]': jiggedFirstLineAddress,
-        # 'invadr[oxuser__oxstreetnr]': houseNum,
-    #     'invadr[oxuser__oxaddinfo]': jiggedSecondLineAddress,
-        # 'invadr[oxuser__oxzip]': zipcode,
-        # 'invadr[oxuser__oxcity]': city,
-        # 'invadr[oxuser__oxcountryid]': country_id,
-        # 'invadr[oxuser__oxstateid]': stateUS,
-        # 'invadr[oxuser__oxbirthdate][day]': random.randint(1, 31),
-        # 'invadr[oxuser__oxbirthdate][month]': random.randint(1, 12),
-        # 'invadr[oxuser__oxbirthdate][year]': random.randint(1950, 2003),
-    #     'invadr[oxuser__oxfon]': phoneNum,
-    #     'lgn_usr': email,
-    #     'lgn_pwd': passwd,
-    #     'lgn_pwd2': passwd,
-    #     }
 
     register_payload = {
         'stoken': stoken,
