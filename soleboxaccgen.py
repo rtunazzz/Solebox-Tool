@@ -361,7 +361,7 @@ def generateAccount():
         'invadr[oxuser__oxbirthdate][year]': random.randint(1950, 2003),
     }
 
-    headers['Referer'] = 'https://www.solebox.com/en/open-account/'
+    headers['referer'] = 'https://www.solebox.com/en/open-account/'
     register_post = s.post(url='https://www.solebox.com/index.php?lang=1&', headers=headers, data=register_payload)
     if register_post.status_code in (302, 200):
         with logger.print_lock:
@@ -375,9 +375,11 @@ def generateAccount():
         print(gettime() + ' [STATUS] -> Trying to update accounts shipping details.')    
     ##########     Updating shipping address     ##########
     s.get(url='https://www.solebox.com/en/my-address/', headers=headers)
-    
+    headers['referer'] = 'https://www.solebox.com/en/my-address/'
+
+
     update_shipping_payload = {
-        'MIME Type': 'application/x-www-form-urlencoded',
+        # 'MIME Type': 'application/x-www-form-urlencoded',
         'stoken': stoken,
         'lang': '1',
         'listtype': '',
@@ -424,7 +426,7 @@ def generateAccount():
             send_webhook(webhook_url, email, passwd)
     else:
         with logger.print_lock:
-            print(Fore.RED + gettime() + ' [ERROR] -> ERROR occurred: Unable to edit shipping details.')
+            print(Fore.RED + gettime() + f' [ERROR] -> Error {update_shipping_post.status_code} occurred: Unable to edit shipping details.')
         saveNoShipEmail(email, passwd)
 
 
