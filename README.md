@@ -1,7 +1,5 @@
 # Solebox account generator
 
-### NOT ACTIVELY MAINTAINED AT LEAST UNTIL FEBRUARY [FINALS]
-
 
 
 
