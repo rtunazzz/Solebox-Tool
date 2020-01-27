@@ -260,9 +260,9 @@ headers = {
     'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
     'accept-encoding': 'gzip, deflate, br',
     'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8,cs;q=0.7,de;q=0.6',
-    'sec-fetch-mode': 'navigate',
-    'sec-fetch-site': 'none',
-    'sec-fetch-user': '?1',
+    # 'sec-fetch-mode': 'navigate',
+    # 'sec-fetch-site': 'none',
+    # 'sec-fetch-user': '?1',
     'upgrade-insecure-requests': '1',
     'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36',
 }
@@ -303,7 +303,7 @@ def generateAccount():
     if stoken is None:
         return
     time.sleep(1)
-    s.get(url='https://www.solebox.com/en/open-account/', headers=headers)
+    # s.get(url='https://www.solebox.com/en/open-account/', headers=headers)
     ##########     Jigging info     ##########
     global firstName, lastName, phoneNum, jiggedFirstLineAddress, jiggedSecondLineAddress
     if jigFirstAndLast:
@@ -329,17 +329,17 @@ def generateAccount():
 
     register_payload = {
         'stoken': stoken,
-        'lang': '1',
+        'lang': 1,
         'actcontrol': 'register',
         'fnc': 'registeruser',
         'cl': 'register',
-        'lgn_cook': '0',
+        'lgn_cook': 0,
         'reloadaddress': '',
-        'option': '3',
+        'option': 3,
         'lgn_usr': email,
         'lgn_pwd': passwd,
         'lgn_pwd2': passwd,
-        'blnewssubscribed': '0',
+        'blnewssubscribed': 0,
         'invadr[oxuser__oxsal]': random.choice(['MR', 'MRS']),  # MR OR MRS
         'invadr[oxuser__oxfname]': firstName,
         'invadr[oxuser__oxlname]': lastName,
@@ -354,13 +354,15 @@ def generateAccount():
         'invadr[oxuser__oxstateid]': stateUS,
         'invadr[oxuser__oxfon]': phoneNum,
         'invadr[oxuser__oxfax]': '',
-        'invadr[oxuser__oxmobfon]': '',
-        'invadr[oxuser__oxprivfon]': '',
+        'invadr[oxuser__oxmobfon]': phoneNum,
+        'invadr[oxuser__oxprivfon]': phoneNum,
         'invadr[oxuser__oxbirthdate][day]': random.randint(1, 31),
         'invadr[oxuser__oxbirthdate][month]': random.randint(1, 12),
         'invadr[oxuser__oxbirthdate][year]': random.randint(1950, 2003),
+        'save': '',
     }
 
+    headers['origin'] = 'https://www.solebox.com'
     headers['referer'] = 'https://www.solebox.com/en/open-account/'
     register_post = s.post(url='https://www.solebox.com/index.php?lang=1&', headers=headers, data=register_payload)
     if register_post.status_code in (302, 200):
