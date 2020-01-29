@@ -48,7 +48,7 @@ while not how_many:
     try:
         how_many = int(input("How many accounts would you like to create?\n"))
     except ValueError:
-        print("This is not an integer. Try again...")
+        print("That is not an integer. Try again...")
 jigFirstAndLast = False #or True
 jigFirst = False #or True
 jigPhone = True #or False
@@ -260,12 +260,13 @@ headers = {
     'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
     'accept-encoding': 'gzip, deflate, br',
     'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8,cs;q=0.7,de;q=0.6',
-    'sec-fetch-mode': 'navigate',
-    'sec-fetch-site': 'none',
-    'sec-fetch-user': '?1',
-    'origin': 'https://www.solebox.com',
-    'upgrade-insecure-requests': '1',
-    'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36',
+    'cache-control': 'max-age=0',
+    # 'sec-fetch-mode': 'navigate',
+    # 'sec-fetch-site': 'none',
+    # 'sec-fetch-user': '?1',
+    # 'origin': 'https://www.solebox.com',
+    # 'upgrade-insecure-requests': '1',
+    # 'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36',
 }
 
 linetwolist = ['apt', 'apartment', 'dorm', 'suite', 'unit', 'house', 'unt', 'room', 'floor']
@@ -323,11 +324,11 @@ def generateAccount():
     else:
         jiggedSecondLineAddress = addySecondLine
     email = f'{get_first_name()}{random.randint(1,9999999)}@{catchall}'
-    time.sleep(0.5)
+    time.sleep(1)
     with logger.print_lock:
         print(gettime() + ' [STATUS] -> Trying to create an account...')
     ##########     Configuring payload for registering and POSTing it to create an account     ##########
-    time.sleep(1)
+    time.sleep(2)
     register_payload = {
         'stoken': stoken,
         'lang': 1,
@@ -356,15 +357,17 @@ def generateAccount():
         'invadr[oxuser__oxfon]': phoneNum,
         'invadr[oxuser__oxfax]': '',
         'invadr[oxuser__oxmobfon]': '',
-        'invadr[oxuser__oxprivfon]': phoneNum,
-        'invadr[oxuser__oxbirthdate][day]': random.randint(1, 31),
-        'invadr[oxuser__oxbirthdate][month]': random.randint(1, 12),
-        'invadr[oxuser__oxbirthdate][year]': random.randint(1950, 2003),
+        'invadr[oxuser__oxprivfon]': '',
+        'invadr[oxuser__oxbirthdate][day]': '',
+        'invadr[oxuser__oxbirthdate][month]': '',
+        'invadr[oxuser__oxbirthdate][year]': '',
         'save': '',
     }
 
-    # headers['origin'] = 'https://www.solebox.com'
-    # headers['referer'] = 'https://www.solebox.com/en/open-account/'
+    headers['origin'] = 'https://www.solebox.com'
+    headers['referer'] = 'https://www.solebox.com/en/open-account/'
+    headers['content-type'] = 'application/x-www-form-urlencoded'
+
     register_post = s.post(url='https://www.solebox.com/index.php?lang=1&', headers=headers, data=register_payload)
     if register_post.status_code in (302, 200):
         with logger.print_lock:
@@ -378,7 +381,7 @@ def generateAccount():
         print(gettime() + ' [STATUS] -> Trying to update accounts shipping details.')    
     ##########     Updating shipping address     ##########
     s.get(url='https://www.solebox.com/en/my-address/', headers=headers)
-    # headers['referer'] = 'https://www.solebox.com/en/my-address/'
+    headers['referer'] = 'https://www.solebox.com/en/my-address/'
 
 
     update_shipping_payload = {
