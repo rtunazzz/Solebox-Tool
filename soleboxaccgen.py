@@ -260,14 +260,16 @@ headers = {
     'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
     'accept-encoding': 'gzip, deflate, br',
     'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8,cs;q=0.7,de;q=0.6',
-    'cache-control': 'max-age=0',
+    # 'cache-control': 'max-age=0',
     # 'sec-fetch-mode': 'navigate',
     # 'sec-fetch-site': 'none',
     # 'sec-fetch-user': '?1',
     # 'origin': 'https://www.solebox.com',
-    # 'upgrade-insecure-requests': '1',
+    'upgrade-insecure-requests': '1',
     # 'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36',
 }
+
+
 
 linetwolist = ['apt', 'apartment', 'dorm', 'suite', 'unit', 'house', 'unt', 'room', 'floor']
 
@@ -279,8 +281,8 @@ def generateAccount():
     # headers['User-Agent'] = useragent
     with logger.print_lock:
         print(gettime() + ' [STATUS] -> Account generation has started...')
-    s = cfscrape.create_scraper()
-    # s = requests.Session()
+    # s = cfscrape.create_scraper()
+    s = requests.Session()
     if proxyList:
         proxy_is_bad = True
         while proxy_is_bad:
@@ -314,7 +316,7 @@ def generateAccount():
     elif jigFirst:
         firstName = get_first_name()
     if jigPhone:
-        phoneNum = f'+1{random.randint(300,999)}{random.randint(300,999)}{random.randint(300,999)}'
+        phoneNum = f'+1{random.randint(300,999)}{random.randint(300,999)}{random.randint(300,999)}{random.randint(0,9)}'
     if jigFirstLineAddress:
         jiggedFirstLineAddress = f'{2*(chr(random.randint(97,97+25)).upper() + chr(random.randint(97,97+25)).upper())} {addyFirstLine}'
     else:
@@ -364,11 +366,11 @@ def generateAccount():
         'save': '',
     }
 
-    headers['origin'] = 'https://www.solebox.com'
-    headers['referer'] = 'https://www.solebox.com/en/open-account/'
-    headers['content-type'] = 'application/x-www-form-urlencoded'
+    # headers['origin'] = 'https://www.solebox.com'
+    # headers['referer'] = 'https://www.solebox.com/en/open-account/'
+    # headers['content-type'] = 'application/x-www-form-urlencoded'
 
-    register_post = s.post(url='https://www.solebox.com/index.php?lang=1&', headers=headers, data=register_payload)
+    register_post = s.post(url='https://www.solebox.com/index.php?lang=1&', headers=headers, data=register_payload, timeout=10)
     if register_post.status_code in (302, 200):
         with logger.print_lock:
             print(Fore.GREEN + Style.BRIGHT + gettime() + ' [SUCCESS] -> Successfully created an account.')
