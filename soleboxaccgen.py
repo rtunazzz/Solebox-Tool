@@ -1,6 +1,18 @@
 #### made by: rtuna#4321 | @rTunaboss
 #### Working on Python 3.8.0
 
+
+
+####################          Settings [Feel free to modify this]          ####################
+
+jigFirstAndLast = False #or True
+jigFirst = False #or True
+jigPhone = True #or False
+jigSecondLineAddress = True #or False
+
+jigFirstLineAddress = True #or False IF YOU SET THIS TO FALSE, YOU ARE VERY LIKELY TO GET THIS ERROR: 'Not possible to register {email}. Maybe you have already registered?'
+
+
 ####################          Importing necessary libraries          ####################
 
 try:
@@ -40,7 +52,8 @@ print('-------------------------------------')
 print(Fore.YELLOW + '!!! IF YOU GET A LOT OF CLOUDFARE ERRORS, MAKE SURE YOU ARE ON THE LATEST VERSION !!!' )
 print('https://github.com/rtunaboss/SoleboxAccountGenerator')
 print('-------------------------------------\n')
-####################          Settings [Feel free to modify this]          ####################
+
+#-------------------------------- DO NOT MODIFY THE CODE BELOW UNLESS YOU KNOW WHAT YOU'RE DOING --------------------------------#
 
 how_many = None
 # how_many = 1
@@ -49,13 +62,6 @@ while not how_many:
         how_many = int(input("How many accounts would you like to create?\n"))
     except ValueError:
         print("That is not an integer. Try again...")
-jigFirstAndLast = False #or True
-jigFirst = False #or True
-jigPhone = True #or False
-jigFirstLineAddress = True #or False
-jigSecondLineAddress = True #or False
-
-#-------------------------------- DO NOT MODIFY THE CODE BELOW UNLESS YOU KNOW WHAT YOU'RE DOING --------------------------------#
 
 class logger:
     print_lock = threading.Lock()
@@ -290,7 +296,7 @@ def generateAccount():
             with logger.print_lock:
                 print(gettime() + ' [STATUS] -> Checking proxy...')
             
-            t = s.get('https://www.solebox.com/en/home/', headers=headers)
+            s.get('https://www.solebox.com/en/home/', headers=headers)
             test = s.get('https://www.solebox.com/en/open-account/', headers=headers)
             if test.status_code in (302, 200):
                 with logger.print_lock:
@@ -370,7 +376,11 @@ def generateAccount():
     # headers['referer'] = 'https://www.solebox.com/en/open-account/'
     # headers['content-type'] = 'application/x-www-form-urlencoded'
 
-    register_post = s.post(url='https://www.solebox.com/index.php?lang=1&', headers=headers, data=register_payload, timeout=10)
+    register_post = s.post(url='https://www.solebox.com/index.php?lang=1&', headers=headers, data=register_payload)
+    if "Not possible to register" in register_post.text:
+        with logger.print_lock:
+            print(Fore.RED + gettime() + f' [ERROR] -> Unable to create an account. Solebox returned:\n\"Not possible to register {email}. Maybe you have already registered?\"')
+        return
     if register_post.status_code in (302, 200):
         with logger.print_lock:
             print(Fore.GREEN + Style.BRIGHT + gettime() + ' [SUCCESS] -> Successfully created an account.')
