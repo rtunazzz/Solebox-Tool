@@ -51,6 +51,9 @@ DM me on Discord rtuna#4321 if you need any help setting this up. **BEFORE DMing
     "webhook_url" : "https://discordapp.com/api/webhooks/..."
 }
 ```
+5. Script was working fine but now I just get `403` errors all the time?
+     - Regenerate proxies (make sure you try both static and rotating)
+     - if that doesn't help, contact me. Solebox most likely changed their security and an update will be needed.
 
 ## To run:
 open your terminal, change your directory to this folder/repo and run:
