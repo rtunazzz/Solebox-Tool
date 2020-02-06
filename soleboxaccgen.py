@@ -251,7 +251,7 @@ if len(stateUS) > 2:
 
 addySecondLine = userData['addySecondLine']
 catchall = userData['catchall']
-if catchall == '':
+if catchall.strip() == '':
     catchall = 'gmail.com'
 if '@' in catchall:
     catchall = catchall.replace('@', '')
@@ -296,7 +296,7 @@ def generateAccount():
             with logger.print_lock:
                 print(gettime() + ' [STATUS] -> Checking proxy...')
             
-            s.get('https://www.solebox.com/en/home/', headers=headers)
+            # s.get('https://www.solebox.com/en/home/', headers=headers)
             test = s.get('https://www.solebox.com/en/open-account/', headers=headers)
             if test.status_code in (302, 200):
                 with logger.print_lock:
