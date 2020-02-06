@@ -271,7 +271,7 @@ headers = {
     # 'sec-fetch-site': 'none',
     # 'sec-fetch-user': '?1',
     # 'origin': 'https://www.solebox.com',
-    'upgrade-insecure-requests': '1',
+    # 'upgrade-insecure-requests': '1',
     # 'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36',
 }
 
