@@ -123,6 +123,20 @@ def saveNoShipEmail(email, passwd):
     with open('no_ship_addy_emails.txt', 'a') as f:
         f.write(f'{email}:{passwd}\n')
 
+def parseStoken(req):
+    soup = bs(req.text, 'lxml')
+    with logger.print_lock:
+        print(gettime() + ' [STATUS] -> Parsing stoken...')
+    try:
+        stoken = soup.find('input', {'name': 'stoken'})['value']
+        with logger.print_lock:
+            print(Fore.GREEN + Style.BRIGHT + gettime() + f' [SUCCESS] -> Successfully parsed stoken: {stoken}!')
+    except:
+        with logger.print_lock:
+            stoken = None
+            print(Fore.RED + gettime() + ' [ERROR] -> Unable to get stoken.')
+    return stoken
+
 def getStoken(s):
     try:
         with logger.print_lock:
@@ -180,10 +194,13 @@ def getCountryId(country_name):
 
 
 ####################          Loading data and initializing other later used variables          ####################
-with open('useragents.txt', 'r') as f:
-# with open('commonagents.txt', 'r') as f:
-    useragents = f.read()
-    useragents = useragents.split('\n')
+with open('./useragents/desktop-useragents.txt', 'r') as f:
+    desktop_useragents = f.read()
+    desktop_useragents = desktop_useragents.split('\n')
+    
+with open('./useragents/mobile-useragents.txt', 'r') as f:
+    mobile_useragents = f.read()
+    mobile_useragents = mobile_useragents.split('\n')
 
 with open('userdata.json', 'r') as f:
     userData = json.loads(f.read())
@@ -269,6 +286,7 @@ headers = {
     # 'cache-control': 'max-age=0',
     # 'sec-fetch-mode': 'navigate',
     # 'sec-fetch-site': 'none',
+    'referer' : "https://www.google.com/",
     # 'sec-fetch-user': '?1',
     # 'origin': 'https://www.solebox.com',
     # 'upgrade-insecure-requests': '1',
@@ -282,9 +300,13 @@ linetwolist = ['apt', 'apartment', 'dorm', 'suite', 'unit', 'house', 'unt', 'roo
 ####################          Main function          ####################
 def generateAccount():
     ##########     Initializing a session & getting stoken     ##########
-    useragent = random.choice(useragents)
+    useragent_type = random.choice(['mobile', 'desktop'])
+    if useragent_type == 'mobile':
+        useragent = random.choice(mobile_useragents)
+    else:
+        useragent = random.choice(desktop_useragents)
+        
     headers['user-agent'] = useragent
-    # headers['User-Agent'] = useragent
     with logger.print_lock:
         print(gettime() + ' [STATUS] -> Account generation has started...')
     # s = cfscrape.create_scraper()
@@ -297,22 +319,26 @@ def generateAccount():
                 print(gettime() + ' [STATUS] -> Checking proxy...')
             
             # s.get('https://www.solebox.com/en/home/', headers=headers)
-            test = s.get('https://www.solebox.com/en/open-account/', headers=headers)
+            try:
+                test = s.get('https://www.solebox.com/en/open-account/', headers=headers, timeout=5)
+            except:
+                with logger.print_lock:
+                    print(Fore.LIGHTYELLOW_EX + gettime() + ' [ERROR] -> Proxy timed out, rotating proxy...')
+                continue
             if test.status_code in (302, 200):
                 with logger.print_lock:
-                    print(Fore.GREEN + Style.BRIGHT + gettime() + ' [SUCCESS] -> Proxy working...')
+                    print(Fore.LIGHTGREEN_EX + Style.BRIGHT + gettime() + ' [SUCCESS] -> Proxy working...')
                 proxy_is_bad = False
             elif 'captcha.js' in test.text:
                 with logger.print_lock:
-                    print(Fore.RED + gettime() + ' [ERROR] -> Encountered CloudFare, rotating proxy...')
+                    print(Fore.LIGHTYELLOW_EX + gettime() + ' [ERROR] -> Encountered CloudFare, rotating proxy...')
             else:
                 with logger.print_lock:
-                    print(Fore.RED + gettime() + ' [ERROR] -> Proxy banned, rotating proxy...')
-            time.sleep(1)
-    stoken = getStoken(s)
+                    print(Fore.LIGHTYELLOW_EX + gettime() + ' [ERROR] -> Proxy banned, rotating proxy...')
+    stoken = parseStoken(test)
     if stoken is None:
         return
-    time.sleep(1)
+    # time.sleep(1)
     # s.get(url='https://www.solebox.com/en/open-account/', headers=headers)
     ##########     Jigging info     ##########
     global firstName, lastName, phoneNum, jiggedFirstLineAddress, jiggedSecondLineAddress
@@ -332,54 +358,89 @@ def generateAccount():
     else:
         jiggedSecondLineAddress = addySecondLine
     email = f'{get_first_name()}{random.randint(1,9999999)}@{catchall}'
-    time.sleep(1)
+    # time.sleep(1)
     with logger.print_lock:
         print(gettime() + ' [STATUS] -> Trying to create an account...')
     ##########     Configuring payload for registering and POSTing it to create an account     ##########
-    time.sleep(2)
-    register_payload = {
-        'stoken': stoken,
-        'lang': 1,
-        'actcontrol': 'register',
-        'fnc': 'registeruser',
-        'cl': 'register',
-        'lgn_cook': 0,
-        'reloadaddress': '',
-        'option': 3,
-        'lgn_usr': email,
-        'lgn_pwd': passwd,
-        'lgn_pwd2': passwd,
-        'blnewssubscribed': 0,
-        'invadr[oxuser__oxsal]': random.choice(['MR', 'MRS']),
-        'invadr[oxuser__oxfname]': firstName,
-        'invadr[oxuser__oxlname]': lastName,
-        'invadr[oxuser__oxcompany]': '',
-        'invadr[oxuser__oxaddinfo]': jiggedSecondLineAddress,
-        'invadr[oxuser__oxstreet]': jiggedFirstLineAddress,
-        'invadr[oxuser__oxstreetnr]': houseNum,
-        'invadr[oxuser__oxzip]': zipcode,
-        'invadr[oxuser__oxcity]': city,
-        'invadr[oxuser__oxustid]': '',
-        'invadr[oxuser__oxcountryid]': country_id,
-        'invadr[oxuser__oxstateid]': stateUS,
-        'invadr[oxuser__oxfon]': phoneNum,
-        'invadr[oxuser__oxfax]': '',
-        'invadr[oxuser__oxmobfon]': '',
-        'invadr[oxuser__oxprivfon]': '',
-        'invadr[oxuser__oxbirthdate][day]': '',
-        'invadr[oxuser__oxbirthdate][month]': '',
-        'invadr[oxuser__oxbirthdate][year]': '',
-        'save': '',
-    }
+    # time.sleep(1)
+
+    if useragent_type == 'mobile':
+        register_payload = {
+            'stoken': stoken,
+            'lang': 1,
+            'actcontrol': 'register',
+            'fnc': 'registeruser',
+            'cl': 'register',
+            'lgn_cook': 0,
+            'reloadaddress': '',
+            'option': 3,
+            'lgn_usr': email,
+            'lgn_pwd': passwd,
+            'lgn_pwd2': passwd,
+            'blnewssubscribed': 0,
+            'invadr[oxuser__oxsal]': random.choice(['MR', 'MRS']),
+            'invadr[oxuser__oxfname]': firstName,
+            'invadr[oxuser__oxlname]': lastName,
+            'invadr[oxuser__oxcompany]': '',
+            'invadr[oxuser__oxaddinfo]': jiggedSecondLineAddress,
+            'invadr[oxuser__oxstreet]': jiggedFirstLineAddress,
+            'invadr[oxuser__oxstreetnr]': houseNum,
+            'invadr[oxuser__oxzip]': zipcode,
+            'invadr[oxuser__oxcity]': city,
+            'invadr[oxuser__oxustid]': '',
+            'invadr[oxuser__oxcountryid]': country_id,
+            'invadr[oxuser__oxstateid]': stateUS,
+            'invadr[oxuser__oxfon]': phoneNum,
+            'invadr[oxuser__oxfax]': '',
+            'invadr[oxuser__oxmobfon]': '',
+            'invadr[oxuser__oxprivfon]': '',
+            'invadr[oxuser__oxbirthdate][day]': '',
+            'invadr[oxuser__oxbirthdate][month]': '',
+            'invadr[oxuser__oxbirthdate][year]': '',
+            'save': '',
+        }
+    else:
+        register_payload = {
+            "stoken": stoken,
+            "lang": 1,
+            "listtype": "",
+            "actcontrol": "account",
+            "cl": "user",
+            "fnc": "createuser",
+            "reloadaddress": "",
+            "blshowshipaddress": 1,
+            "invadr[oxuser__oxsal]": random.choice(['MR', 'MRS']),
+            "invadr[oxuser__oxfname]": firstName,
+            "invadr[oxuser__oxlname]": lastName,
+            "invadr[oxuser__oxstreet]": jiggedFirstLineAddress,
+            "invadr[oxuser__oxstreetnr]": houseNum,
+            "invadr[oxuser__oxaddinfo]": jiggedSecondLineAddress,
+            "invadr[oxuser__oxzip]": zipcode,
+            "invadr[oxuser__oxcity]": city,
+            "invadr[oxuser__oxcountryid]": country_id,
+            "invadr[oxuser__oxstateid]": stateUS,
+            "invadr[oxuser__oxbirthdate][day]": "",
+            "invadr[oxuser__oxbirthdate][month]": "",
+            "invadr[oxuser__oxbirthdate][year]": "",
+            "invadr[oxuser__oxfon]": phoneNum,
+            "lgn_usr": email,
+            "lgn_pwd": passwd,
+            "lgn_pwd2": passwd,
+            "userform": "",
+        }
 
     # headers['origin'] = 'https://www.solebox.com'
     # headers['referer'] = 'https://www.solebox.com/en/open-account/'
-    # headers['content-type'] = 'application/x-www-form-urlencoded'
+    headers['content-type'] = 'application/x-www-form-urlencoded'
 
     register_post = s.post(url='https://www.solebox.com/index.php?lang=1&', headers=headers, data=register_payload)
     if "Not possible to register" in register_post.text:
         with logger.print_lock:
             print(Fore.RED + gettime() + f' [ERROR] -> Unable to create an account. Solebox returned:\n\"Not possible to register {email}. Maybe you have already registered?\"')
+        return
+    if "captcha.js" in register_post.text:
+        with logger.print_lock:
+            print(Fore.RED + gettime() + f' [ERROR] -> Unable to generate account - encountered Cloudfare. (captcha)')
         return
     if register_post.status_code in (302, 200):
         with logger.print_lock:
@@ -388,7 +449,7 @@ def generateAccount():
         with logger.print_lock:
             print(Fore.RED + gettime() + ' [ERROR] -> ERROR %d occurred: Unable to create an account.' % register_post.status_code)
         return
-    time.sleep(1)
+    # time.sleep(1)
     with logger.print_lock:
         print(gettime() + ' [STATUS] -> Trying to update accounts shipping details.')    
     ##########     Updating shipping address     ##########
@@ -436,6 +497,10 @@ def generateAccount():
 
     time.sleep(1)
     update_shipping_post = s.post(url='https://www.solebox.com/index.php?lang=1&', headers=headers, data=update_shipping_payload)
+    if "captcha.js" in update_shipping_post.text:
+        with logger.print_lock:
+            print(Fore.RED + gettime() + f' [ERROR] -> Unable to generate account - encountered Cloudfare. (captcha)')
+        return
     if update_shipping_post.status_code in (302,200):
         with logger.print_lock:
             print(Fore.GREEN + Style.BRIGHT + gettime() + ' [SUCCESS] -> Successfully updated accounts shipping details.')
@@ -488,7 +553,8 @@ else:
         t = threading.Thread(target=generateAccount)
         threads.append(t)
         t.start()
-        time.sleep(0.5)
+        time.sleep(1)
             
     for t in threads:
         t.join()
+print("\nIf you get a lot of 'Unable to generate account - encountered Cloudfare. (captcha)' errors, try again in a couple of minutes or try to decrease the number of accounts (or both)")
