@@ -9,3 +9,4 @@ userdata_template.json
 valid_emails.txt
 test.py
 windowserror.py
+mydata/*
