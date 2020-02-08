@@ -1,14 +1,15 @@
 # -------------------------------------------------------------------------------- SETUP & IMPORTS -------------------------------------------------------------------------------- #
 
 print(r'''
- ____     ___    _   _   _____     _     __   __      _         
-| __ )   / _ \  | \ | | |__  /    / \    \ \ / /     (_)   ___  
-|  _ \  | | | | |  \| |   / /    / _ \    \ V /      | |  / _ \ 
-| |_) | | |_| | | |\  |  / /_   / ___ \    | |    _  | | | (_) |
-|____/   \___/  |_| \_| /____| /_/   \_\   |_|   (_) |_|  \___/ 
+ ____    ____   _   _  ______       __     __ _        
+|  _ \  / __ \ | \ | ||___  /    /\ \ \   / /(_)       
+| |_) || |  | ||  \| |   / /    /  \ \ \_/ /  _   ___  
+|  _ < | |  | || . ` |  / /    / /\ \ \   /  | | / _ \ 
+| |_) || |__| || |\  | / /__  / ____ \ | | _ | || (_) |
+|____/  \____/ |_| \_|/_____|/_/    \_\|_|(_)|_| \___/ 
 ------
 https://github.com/rtunaboss/SoleboxAccountGenerator
-• developed by: rtuna\#4321 | @rTunaboss
+• developed by: rtuna#4321 | @rTunaboss
 • for personal use only
 ------''')
 
@@ -25,24 +26,28 @@ print_lock = threading.Lock()
 # -------------------------------------------------------------------------------- FUNCTIONS -------------------------------------------------------------------------------- #
 
 def SoleboxGenerateAccount():
-    print("Starting to generate accounts...")
     gen = SoleboxGen()
     gen.generateAccount(print_lock)
     gen.updateShippingAddress(print_lock, new_account=True)
-    print("Finished generating accounts.")
 
-def SoleboxUpdateShippingExistingAccount():
-    print("Starting to update shipping addresses...")
+def SoleboxCheckAccount(email, passwd):
     gen = SoleboxGen()
-    gen.updateShippingAddress(print_lock, new_account=False)
-    print("Finished updating addresses...")
+    gen.checkAccount(print_lock, email, passwd)
+
+def SoleboxCheckShippingAddress(email, passwd):
+    gen = SoleboxGen()
+    gen.checkShippingAddress(print_lock, email=email, passwd=passwd)
+
+def SoleboxUpdateShippingExistingAccount(email, passwd):
+    gen = SoleboxGen()
+    gen.updateShippingAddress(print_lock, new_account=False, email=email, passwd=passwd)
 
 def start():
     print(Style.BRIGHT + Fore.CYAN + "Welcome to BONZAY Tools!")
     print(Fore.LIGHTYELLOW_EX + "Please select an option:")
     print(Fore.LIGHTYELLOW_EX + "[1] - Generate Solebox accounts")
-    print(Fore.LIGHTYELLOW_EX + "[2] - Check Solebox counts")
-    print(Fore.LIGHTYELLOW_EX + "[3] - Check Solebox shipping addresses")
+    print(Fore.LIGHTYELLOW_EX + "[2] - Check valid Solebox accounts")
+    print(Fore.LIGHTYELLOW_EX + "[3] - Check Solebox accounts' shipping addresses")
     print(Fore.LIGHTYELLOW_EX + "[4] - Update Solebox shipping addresses")
     print("------")
 
@@ -71,7 +76,7 @@ def start():
                 print("That is not an integer. Try again...")
             if type(how_many) == int:
                 break
-        
+        print("Starting to generate Solebox accounts...")
         threads = []
         for _ in range(how_many):
             t = threading.Thread(target=SoleboxGenerateAccount)
@@ -81,32 +86,82 @@ def start():
                 
         for t in threads:
             t.join()
+        print("\nFinished generating Solebox accounts.")
 
-    # ---------------------------------------- [2] - Solebox Account Checker ---------------------------------------- #
+    # ---------------------------------------- [2] - Solebox Valid Account Checker ---------------------------------------- #
     if option == 2:
-        # ----- Load all accounts ----- #
-        f = readFile("./accounts/solebox-no-shipping.txt")
+        # ----- Load all accounts with shipping ----- #
+        print("Loading accounts from solebox-valid.txt")
+        f = readFile("./accounts/solebox-valid.txt")
         accounts = f.split('\n')
+
+        print("Starting to check valid Solebox accounts...")
         # ----- Create one thread for each account ----- #
-        # threads = []
-        # for _ in range(how_many):
-        #     t = threading.Thread(target=SoleboxGenerateAccount)
-        #     threads.append(t)
-        #     t.start()
-        #     time.sleep(0.5)
+        threads = []
+        for account in accounts:
+            if account.strip() == '':
+                continue
+            # check if there's no newline in password
+            username, password = account.split(':')
+            t = threading.Thread(target=SoleboxCheckAccount, args=(username, password))
+            threads.append(t)
+            t.start()
+            time.sleep(0.5)
                 
-        # for t in threads:
-        #     t.join()
+        for t in threads:
+            t.join()
+        print("\nFinished checking Solebox accounts.")
 
 
     # ---------------------------------------- [3] - Solebox Shipping Address Checker ---------------------------------------- #
     if option == 3:
-        pass
+        # ----- Load all accounts with shipping ----- #
+        print("Loading accounts from solebox-valid.txt")
+        f = readFile("./accounts/solebox-valid.txt")
+        accounts = f.split('\n')
+    
+        print("Starting to check Solebox account's shipping addresses.")
+        # ----- Create one thread for each account ----- #
+        threads = []
+        for account in accounts:
+            if account.strip() == '':
+                continue
+            # check if there's no newline in password
+            username, password = account.split(':')
+            t = threading.Thread(target=SoleboxCheckShippingAddress, args=(username, password))
+            threads.append(t)
+            t.start()
+            time.sleep(0.5)
+                
+        for t in threads:
+            t.join()
+        print("\nFinished checking Solebox account's shipping addresses.")
 
     # ---------------------------------------- [4] - Solebox Shipping Address Updater ---------------------------------------- #
     if option == 4:
-        pass
+        return #TODO NOT WORKING
+        # ----- Load all accounts with NO shipping ----- #
+        print("Loading accounts from solebox-no-shipping.txt")
+        f = readFile("./accounts/solebox-no-shipping.txt")
+        accounts = f.split('\n')
+    
+        print("Starting to add addresses to Solebox accounts...")
+        # ----- Create one thread for each account ----- #
+        threads = []
+        for account in accounts:
+            # check if there's no newline in password
+            username, password = account.split(':')
+            t = threading.Thread(target=SoleboxUpdateShippingExistingAccount, args=(username, password))
+            threads.append(t)
+            t.start()
+            time.sleep(0.5)
+                
+        for t in threads:
+            t.join()
+        print("\nFinished adding addresses to Solebox accounts.")
 
 
 # -------------------------------------------------------------------------------- RUNNING -------------------------------------------------------------------------------- #
-# start()
+start()
+
+# SoleboxUpdateShippingExistingAccount(email, passwd) #TODO NOT WORKING

@@ -26,7 +26,8 @@ def getTime():
 def logMessage(status, message):
     # logging can be setup later if needed
     if status != "debug":
-        print(getTime() + f"[{status.upper()}] -> {message}" )
+        status = f"[{status}]"
+        print(getTime() + f"{status.upper():<9} -> {message}")
 
 # ---------- Proxy Functions ---------- #
 
@@ -98,11 +99,6 @@ def isProxyGood(url: str, proxy: dict, headers: dict):
 
 # ---------- File management Functions ---------- #
 
-def saveJson(filename: str, data: dict):
-    """Saves data into a JSON file"""
-    with open(filename, 'w') as f:
-        json.dump(data, f)
-
 def readFile(filename: str):
     """Reads from a file"""
     filetype = filename.split('.')[-1]
@@ -130,7 +126,20 @@ def saveIntoFile(filename: str, data):
         with open(filename, 'w') as f:
             f.write(data)
     else:
-        print(f"[ERROR - saveFile] - Error writing into {filename}.")
+        print(f"[ERROR - saveIntoFile] - Error writing into {filename}.")
+
+def appendIntoFile(filename: str, data):
+    """Appends data into a file"""
+    filetype = filename.split('.')[-1]
+
+    if filetype == 'json' and type(data) == dict:
+        with open(filename, 'a') as f:
+            json.dump(data, f)
+    elif filetype == 'txt':
+        with open(filename, 'a') as f:
+            f.write(data)
+    else:
+        print(f"[ERROR - appendIntoFile] - Error writing into {filename}.")
 
 def loadUseragents():
     """

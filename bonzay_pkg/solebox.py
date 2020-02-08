@@ -8,14 +8,20 @@ from discord_webhook import DiscordWebhook, DiscordEmbed
 import os
 import threading
 
-from bonzay_pkg.reusable import getTime, saveIntoFile, readFile, isProxyGood, loadProxies, loadUseragents
+from bonzay_pkg.reusable import getTime, saveIntoFile, appendIntoFile, readFile, isProxyGood, loadProxies, loadUseragents
 
 init(autoreset=True)
 
 # -------------------------------------------------------------------------------- SOLEBOX SPECIFIC FUNCTIONS -------------------------------------------------------------------------------- #
 
 def logMessage(status: str, message: str):
-    print(getTime() + f"[{status:<8}] -> {message}")
+    status=f"[{status}]"
+    if "success" in status.lower():
+        print(Fore.GREEN + getTime() + f"{status.upper():<9} -> {message}")
+    elif "error" in status.lower():
+        print(Fore.RED + getTime() + f"{status.upper():<9} -> {message}")
+    else:
+        print(getTime() + f"{status.upper():<9} -> {message}")
 
 def scrapeCountryIds(headers: dict):
     """
@@ -115,17 +121,18 @@ class SoleboxGen():
     def __init__(self):
         # ---------- Headers ---------- #
         self.headers = {
-            'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-            'accept-encoding': 'gzip, deflate, br',
-            'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8,cs;q=0.7,de;q=0.6',
-            # 'cache-control': 'max-age=0',
-            # 'sec-fetch-mode': 'navigate',
-            # 'sec-fetch-site': 'none',
-            'referer' : "https://www.google.com/",
-            # 'sec-fetch-user': '?1',
-            # 'origin': 'https://www.solebox.com',
-            # 'upgrade-insecure-requests': '1',
-            # 'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36',
+            # "authority": "www.solebox.com",
+            # "method": "GET",
+            # "path": "/",
+            # "scheme": "https",
+            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+            "accept-encoding": "gzip, deflate, br",
+            "referer": "https://www.solebox.com/Soon/",
+            "accept-language": "en-GB,en-US;q=0.9,en;q=0.8,cs;q=0.7,de;q=0.6",
+            # "sec-fetch-mode": "navigate",
+            # "sec-fetch-site": "none",
+            "upgrade-insecure-requests": "1",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36",
         }
 
         # ---------- Loading user input data ---------- #
@@ -331,6 +338,7 @@ class SoleboxGen():
             if test.status_code in (302, 200):
                 with print_lock:
                     logMessage("STATUS", "Proxy working...")
+                self.stoken = parseStoken(test, print_lock)
                 return True
             elif "captcha.js" in test.text:
                 with print_lock:
@@ -359,14 +367,19 @@ class SoleboxGen():
             logMessage("STATUS", f"Generating account for {self.email}")
         
         # ---------- Proxy testing ---------- #
-        proxy_status = testWorkingProxies(print_lock)
+        proxy_status = self.testWorkingProxies(print_lock)
         if not proxy_status:
             return False
         
-        # ---------- Parsing stoken ---------- #
-        self.stoken = parseStoken(test, print_lock)
+        # ---------- Parsing stoken (if it's not obtained from proxy testing) ---------- #
         if self.stoken is None:
-            return False
+            try:
+                r = self.s.get('https://www.solebox.com/en/open-account/', headers=self.headers, timeout=5)
+                parseStoken(r, print_lock)
+            except:
+                with print_lock:
+                    logMessage("ERROR", "Unable to edit shipping details. Try again later or use different proxies.")
+                return False
 
         # ---------------------------------------- Creating an account ---------------------------------------- #
         with print_lock:
@@ -405,6 +418,14 @@ class SoleboxGen():
         with print_lock:
             logMessage("STATUS", f"Trying to log in as {self.email}.")
         login_url = "https://www.solebox.com/index.php?lang=1&"
+
+        # ---------- If there's no stoken, that means that we haven't tested proxies for the website yet, so we have to test ---------- #
+        if self.stoken == None:
+            # ---------- Proxy testing ---------- #
+            proxy_status = self.testWorkingProxies(print_lock)
+            if not proxy_status:
+                return False
+
         login_payload = {
             "stoken": self.stoken,
             "lang": 1,
@@ -416,53 +437,60 @@ class SoleboxGen():
             "lgn_pwd": self.passwd,
         }
         try:
-            p = self.s.get(url=login_url, headers=self.headers, data=login_payload)
+            p = self.s.post(url=login_url, headers=self.headers, data=login_payload)
         except:
             with print_lock:
-                logMessage("STATUS", f"Failed to log in as {self.email}.")
-            return
-        if p.status_code in (302, 200) and "YOUR SOLEBOX DASHBOARD" in p.text:
+                logMessage("ERROR", f"Failed to log in as {self.email}.")
+            return False
+        if p.status_code in (302, 200) and "Your solebox Dashboard".lower() in p.text.lower():
             with print_lock:
-                logMessage("STATUS", f"Logged in successfully as {self.email}.")
+                logMessage("SUCCESS", f"Logged in successfully as {self.email}.")
                 return True
         elif "Wrong e-mail address or password!" in p.text:
             with print_lock:
-                logMessage("STATUS", f"Failed to log in as {self.email}.")
+                logMessage("ERROR", f"Failed to log in as {self.email}.")
                 return False
         else:
             with print_lock:
-                logMessage("STATUS", f"Failed to log in as {self.email}. Status code {p.status_code}")
+                logMessage("ERROR", f"Failed to log in as {self.email}. Status code {p.status_code}")
                 return None
 
-    def updateShippingAddress(self, print_lock: threading.Lock, new_account: bool):
+    def updateShippingAddress(self, print_lock: threading.Lock, new_account: bool, email: str = None, passwd: str = None):
         # ---------------------------------------- This part executes only if the account isn't new ---------------------------------------- #
         if not new_account:
-
             # ---------- Setup ---------- #
-
             self.setup()
+            if email != None:
+                self.email = email
+            if passwd != None:
+                self.passwd = passwd
+
             # ---------- Proxy testing ---------- #
-            proxy_status = testWorkingProxies(print_lock)
+            proxy_status = self.testWorkingProxies(print_lock)
             if not proxy_status:
                 return False
             
-            # ---------- Parsing stoken ---------- #
-            self.stoken = parseStoken(test, print_lock)
-            if self.stoken is None:
-                return False
-            
             # ---------- Logging in ---------- #
-            self.login(print_lock)
+            login_status = self.login(print_lock)
+            if login_status == False:
+                return False
 
         # ---------------------------------------- Updating the shipping address ---------------------------------------- #
         with print_lock:
-            logMessage("STATUS", f"Updating shipping address for {self.email}")
+            logMessage("STATUS", f"Updating shipping address for {self.email}...")
         
+        # ---------- Parsing stoken (if it's not obtained from proxy testing) ---------- #
         if self.stoken is None:
-            r = self.s.get('https://www.solebox.com/en/open-account/', headers=self.headers, timeout=5)
-            parseStoken(r, print_lock)
-        update_shipping_payload = self.buildShippingPayload(self.stoken)
+            try:
+                r = self.s.get('https://www.solebox.com/en/open-account/', headers=self.headers, timeout=5)
+                parseStoken(r, print_lock)
+            except:
+                with print_lock:
+                    logMessage("ERROR", "Unable to edit shipping details. Try again later or use different proxies.")
+                return False
 
+        update_shipping_payload = self.buildShippingPayload(self.stoken)
+        self.s.get(url="https://www.solebox.com/en/my-address/", headers=self.headers)
         update_shipping_post = self.s.post(url='https://www.solebox.com/index.php?lang=1&', headers=self.headers, data=update_shipping_payload)
         if "captcha.js" in update_shipping_post.text:
             with print_lock:
@@ -470,32 +498,44 @@ class SoleboxGen():
             return False
         if update_shipping_post.status_code in (302,200):
             with print_lock:
-                logMessage("SUCCESS", "Successfully updated accounts shipping details.")
-            saveIntoFile("./accounts/solebox-valid.txt", f"{self.email}:{self.passwd}\n")
+                logMessage("SUCCESS", f"Successfully updated account's shipping details for {self.email}.")
+            appendIntoFile("./accounts/solebox-valid.txt", f"{self.email}:{self.passwd}\n")
             if self.webhook_url.strip() != '':
                 if new_account:
                     message = "Account successfully created!"
                 else:
-                    message = "Shipping details updated successfully created!"
+                    message = "Shipping details updated successfully!"
                 sendSoleboxWebhook(self.webhook_url, message, self.email, self.passwd)
 
         else:
             with print_lock:
                 logMessage("ERROR", f"Error {update_shipping_post.status_code} occurred: Unable to edit shipping details.")
             if new_account:
-                saveIntoFile("./accounts/solebox-no-shipping.txt", f"{self.email}:{self.passwd}\n")
+                appendIntoFile("./accounts/solebox-no-shipping.txt", f"{self.email}:{self.passwd}\n")
 
-    def checkAccount(self, print_lock: threading.Lock):
-        with print_lock:
-            logMessage("STATUS", f"Checking account {self.email}...")
-
+    def checkAccount(self, print_lock: threading.Lock, email, passwd):
         # ---------- Setup ---------- #
         self.setup()
+        self.email = email
+        self.passwd = passwd
+
+        with print_lock:
+            logMessage("STATUS", f"Checking account {self.email}...")
 
         # ---------- Proxy testing ---------- #
         proxy_status = self.testWorkingProxies(print_lock)
         if not proxy_status:
             return False
+
+        # ---------- Parsing stoken (if it's not obtained from proxy testing) ---------- #
+        if self.stoken is None:
+            try:
+                r = self.s.get('https://www.solebox.com/en/open-account/', headers=self.headers, timeout=5)
+                parseStoken(r, print_lock)
+            except:
+                with print_lock:
+                    logMessage("ERROR", "Unable to edit shipping details. Try again later or use different proxies.")
+                return False
 
         # ---------- Logging in ---------- #
         login_status = self.login(print_lock)
@@ -511,5 +551,46 @@ class SoleboxGen():
                 logMessage("ERROR", f"Account {self.email} is NOT working.")
             return False
     
-    def checkShippingAddress(self, print_lock: threading.Lock):
-        pass
+    def checkShippingAddress(self, print_lock: threading.Lock, email: str = None, passwd: str = None):
+        """
+
+        Returns:
+            - True  - if there is a shippping address
+            - False - if there isn't a shipping address
+            - None  - on error
+        """
+        # ---------- Setup ---------- #
+        self.setup()
+        if email != None:
+            self.email = email
+        if passwd != None:
+            self.passwd = passwd
+        address_url = "https://www.solebox.com/en/my-address/"
+
+        with print_lock:
+            logMessage("STATUS", f"Checking if account {self.email} has a shipping address...")
+        
+        # ---------- Logging in ---------- #
+        # We don't need to proxy test bcs we test the proxy while logging in
+        login_status = self.login(print_lock)
+        if login_status == False:
+            return None
+        
+        # ---------- Going to the shipping page ---------- #
+        try:
+            r = self.s.get(url=address_url, headers=self.headers)
+        except:
+            return False
+        if r.status_code in (302,200):
+            soup = bs(r.text, "lxml")
+            address_selection = soup.find("select", {"id":"addressId", "name": "oxaddressid"})
+            options = address_selection.find_all("option", {"value": True})
+            # ---------- Checking if an account has a shipping address ---------- #
+            if len(options) == 1:
+                logMessage("STATUS", f"Account {self.email} does NOT have a shipping address.")
+                return False
+            else:
+                logMessage("SUCCESS", f"Account {self.email} DOES have a shipping address.")
+                return True
+        return False
+      
