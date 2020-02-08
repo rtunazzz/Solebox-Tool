@@ -17,9 +17,9 @@ DM me on Discord rtuna#4321 if you need any help setting this up. **BEFORE DMing
 ## To run:
 open your terminal, change your directory to this folder/repo and run:
 
-- on Mac: `python3 soleboxaccgen.py`
+- on Mac: `python3 main.py`
 
-- on Widnows: `py soleboxaccgen.py`
+- on Widnows: `py main.py`
 
 ## Common errors:
 1. The script closes itself after you input the number of accounts you want to generate? YOU DIDN'T FOLLOW THE INSTURCTIONS AND YOU'RE RUNNING IT THE WRONG WAY, FOLLOW [THESE STEPS](https://github.com/rtunaboss/SoleboxAccountGenerator#before-running)
