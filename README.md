@@ -24,6 +24,13 @@ DM me on Discord rtuna#4321 if you need any help setting this up. **BEFORE DMing
     jigSecondLineAddress = True #or False
     ```
 
+## To run:
+open your terminal, change your directory to this folder/repo and run:
+
+- on Mac: `python3 soleboxaccgen.py`
+
+- on Widnows: `py soleboxaccgen.py`
+
 ## Common errors:
 1. The script closes itself after you input the number of accounts you want to generate? YOU DIDN'T FOLLOW THE INSTURCTIONS AND YOU'RE RUNNING IT THE WRONG WAY, FOLLOW [THESE STEPS](https://github.com/rtunaboss/SoleboxAccountGenerator#before-running)
 2. `[FATAL ERROR] -> "Some dependencies are not installed."` = you don't have any of the dependencies installed. Make sure you did everything in [Before running](https://github.com/rtunaboss/SoleboxAccountGenerator#before-running). If that doesn't fix it, try running:
@@ -54,13 +61,6 @@ DM me on Discord rtuna#4321 if you need any help setting this up. **BEFORE DMing
 5. Script was working fine but now I just get `403` errors all the time?
      - Regenerate proxies (make sure you try both static and rotating)
      - if that doesn't help, contact me. Solebox most likely changed their security and an update will be needed.
-
-## To run:
-open your terminal, change your directory to this folder/repo and run:
-
-- on Mac: `python3 soleboxaccgen.py`
-
-- on Widnows: `py soleboxaccgen.py`
 
 ## Where do I find generated accounts?
 - If everything goes smoothly, accounts should be in `valid_emails.txt` as well as if you have a webhook setup, you'll get a Discord notification.

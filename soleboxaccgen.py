@@ -49,9 +49,9 @@ print(r'''
 print(" • made by: rtuna#4321 | @rTunaboss")
 print(" • for personal use only")
 print('-------------------------------------')
-print(Fore.YELLOW + '!!! IF YOU GET A LOT OF CLOUDFARE ERRORS, MAKE SURE YOU ARE ON THE LATEST VERSION !!!' )
 print('https://github.com/rtunaboss/SoleboxAccountGenerator')
 print('-------------------------------------\n')
+print(Fore.YELLOW + '!!! IF YOU GET A LOT OF CLOUDFARE ERRORS, MAKE SURE YOU ARE ON THE LATEST VERSION !!!' )
 
 #-------------------------------- DO NOT MODIFY THE CODE BELOW UNLESS YOU KNOW WHAT YOU'RE DOING --------------------------------#
 
@@ -66,7 +66,7 @@ while not how_many:
 class logger:
     print_lock = threading.Lock()
 ####################          Defining non-account specific functions          ####################
-def gettime():
+def getTime():
     now = str(datetime.datetime.now())
     now = now.split(' ')[1]
     threadname = threading.currentThread().getName()
@@ -126,44 +126,44 @@ def saveNoShipEmail(email, passwd):
 def parseStoken(req):
     soup = bs(req.text, 'lxml')
     with logger.print_lock:
-        print(gettime() + ' [STATUS] -> Parsing stoken...')
+        print(getTime() + ' [STATUS] -> Parsing stoken...')
     try:
         stoken = soup.find('input', {'name': 'stoken'})['value']
         with logger.print_lock:
-            print(Fore.GREEN + Style.BRIGHT + gettime() + f' [SUCCESS] -> Successfully parsed stoken: {stoken}!')
+            print(Fore.GREEN + Style.BRIGHT + getTime() + f' [SUCCESS] -> Successfully parsed stoken: {stoken}!')
     except:
         with logger.print_lock:
             stoken = None
-            print(Fore.RED + gettime() + ' [ERROR] -> Unable to get stoken.')
+            print(Fore.RED + getTime() + ' [ERROR] -> Unable to get stoken.')
     return stoken
 
 def getStoken(s):
     try:
         with logger.print_lock:
-            print(gettime() + ' [STATUS] -> Trying to scrape stoken...')
+            print(getTime() + ' [STATUS] -> Trying to scrape stoken...')
         index_url = 'https://www.solebox.com/en/my-account/'
         index_r = s.get(url=index_url, headers=headers)
         if 'captcha.js' in index_r.text:
-            print(Fore.RED + gettime() + ' [ERROR] -> Encountered CloudFare.')
+            print(Fore.RED + getTime() + ' [ERROR] -> Encountered CloudFare.')
             return
         if index_r.status_code == 200:
             soup = bs(index_r.text, 'lxml')
             stoken = soup.find('input', {'name': 'stoken'})['value']
             with logger.print_lock:
-                print(Fore.GREEN + Style.BRIGHT + gettime() + f' [SUCCESS] -> Successfully scraped stoken: {stoken} !')
+                print(Fore.GREEN + Style.BRIGHT + getTime() + f' [SUCCESS] -> Successfully scraped stoken: {stoken} !')
             return stoken
         else:
             with logger.print_lock:
-                print(Fore.RED + gettime() + ' [ERROR] -> Bad request. Satus code %d, unable to get stoken...' % index_r.status_code)
+                print(Fore.RED + getTime() + ' [ERROR] -> Bad request. Satus code %d, unable to get stoken...' % index_r.status_code)
             return
     except:
         with logger.print_lock:
-            print(Fore.RED + gettime() + ' [ERROR] -> Unable to get stoken.')
+            print(Fore.RED + getTime() + ' [ERROR] -> Unable to get stoken.')
 
 def scrapeCountryIds():
     country_data = {}
     with logger.print_lock:
-        print(gettime() + ' [STATUS] -> Scraping country IDs...')
+        print(getTime() + ' [STATUS] -> Scraping country IDs...')
     s = cfscrape.create_scraper()
     r = s.get(url='https://www.solebox.com/', headers=headers)
     soup = bs(r.text, 'lxml')
@@ -181,7 +181,7 @@ def scrapeCountryIds():
     with open('countrydata.json', 'w') as f:
         json.dump(country_data, f)
     with logger.print_lock:
-        print(Fore.GREEN + Style.BRIGHT + gettime() + ' [SUCCESS] -> Country IDs scraped!')
+        print(Fore.GREEN + Style.BRIGHT + getTime() + ' [SUCCESS] -> Country IDs scraped!')
 
 def getCountryId(country_name):
     with open('countrydata.json', 'r') as f:
@@ -190,7 +190,7 @@ def getCountryId(country_name):
         country_id = country_data[country_name]
         return country_id
     except:
-        print(Fore.RED + gettime() + ' [ERROR] -> Error getting country_id, check your country name in userdata.json!')
+        print(Fore.RED + getTime() + ' [ERROR] -> Error getting country_id, check your country name in userdata.json!')
 
 
 ####################          Loading data and initializing other later used variables          ####################
@@ -209,62 +209,62 @@ webhook_url = userData['webhook_url']
 firstName = userData['firstName']
 if firstName == '':
     with logger.print_lock:
-        print(gettime() + ' [ERROR] -> Check your userdata.json, you forgot to fill in your firstName!')
+        print(getTime() + ' [ERROR] -> Check your userdata.json, you forgot to fill in your firstName!')
     input()
     quit()
 lastName = userData['lastName']
 if lastName == '':
     with logger.print_lock:
-        print(gettime() + ' [ERROR] -> Check your userdata.json, you forgot to fill in your lastName!')
+        print(getTime() + ' [ERROR] -> Check your userdata.json, you forgot to fill in your lastName!')
     input()
     quit()
 phoneNum = userData['phoneNum']
 if phoneNum == '':
     with logger.print_lock:
-        print(gettime() + ' [ERROR] -> Check your userdata.json, you forgot to fill in your phoneNum!')
+        print(getTime() + ' [ERROR] -> Check your userdata.json, you forgot to fill in your phoneNum!')
     input()
     quit()
 passwd = userData['passwd']
 if passwd == '':
     with logger.print_lock:
-        print(gettime() + ' [ERROR] -> Check your userdata.json, you forgot to fill in your passwd!')
+        print(getTime() + ' [ERROR] -> Check your userdata.json, you forgot to fill in your passwd!')
     input()
     quit()
 addyFirstLine = userData['addyFirstLine']
 if addyFirstLine == '':
     with logger.print_lock:
-        print(gettime() + ' [ERROR] -> Check your userdata.json, you forgot to fill in your addyFirstLine!')
+        print(getTime() + ' [ERROR] -> Check your userdata.json, you forgot to fill in your addyFirstLine!')
     input()
     quit()
 houseNum = userData['houseNum']
 if houseNum == '':
     with logger.print_lock:
-        print(gettime() + ' [ERROR] -> Check your userdata.json, you forgot to fill in your houseNum!')
+        print(getTime() + ' [ERROR] -> Check your userdata.json, you forgot to fill in your houseNum!')
     input()
     quit()
 zipcode = userData['zipcode']
 if zipcode == '':
     with logger.print_lock:
-        print(gettime() + ' [ERROR] -> Check your userdata.json, you forgot to fill in your zipcode!')
+        print(getTime() + ' [ERROR] -> Check your userdata.json, you forgot to fill in your zipcode!')
     input()
     quit()
 city = userData['city']
 if city == '':
     with logger.print_lock:
-        print(gettime() + ' [ERROR] -> Check your userdata.json, you forgot to fill in your city!')
+        print(getTime() + ' [ERROR] -> Check your userdata.json, you forgot to fill in your city!')
     input()
     quit()
 country_name = userData['country_name']
 if country_name == '':
     with logger.print_lock:
-        print(gettime() + ' [ERROR] -> Check your userdata.json, you forgot to fill in your country_name!')
+        print(getTime() + ' [ERROR] -> Check your userdata.json, you forgot to fill in your country_name!')
     input()
     quit()
 
 stateUS = userData['stateUS']
 if len(stateUS) > 2:
     with logger.print_lock:
-        print(gettime() + ' [ERROR] -> Check your State settings! Correct formatting: "NY" or "TX"')
+        print(getTime() + ' [ERROR] -> Check your State settings! Correct formatting: "NY" or "TX"')
 
 addySecondLine = userData['addySecondLine']
 catchall = userData['catchall']
@@ -308,7 +308,7 @@ def generateAccount():
         
     headers['user-agent'] = useragent
     with logger.print_lock:
-        print(gettime() + ' [STATUS] -> Account generation has started...')
+        print(getTime() + ' [STATUS] -> Account generation has started...')
     # s = cfscrape.create_scraper()
     s = requests.Session()
     if proxyList:
@@ -316,25 +316,25 @@ def generateAccount():
         while proxy_is_bad:
             s.proxies = random.choice(proxyList)
             with logger.print_lock:
-                print(gettime() + ' [STATUS] -> Checking proxy...')
+                print(getTime() + ' [STATUS] -> Checking proxy...')
             
             # s.get('https://www.solebox.com/en/home/', headers=headers)
             try:
                 test = s.get('https://www.solebox.com/en/open-account/', headers=headers, timeout=5)
             except:
                 with logger.print_lock:
-                    print(Fore.LIGHTYELLOW_EX + gettime() + ' [ERROR] -> Proxy timed out, rotating proxy...')
+                    print(Fore.LIGHTYELLOW_EX + getTime() + ' [ERROR] -> Proxy timed out, rotating proxy...')
                 continue
             if test.status_code in (302, 200):
                 with logger.print_lock:
-                    print(Fore.LIGHTGREEN_EX + Style.BRIGHT + gettime() + ' [SUCCESS] -> Proxy working...')
+                    print(Fore.LIGHTGREEN_EX + Style.BRIGHT + getTime() + ' [SUCCESS] -> Proxy working...')
                 proxy_is_bad = False
             elif 'captcha.js' in test.text:
                 with logger.print_lock:
-                    print(Fore.LIGHTYELLOW_EX + gettime() + ' [ERROR] -> Encountered CloudFare, rotating proxy...')
+                    print(Fore.LIGHTYELLOW_EX + getTime() + ' [ERROR] -> Encountered CloudFare, rotating proxy...')
             else:
                 with logger.print_lock:
-                    print(Fore.LIGHTYELLOW_EX + gettime() + ' [ERROR] -> Proxy banned, rotating proxy...')
+                    print(Fore.LIGHTYELLOW_EX + getTime() + ' [ERROR] -> Proxy banned, rotating proxy...')
     stoken = parseStoken(test)
     if stoken is None:
         return
@@ -360,7 +360,7 @@ def generateAccount():
     email = f'{get_first_name()}{random.randint(1,9999999)}@{catchall}'
     # time.sleep(1)
     with logger.print_lock:
-        print(gettime() + ' [STATUS] -> Trying to create an account...')
+        print(getTime() + ' [STATUS] -> Trying to create an account...')
     ##########     Configuring payload for registering and POSTing it to create an account     ##########
     # time.sleep(1)
 
@@ -436,22 +436,22 @@ def generateAccount():
     register_post = s.post(url='https://www.solebox.com/index.php?lang=1&', headers=headers, data=register_payload)
     if "Not possible to register" in register_post.text:
         with logger.print_lock:
-            print(Fore.RED + gettime() + f' [ERROR] -> Unable to create an account. Solebox returned:\n\"Not possible to register {email}. Maybe you have already registered?\"')
+            print(Fore.RED + getTime() + f' [ERROR] -> Unable to create an account. Solebox returned:\n\"Not possible to register {email}. Maybe you have already registered?\"')
         return
     if "captcha.js" in register_post.text:
         with logger.print_lock:
-            print(Fore.RED + gettime() + f' [ERROR] -> Unable to generate account - encountered Cloudfare. (captcha)')
+            print(Fore.RED + getTime() + f' [ERROR] -> Unable to generate account - encountered Cloudfare. (captcha)')
         return
     if register_post.status_code in (302, 200):
         with logger.print_lock:
-            print(Fore.GREEN + Style.BRIGHT + gettime() + ' [SUCCESS] -> Successfully created an account.')
+            print(Fore.GREEN + Style.BRIGHT + getTime() + ' [SUCCESS] -> Successfully created an account.')
     else:
         with logger.print_lock:
-            print(Fore.RED + gettime() + ' [ERROR] -> ERROR %d occurred: Unable to create an account.' % register_post.status_code)
+            print(Fore.RED + getTime() + ' [ERROR] -> ERROR %d occurred: Unable to create an account.' % register_post.status_code)
         return
     # time.sleep(1)
     with logger.print_lock:
-        print(gettime() + ' [STATUS] -> Trying to update accounts shipping details.')    
+        print(getTime() + ' [STATUS] -> Trying to update accounts shipping details.')    
     ##########     Updating shipping address     ##########
     s.get(url='https://www.solebox.com/en/my-address/', headers=headers)
     headers['referer'] = 'https://www.solebox.com/en/my-address/'
@@ -499,17 +499,17 @@ def generateAccount():
     update_shipping_post = s.post(url='https://www.solebox.com/index.php?lang=1&', headers=headers, data=update_shipping_payload)
     if "captcha.js" in update_shipping_post.text:
         with logger.print_lock:
-            print(Fore.RED + gettime() + f' [ERROR] -> Unable to generate account - encountered Cloudfare. (captcha)')
+            print(Fore.RED + getTime() + f' [ERROR] -> Unable to edit shipping details - encountered Cloudfare. (captcha)')
         return
     if update_shipping_post.status_code in (302,200):
         with logger.print_lock:
-            print(Fore.GREEN + Style.BRIGHT + gettime() + ' [SUCCESS] -> Successfully updated accounts shipping details.')
+            print(Fore.GREEN + Style.BRIGHT + getTime() + ' [SUCCESS] -> Successfully updated accounts shipping details.')
         saveEmail(email, passwd)
         if webhook_url:
             send_webhook(webhook_url, email, passwd)
     else:
         with logger.print_lock:
-            print(Fore.RED + gettime() + f' [ERROR] -> Error {update_shipping_post.status_code} occurred: Unable to edit shipping details.')
+            print(Fore.RED + getTime() + f' [ERROR] -> Error {update_shipping_post.status_code} occurred: Unable to edit shipping details.')
         saveNoShipEmail(email, passwd)
 
 
@@ -546,7 +546,7 @@ if not proxyList:
             generateAccount()
     else:
         with logger.print_lock:
-            print(Fore.YELLOW + gettime() + ' [WARNING] -> You are trying to create more than 3 accounts with no proxies! Add some proxies and try again.')
+            print(Fore.YELLOW + getTime() + ' [WARNING] -> You are trying to create more than 3 accounts with no proxies! Add some proxies and try again.')
 # generateAccount()
 else:
     for acc in range(how_many):
