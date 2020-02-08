@@ -27,8 +27,9 @@ print_lock = threading.Lock()
 
 def SoleboxGenerateAccount():
     gen = SoleboxGen()
-    gen.generateAccount(print_lock)
-    gen.updateShippingAddress(print_lock, new_account=True)
+    create_status = gen.generateAccount(print_lock)
+    if create_status:
+        gen.updateShippingAddress(print_lock, new_account=True)
 
 def SoleboxCheckAccount(email, passwd):
     gen = SoleboxGen()

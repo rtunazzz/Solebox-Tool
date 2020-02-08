@@ -238,42 +238,81 @@ class SoleboxGen():
 
     def buildShippingPayload(self, stoken: str):
         title = random.choice(["MR", "MRS"])
-        return {
-            "stoken": stoken,
-            "lang": 1,
-            "listtype": "",
-            "actcontrol": "account_user",
-            "fnc": "changeuser_testvalues",
-            "cl": "account_user",
-            "CustomError": "user",
-            "blshowshipaddress": 1,
-            "invadr[oxuser__oxsal]": title,
-            "invadr[oxuser__oxfname]": self.first_name,
-            "invadr[oxuser__oxlname]": self.last_name,
-            "invadr[oxuser__oxstreet]": self.address_first_line,
-            "invadr[oxuser__oxstreetnr]": self.house_number,
-            "invadr[oxuser__oxaddinfo]": self.address_second_line,
-            "invadr[oxuser__oxzip]": self.zipcode,
-            "invadr[oxuser__oxcity]": self.city,
-            "invadr[oxuser__oxcountryid]": self.country_id,
-            "invadr[oxuser__oxstateid]": self.us_state,
-            "invadr[oxuser__oxfon]": self.phone_num,
-            "changeClass": "account_user",
-            "oxaddressid": -1,
-            "deladr[oxaddress__oxsal]": title,
-            "deladr[oxaddress__oxfname]": self.first_name,
-            "deladr[oxaddress__oxlname]": self.last_name,
-            "deladr[oxaddress__oxcompany]": "",
-            "deladr[oxaddress__oxstreet]": self.address_first_line,
-            "deladr[oxaddress__oxstreetnr]": self.house_number,
-            "deladr[oxaddress__oxaddinfo]": self.address_second_line,
-            "deladr[oxaddress__oxzip]": self.zipcode,
-            "deladr[oxaddress__oxcity]": self.city,
-            "deladr[oxaddress__oxcountryid]": self.country_id,
-            "deladr[oxaddress__oxstateid]": self.us_state,
-            "deladr[oxaddress__oxfon]": self.phone_num,
-            "userform" : "",
-        }
+
+        if self.useragent_type == "mobile":
+            return {
+                "stoken": stoken,
+                "lang": 1,
+                "listtype": "",
+                "actcontrol": "account_user",
+                "fnc": "changeuser_testvalues",
+                "cl": "account_user",
+                "CustomError": "user",
+                "blshowshipaddress": 1,
+                "invadr[oxuser__oxsal]": title,
+                "invadr[oxuser__oxfname]": self.first_name,
+                "invadr[oxuser__oxlname]": self.last_name,
+                "invadr[oxuser__oxstreet]": self.address_first_line,
+                "invadr[oxuser__oxstreetnr]": self.house_number,
+                "invadr[oxuser__oxaddinfo]": self.address_second_line,
+                "invadr[oxuser__oxzip]": self.zipcode,
+                "invadr[oxuser__oxcity]": self.city,
+                "invadr[oxuser__oxcountryid]": self.country_id,
+                "invadr[oxuser__oxstateid]": self.us_state,
+                "invadr[oxuser__oxfon]": self.phone_num,
+                "changeClass": "account_user",
+                "oxaddressid": -1,
+                "deladr[oxaddress__oxsal]": title,
+                "deladr[oxaddress__oxfname]": self.first_name,
+                "deladr[oxaddress__oxlname]": self.last_name,
+                "deladr[oxaddress__oxcompany]": "",
+                "deladr[oxaddress__oxstreet]": self.address_first_line + self.house_number,
+                "deladr[oxaddress__oxstreetnr]": self.address_second_line,
+                "deladr[oxaddress__oxzip]": self.zipcode,
+                "deladr[oxaddress__oxcity]": self.city,
+                "deladr[oxaddress__oxcountryid]": self.country_id,
+                "deladr[oxaddress__oxstateid]": self.us_state,
+                "deladr[oxaddress__oxfon]": self.phone_num,
+                "userform" : "",
+            }
+        else:
+            return {
+                "stoken": stoken,
+                "lang": 1,
+                "listtype": "",
+                "actcontrol": "account_user",
+                "fnc": "changeuser_testvalues",
+                "cl": "account_user",
+                "CustomError": "user",
+                "blshowshipaddress": 1,
+                "invadr[oxuser__oxsal]": title,
+                "invadr[oxuser__oxfname]": self.first_name,
+                "invadr[oxuser__oxlname]": self.last_name,
+                "invadr[oxuser__oxstreet]": self.address_first_line,
+                "invadr[oxuser__oxstreetnr]": self.house_number,
+                "invadr[oxuser__oxaddinfo]": self.address_second_line,
+                "invadr[oxuser__oxzip]": self.zipcode,
+                "invadr[oxuser__oxcity]": self.city,
+                "invadr[oxuser__oxcountryid]": self.country_id,
+                "invadr[oxuser__oxstateid]": self.us_state,
+                "invadr[oxuser__oxfon]": self.phone_num,
+                "changeClass": "account_user",
+                "oxaddressid": -1,
+                "deladr[oxaddress__oxsal]": title,
+                "deladr[oxaddress__oxfname]": self.first_name,
+                "deladr[oxaddress__oxlname]": self.last_name,
+                "deladr[oxaddress__oxcompany]": "",
+                "deladr[oxaddress__oxstreet]": self.address_first_line,
+                "deladr[oxaddress__oxstreetnr]": self.house_number,
+                "deladr[oxaddress__oxaddinfo]": self.address_second_line,
+                "deladr[oxaddress__oxzip]": self.zipcode,
+                "deladr[oxaddress__oxcity]": self.city,
+                "deladr[oxaddress__oxcountryid]": self.country_id,
+                "deladr[oxaddress__oxstateid]": self.us_state,
+                "deladr[oxaddress__oxfon]": self.phone_num,
+                "userform" : "",
+            }
+
     
     def jigInfo(self):
 
@@ -456,6 +495,19 @@ class SoleboxGen():
             with print_lock:
                 logMessage("ERROR", f"Failed to log in as {self.email}. Status code {p.status_code}")
                 return None
+
+        #TODO Mobile mode:
+        # stoken: 7DD0CB5D
+        # lang: 1
+        # listtype: 
+        # actcontrol: account
+        # fnc: login_noredirect
+        # cl: account
+        # tpl: 
+        # oxloadid: 
+        # lgn_usr: self.email
+        # lgn_pwd: self.passwd
+        # lgn_cook: 1
 
     def updateShippingAddress(self, print_lock: threading.Lock, new_account: bool, email: str = None, passwd: str = None):
         # ---------------------------------------- This part executes only if the account isn't new ---------------------------------------- #
