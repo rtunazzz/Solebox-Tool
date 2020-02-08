@@ -165,6 +165,8 @@ class SoleboxGen():
 
         # ---------- Loading data ---------- #
         self.country_id = getCountryId(self.country_name)
+        if self.country_id == None:
+            quit()
 
     def buildBillingPayload(self, stoken: str):
         if self.useragent_type == "mobile":
@@ -235,42 +237,42 @@ class SoleboxGen():
         return register_payload
 
     def buildShippingPayload(self, stoken: str):
+        title = random.choice(["MR", "MRS"])
         return {
-            # 'MIME Type': 'application/x-www-form-urlencoded',
-            'stoken': stoken,
-            'lang': '1',
-            'listtype': '',
-            'actcontrol': 'account_user',
-            'fnc': 'changeuser_testvalues',
-            'cl': 'account_user',
-            'CustomError': 'user',
-            'blshowshipaddress': '1',
-            'invadr[oxuser__oxsal]': random.choice(['MR', 'MRS']),  # MR OR MRS
-            'invadr[oxuser__oxfname]': self.first_name,
-            'invadr[oxuser__oxlname]': self.last_name,
-            'invadr[oxuser__oxstreet]': self.address_first_line,
-            'invadr[oxuser__oxstreetnr]': self.house_number,
-            'invadr[oxuser__oxaddinfo]': self.address_second_line,
-            'invadr[oxuser__oxzip]': self.zipcode,
-            'invadr[oxuser__oxcity]': self.city,
-            'invadr[oxuser__oxcountryid]': self.country_id,
-            'invadr[oxuser__oxstateid]': self.us_state,
-            'invadr[oxuser__oxfon]': self.phone_num,
-            'changeClass': 'account_user',
-            'oxaddressid': '-1',
-            'deladr[oxaddress__oxsal]': random.choice(['MR', 'MRS']),  # MR OR MRS
-            'deladr[oxaddress__oxfname]': self.first_name,
-            'deladr[oxaddress__oxlname]': self.last_name,
-            'deladr[oxaddress__oxcompany]': '',
-            'deladr[oxaddress__oxstreet]': self.address_first_line,
-            'deladr[oxaddress__oxstreetnr]': self.house_number,
-            'deladr[oxaddress__oxaddinfo]': self.address_second_line,
-            'deladr[oxaddress__oxzip]': self.zipcode,
-            'deladr[oxaddress__oxcity]': self.city,
-            'deladr[oxaddress__oxcountryid]': self.country_id,
-            'deladr[oxaddress__oxstateid]': self.us_state,
-            'deladr[oxaddress__oxfon]': self.phone_num,
-            'userform' : '',
+            "stoken": stoken,
+            "lang": 1,
+            "listtype": "",
+            "actcontrol": "account_user",
+            "fnc": "changeuser_testvalues",
+            "cl": "account_user",
+            "CustomError": "user",
+            "blshowshipaddress": 1,
+            "invadr[oxuser__oxsal]": title,
+            "invadr[oxuser__oxfname]": self.first_name,
+            "invadr[oxuser__oxlname]": self.last_name,
+            "invadr[oxuser__oxstreet]": self.address_first_line,
+            "invadr[oxuser__oxstreetnr]": self.house_number,
+            "invadr[oxuser__oxaddinfo]": self.address_second_line,
+            "invadr[oxuser__oxzip]": self.zipcode,
+            "invadr[oxuser__oxcity]": self.city,
+            "invadr[oxuser__oxcountryid]": self.country_id,
+            "invadr[oxuser__oxstateid]": self.us_state,
+            "invadr[oxuser__oxfon]": self.phone_num,
+            "changeClass": "account_user",
+            "oxaddressid": -1,
+            "deladr[oxaddress__oxsal]": title,
+            "deladr[oxaddress__oxfname]": self.first_name,
+            "deladr[oxaddress__oxlname]": self.last_name,
+            "deladr[oxaddress__oxcompany]": "",
+            "deladr[oxaddress__oxstreet]": self.address_first_line,
+            "deladr[oxaddress__oxstreetnr]": self.house_number,
+            "deladr[oxaddress__oxaddinfo]": self.address_second_line,
+            "deladr[oxaddress__oxzip]": self.zipcode,
+            "deladr[oxaddress__oxcity]": self.city,
+            "deladr[oxaddress__oxcountryid]": self.country_id,
+            "deladr[oxaddress__oxstateid]": self.us_state,
+            "deladr[oxaddress__oxfon]": self.phone_num,
+            "userform" : "",
         }
     
     def jigInfo(self):
@@ -488,10 +490,10 @@ class SoleboxGen():
                 with print_lock:
                     logMessage("ERROR", "Unable to edit shipping details. Try again later or use different proxies.")
                 return False
-
+        
         update_shipping_payload = self.buildShippingPayload(self.stoken)
-        self.s.get(url="https://www.solebox.com/en/my-address/", headers=self.headers)
         update_shipping_post = self.s.post(url='https://www.solebox.com/index.php?lang=1&', headers=self.headers, data=update_shipping_payload)
+
         if "captcha.js" in update_shipping_post.text:
             with print_lock:
                 logMessage("ERROR", "Unable to edit shipping details - encountered Cloudfare. (captcha)")

@@ -48,7 +48,6 @@ def start():
     print(Fore.LIGHTYELLOW_EX + "[1] - Generate Solebox accounts")
     print(Fore.LIGHTYELLOW_EX + "[2] - Check valid Solebox accounts")
     print(Fore.LIGHTYELLOW_EX + "[3] - Check Solebox accounts' shipping addresses")
-    print(Fore.LIGHTYELLOW_EX + "[4] - Update Solebox shipping addresses")
     print("------")
 
     # ----- Get input (which option) ----- #
@@ -76,7 +75,7 @@ def start():
                 print("That is not an integer. Try again...")
             if type(how_many) == int:
                 break
-        print("Starting to generate Solebox accounts...")
+        print(Style.BRIGHT + "Starting to generate Solebox accounts...")
         threads = []
         for _ in range(how_many):
             t = threading.Thread(target=SoleboxGenerateAccount)
@@ -86,16 +85,17 @@ def start():
                 
         for t in threads:
             t.join()
-        print("\nFinished generating Solebox accounts.")
+        print(Style.BRIGHT + "\nFinished generating Solebox accounts.")
 
     # ---------------------------------------- [2] - Solebox Valid Account Checker ---------------------------------------- #
     if option == 2:
+        print(Style.BRIGHT + Fore.CYAN + "SOLEBOX VALID ACCOUNT CHECKER")
         # ----- Load all accounts with shipping ----- #
         print("Loading accounts from solebox-valid.txt")
         f = readFile("./accounts/solebox-valid.txt")
         accounts = f.split('\n')
 
-        print("Starting to check valid Solebox accounts...")
+        print(Style.BRIGHT + "Starting to check valid Solebox accounts...")
         # ----- Create one thread for each account ----- #
         threads = []
         for account in accounts:
@@ -110,23 +110,23 @@ def start():
                 
         for t in threads:
             t.join()
-        print("\nFinished checking Solebox accounts.")
+        print(Style.BRIGHT + "\nFinished checking Solebox accounts.")
 
 
     # ---------------------------------------- [3] - Solebox Shipping Address Checker ---------------------------------------- #
     if option == 3:
+        print(Style.BRIGHT + Fore.CYAN + "SOLEBOX SHIPPING ADDRESS CHECKER")
         # ----- Load all accounts with shipping ----- #
         print("Loading accounts from solebox-valid.txt")
         f = readFile("./accounts/solebox-valid.txt")
         accounts = f.split('\n')
     
-        print("Starting to check Solebox account's shipping addresses.")
+        print(Style.BRIGHT + "Starting to check Solebox account's shipping addresses.")
         # ----- Create one thread for each account ----- #
         threads = []
         for account in accounts:
             if account.strip() == '':
                 continue
-            # check if there's no newline in password
             username, password = account.split(':')
             t = threading.Thread(target=SoleboxCheckShippingAddress, args=(username, password))
             threads.append(t)
@@ -135,33 +135,10 @@ def start():
                 
         for t in threads:
             t.join()
-        print("\nFinished checking Solebox account's shipping addresses.")
-
-    # ---------------------------------------- [4] - Solebox Shipping Address Updater ---------------------------------------- #
-    if option == 4:
-        return #TODO NOT WORKING
-        # ----- Load all accounts with NO shipping ----- #
-        print("Loading accounts from solebox-no-shipping.txt")
-        f = readFile("./accounts/solebox-no-shipping.txt")
-        accounts = f.split('\n')
-    
-        print("Starting to add addresses to Solebox accounts...")
-        # ----- Create one thread for each account ----- #
-        threads = []
-        for account in accounts:
-            # check if there's no newline in password
-            username, password = account.split(':')
-            t = threading.Thread(target=SoleboxUpdateShippingExistingAccount, args=(username, password))
-            threads.append(t)
-            t.start()
-            time.sleep(0.5)
-                
-        for t in threads:
-            t.join()
-        print("\nFinished adding addresses to Solebox accounts.")
+        print(Style.BRIGHT + "\nFinished checking Solebox account's shipping addresses.")
 
 
 # -------------------------------------------------------------------------------- RUNNING -------------------------------------------------------------------------------- #
-start()
 
-# SoleboxUpdateShippingExistingAccount(email, passwd) #TODO NOT WORKING
+if __name__ == "__main__":
+    start()

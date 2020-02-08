@@ -1,15 +1,23 @@
 {
-    "firstName": "",
-    "lastName": "",
-    "phoneNum": "",
-    "catchall": "",
-    "passwd": "",
-    "addyFirstLine": "",
-    "houseNum": "",
-    "addySecondLine": "",
-    "zipcode": "",
-    "city": "",
-    "country_name": "",
-    "stateUS": "",
-    "webhook_url" : ""
+    "profile" : {
+        "first_name": "",
+        "last_name": "",
+        "phone_num": "",
+        "catchall": "",
+        "passwd": "",
+        "address_first_line": "",
+        "house_number": "",
+        "address_second_line": "",
+        "zipcode": "",
+        "city": "",
+        "country_name": "",
+        "us_state": "",
+        "webhook_url" : ""
+    },
+    "settings": {
+        "jig_name": true,
+        "jig_first_line": true,
+        "jig_second_line": true,
+        "jig_phone_number": true
+    }
 }
