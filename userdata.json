@@ -15,7 +15,8 @@
         "webhook_url" : ""
     },
     "settings": {
-        "jig_name": true,
+        "jig_first_name": true,
+        "jig_last_name": true,
         "jig_first_line": true,
         "jig_second_line": true,
         "jig_phone_number": true

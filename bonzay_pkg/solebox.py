@@ -318,13 +318,16 @@ class SoleboxGen():
 
         linetwolist =['apt', 'apartment', 'dorm', 'suite', 'unit', 'house', 'unt', 'room', 'floor']
         
-        jig_name = self.settings["jig_name"]
+        jig_first_name = self.settings["jig_first_name"]
+        jig_last_name = self.settings["jig_last_name"]
+
         jig_first_line = self.settings["jig_first_line"]
         jig_second_line = self.settings["jig_second_line"]
         jig_phone_number = self.settings["jig_phone_number"]
 
-        if jig_name:
+        if jig_first_name:
             self.first_name = get_first_name()
+        if jig_last_name:
             self.last_name = get_last_name()
 
         if jig_phone_number:
