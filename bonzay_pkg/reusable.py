@@ -27,7 +27,7 @@ def logMessage(status, message):
     # logging can be setup later if needed
     if status != "debug":
         status = f"[{status}]"
-        print(getTime() + f"{status.upper():<9} -> {message}")
+        print(f"{getTime():<25}" + f"{status.upper():<10} -> {message}")
 
 # ---------- Proxy Functions ---------- #
 

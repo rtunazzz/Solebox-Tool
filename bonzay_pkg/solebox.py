@@ -8,7 +8,10 @@ from discord_webhook import DiscordWebhook, DiscordEmbed
 import os
 import threading
 
-from bonzay_pkg.reusable import getTime, saveIntoFile, appendIntoFile, readFile, isProxyGood, loadProxies, loadUseragents
+try:
+    from bonzay_pkg.reusable import getTime, saveIntoFile, appendIntoFile, readFile, isProxyGood, loadProxies, loadUseragents
+except:
+    from reusable import getTime, saveIntoFile, appendIntoFile, readFile, isProxyGood, loadProxies, loadUseragents
 
 init(autoreset=True)
 
@@ -17,11 +20,11 @@ init(autoreset=True)
 def logMessage(status: str, message: str):
     status=f"[{status}]"
     if "success" in status.lower():
-        print(Fore.GREEN + getTime() + f"{status.upper():<9} -> {message}")
+        print(Fore.GREEN + f"{getTime():<25}" + f"{status.upper():<10} -> {message}")
     elif "error" in status.lower():
-        print(Fore.RED + getTime() + f"{status.upper():<9} -> {message}")
+        print(Fore.RED + f"{getTime():<25}" + f"{status.upper():<10} -> {message}")
     else:
-        print(getTime() + f"{status.upper():<9} -> {message}")
+        print(f"{getTime():<25}" + f"{status.upper():<10} -> {message}")
 
 def scrapeCountryIds(headers: dict):
     """
@@ -266,14 +269,13 @@ class SoleboxGen():
                 "deladr[oxaddress__oxfname]": self.first_name,
                 "deladr[oxaddress__oxlname]": self.last_name,
                 "deladr[oxaddress__oxcompany]": "",
-                "deladr[oxaddress__oxstreet]": self.address_first_line + self.house_number,
+                "deladr[oxaddress__oxstreet]": self.address_first_line + ' ' + self.house_number,
                 "deladr[oxaddress__oxstreetnr]": self.address_second_line,
                 "deladr[oxaddress__oxzip]": self.zipcode,
                 "deladr[oxaddress__oxcity]": self.city,
                 "deladr[oxaddress__oxcountryid]": self.country_id,
                 "deladr[oxaddress__oxstateid]": self.us_state,
                 "deladr[oxaddress__oxfon]": self.phone_num,
-                "userform" : "",
             }
         else:
             return {
@@ -313,7 +315,6 @@ class SoleboxGen():
                 "userform" : "",
             }
 
-    
     def jigInfo(self):
 
         linetwolist =['apt', 'apartment', 'dorm', 'suite', 'unit', 'house', 'unt', 'room', 'floor']
@@ -546,8 +547,13 @@ class SoleboxGen():
                     logMessage("ERROR", "Unable to edit shipping details. Try again later or use different proxies.")
                 return False
         
+        headers_cpy = self.headers
+        headers_cpy["referer"] = "https://www.solebox.com/en/my-address/"
+        headers_cpy["origion"] = "https://www.solebox.com/"
+
         update_shipping_payload = self.buildShippingPayload(self.stoken)
-        update_shipping_post = self.s.post(url='https://www.solebox.com/index.php?lang=1&', headers=self.headers, data=update_shipping_payload)
+        # update_shipping_post = self.s.post(url='https://www.solebox.com/index.php?lang=1&', headers=self.headers, data=update_shipping_payload)
+        update_shipping_post = self.s.post(url='https://www.solebox.com/index.php?lang=1&', headers=headers_cpy, data=update_shipping_payload)
 
         if "captcha.js" in update_shipping_post.text:
             with print_lock:
