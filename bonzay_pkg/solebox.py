@@ -131,11 +131,12 @@ class SoleboxGen():
             "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
             "accept-encoding": "gzip, deflate, br",
             "referer": "https://www.solebox.com/Soon/",
+            "orogin": "https://www.solebox.com/",
             "accept-language": "en-GB,en-US;q=0.9,en;q=0.8,cs;q=0.7,de;q=0.6",
             # "sec-fetch-mode": "navigate",
             # "sec-fetch-site": "none",
             "upgrade-insecure-requests": "1",
-            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36",
+            # "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36",
         }
 
         # ---------- Loading user input data ---------- #
@@ -150,9 +151,9 @@ class SoleboxGen():
         self.catchall = userdata["catchall"]
 
         if self.catchall.strip() == '':
-            catchall = "gmail.com"
+            self.catchall = "gmail.com"
         if '@' in self.catchall:
-            self.catchall = catchall.replace('@', '')
+            self.catchall = self.catchall.replace('@', '')
 
         self.passwd = userdata["passwd"]
 
@@ -419,13 +420,15 @@ class SoleboxGen():
         # ---------- Parsing stoken (if it's not obtained from proxy testing) ---------- #
         if self.stoken is None:
             try:
-                r = self.s.get('https://www.solebox.com/en/open-account/', headers=self.headers, timeout=5)
+                r = self.s.get("https://www.solebox.com/en/open-account/", headers=self.headers, timeout=5)
                 parseStoken(r, print_lock)
             except:
                 with print_lock:
                     logMessage("ERROR", "Unable to edit shipping details. Try again later or use different proxies.")
                 return False
 
+        # headers_cpy = self.headerss
+        # headers_cpy["referer"] = 
         # ---------------------------------------- Creating an account ---------------------------------------- #
         with print_lock:
             logMessage("STATUS", f"Trying to create an account for {self.email}, using {self.useragent_type} mode.")
@@ -549,7 +552,6 @@ class SoleboxGen():
         
         headers_cpy = self.headers
         headers_cpy["referer"] = "https://www.solebox.com/en/my-address/"
-        headers_cpy["origion"] = "https://www.solebox.com/"
 
         update_shipping_payload = self.buildShippingPayload(self.stoken)
         # update_shipping_post = self.s.post(url='https://www.solebox.com/index.php?lang=1&', headers=self.headers, data=update_shipping_payload)

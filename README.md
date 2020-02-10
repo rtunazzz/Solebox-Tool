@@ -1,8 +1,10 @@
 # Solebox account generator
 
-Here is a [demo](https://i.imgur.com/eEcF5R0.mp4)
+![Header](https://i.imgur.com/ZOnTXv0.png)
 
-This Python script creates Solebox accounts and **adds a shipping address to them**. (also has some other functionality)
+*Update Feb/8/2020*: I completely rewrote the whole generator, it can now also **check if accounts are valid** (Accounts to check are loaded from `solebox-valid.txt`) and **check if an account has a shipping address** (accounts also get loaded from `solebox-valid.txt`)
+
+Here is a [demo](https://i.imgur.com/eEcF5R0.mp4)
  
 **Use of proxies is NECESSARY.**
 

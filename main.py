@@ -66,7 +66,7 @@ def start():
     if option == 1:
         # print("\n"*100)
         print(Style.BRIGHT + Fore.CYAN + "SOLEBOX ACCOUNT GENERATOR")
-
+    
         # ----- Get input (how many accs to generate) ----- #
         how_many = None
         while(1):
@@ -82,7 +82,7 @@ def start():
             t = threading.Thread(target=SoleboxGenerateAccount)
             threads.append(t)
             t.start()
-            time.sleep(0.5)
+            time.sleep(1)
                 
         for t in threads:
             t.join()
@@ -107,7 +107,8 @@ def start():
             t = threading.Thread(target=SoleboxCheckAccount, args=(username, password))
             threads.append(t)
             t.start()
-            time.sleep(0.5)
+            time.sleep(1)
+            
                 
         for t in threads:
             t.join()
@@ -132,7 +133,7 @@ def start():
             t = threading.Thread(target=SoleboxCheckShippingAddress, args=(username, password))
             threads.append(t)
             t.start()
-            time.sleep(0.5)
+            time.sleep(1)
                 
         for t in threads:
             t.join()
