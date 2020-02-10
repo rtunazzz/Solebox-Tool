@@ -1,4 +1,5 @@
-# Solebox account generator ![Header](https://i.imgur.com/xncrVHK.png)
+# Solebox account generator 
+# ![Header](https://i.imgur.com/xncrVHK.png)
 
 *Update Feb/8/2020*: I completely rewrote the whole generator, it can now also **check if accounts are valid** (Accounts to check are loaded from `solebox-valid.txt`) and **check if an account has a shipping address** (accounts also get loaded from `solebox-valid.txt`)
 
