@@ -70,9 +70,6 @@ open your terminal, change your directory to this folder/repo and run:
 - If everything goes smoothly, accounts should be in the **accounts folder** in `solebox-valid.txt` as well as if you have a webhook setup, you'll get a Discord notification.
 - if an error occurs when trying to update a shipping address, they'll be in the **accounts folder** `solebox-no-shipping.txt` and you'll need to update shipping address manually (or just gen new ones 😝)
 
-This is how it should look like when you run it:
-![How it should look like](https://i.imgur.com/Tc0GxtO.png)
-
 
 ## Notes:
 - If you don't have a catchall, feel free to leave the catchall field blank but you won't get confirmation emails (it will just create an account with a random gmail)
