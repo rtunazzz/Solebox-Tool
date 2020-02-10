@@ -1,4 +1,6 @@
-<p align="center"><img width=50% src="https://i.imgur.com/Sw0S7Sc.png"></p>
+<p align="center"><img width=50% src="https://i.imgur.com/xncrVHK.png"></p>
+
+
 
 
 ## Update Feb/8/2020:
@@ -6,7 +8,7 @@ I completely rewrote the whole generator, it can now also **check if accounts ar
 
 # Account Generator
 Here is a [demo](https://i.imgur.com/eEcF5R0.mp4)
- 
+
 **Use of proxies is NECESSARY.**
 
 DM me on Discord rtuna#4321 if you need any help setting this up. **BEFORE DMing ME, READ THROUGH THIS FILE**
