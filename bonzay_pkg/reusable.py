@@ -83,13 +83,14 @@ def isProxyGood(url: str, proxy: dict, headers: dict):
         headers - Headers that you want to test with the proxy
     
     Returns:
-        True or False
+        - A request object (used for testing the proxy connection)
+        - False (when an error occured)
     """
     logMessage("debug", f"Testing proxy for {url}")
     test = requests.get(url=url, headers=headers, proxies=proxy)
     if test.status_code in (302, 200):
         logMessage("debug", f"Proxy working for {url}!")
-        return True
+        return test
     elif 'captcha.js' in test.text:
         logMessage("info", "Encounered captcha, rotating proxy...")
         return False

@@ -7,6 +7,7 @@ import random
 from discord_webhook import DiscordWebhook, DiscordEmbed
 import os
 import threading
+import time
 
 try:
     from bonzay_pkg.reusable import getTime, saveIntoFile, appendIntoFile, readFile, isProxyGood, loadProxies, loadUseragents
@@ -123,6 +124,18 @@ class SoleboxGen():
 
     def __init__(self):
         # ---------- Headers ---------- #
+        SOLEBOX_URLS = [
+            "https://www.solebox.com/",
+            "https://www.solebox.com/en/New/",
+            "https://www.solebox.com/en/Soon/",
+            "https://www.solebox.com/en/Footwear/",
+            "https://www.solebox.com/en/Apparel/",
+            "https://www.solebox.com/en/Accessories/",
+            "https://www.solebox.com/index.php?lang=1&cl=brands",
+            "https://www.solebox.com/en/Sale/",
+            "https://www.solebox.com/blog/",
+            "https://www.solebox.com/en/cart/",
+        ]
         self.headers = {
             # "authority": "www.solebox.com",
             # "method": "GET",
@@ -130,11 +143,12 @@ class SoleboxGen():
             # "scheme": "https",
             "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
             "accept-encoding": "gzip, deflate, br",
-            "referer": "https://www.solebox.com/Soon/",
-            "orogin": "https://www.solebox.com/",
+            "referer": random.choice(SOLEBOX_URLS),
+            "origin": "https://www.solebox.com/",
             "accept-language": "en-GB,en-US;q=0.9,en;q=0.8,cs;q=0.7,de;q=0.6",
-            # "sec-fetch-mode": "navigate",
-            # "sec-fetch-site": "none",
+            "sec-fetch-mode": "navigate",
+            "sec-fetch-site": "same-origin",
+            "sec-fetch-user": "?1",
             "upgrade-insecure-requests": "1",
             # "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36",
         }
@@ -203,9 +217,9 @@ class SoleboxGen():
                 'invadr[oxuser__oxfax]': '',
                 'invadr[oxuser__oxmobfon]': '',
                 'invadr[oxuser__oxprivfon]': '',
-                'invadr[oxuser__oxbirthdate][day]': '',
-                'invadr[oxuser__oxbirthdate][month]': '',
-                'invadr[oxuser__oxbirthdate][year]': '',
+                "invadr[oxuser__oxbirthdate][day]": random.randint(1,27),
+                "invadr[oxuser__oxbirthdate][month]": random.randint(1,12),
+                "invadr[oxuser__oxbirthdate][year]": random.randint(1950,2000),
                 'save': '',
             }
         else:
@@ -228,9 +242,9 @@ class SoleboxGen():
                 "invadr[oxuser__oxcity]": self.city,
                 "invadr[oxuser__oxcountryid]": self.country_id,
                 "invadr[oxuser__oxstateid]": self.us_state,
-                "invadr[oxuser__oxbirthdate][day]": "",
-                "invadr[oxuser__oxbirthdate][month]": "",
-                "invadr[oxuser__oxbirthdate][year]": "",
+                "invadr[oxuser__oxbirthdate][day]": random.randint(1,27),
+                "invadr[oxuser__oxbirthdate][month]": random.randint(1,12),
+                "invadr[oxuser__oxbirthdate][year]": random.randint(1950,2000),
                 "invadr[oxuser__oxfon]": self.phone_num,
                 "lgn_usr": self.email,
                 "lgn_pwd": self.passwd,
@@ -263,6 +277,9 @@ class SoleboxGen():
                 "invadr[oxuser__oxcity]": self.city,
                 "invadr[oxuser__oxcountryid]": self.country_id,
                 "invadr[oxuser__oxstateid]": self.us_state,
+                "invadr[oxuser__oxbirthdate][day]": random.randint(1,27),
+                "invadr[oxuser__oxbirthdate][month]": random.randint(1,12),
+                "invadr[oxuser__oxbirthdate][year]": random.randint(1950,2000),
                 "invadr[oxuser__oxfon]": self.phone_num,
                 "changeClass": "account_user",
                 "oxaddressid": -1,
@@ -298,6 +315,9 @@ class SoleboxGen():
                 "invadr[oxuser__oxcity]": self.city,
                 "invadr[oxuser__oxcountryid]": self.country_id,
                 "invadr[oxuser__oxstateid]": self.us_state,
+                "invadr[oxuser__oxbirthdate][day]": random.randint(1,27),
+                "invadr[oxuser__oxbirthdate][month]": random.randint(1,12),
+                "invadr[oxuser__oxbirthdate][year]": random.randint(1950,2000),
                 "invadr[oxuser__oxfon]": self.phone_num,
                 "changeClass": "account_user",
                 "oxaddressid": -1,
@@ -427,15 +447,22 @@ class SoleboxGen():
                     logMessage("ERROR", "Unable to edit shipping details. Try again later or use different proxies.")
                 return False
 
-        # headers_cpy = self.headerss
-        # headers_cpy["referer"] = 
+        headers_cpy = self.headers
+        if self.useragent_type == "mobile":
+            # headers_cpy["referer"] = random.choice(["https://www.solebox.com/konto-eroeffnen/", "https://www.solebox.com/en/open-account/"])
+            headers_cpy["referer"] = "https://www.solebox.com/en/open-account/"
+        else:
+            # headers_cpy["referer"] = random.choice(["https://www.solebox.com/mein-konto/", "https://www.solebox.com/en/my-account/"])
+            headers_cpy["referer"] = "https://www.solebox.com/en/my-account/"
+
         # ---------------------------------------- Creating an account ---------------------------------------- #
         with print_lock:
             logMessage("STATUS", f"Trying to create an account for {self.email}, using {self.useragent_type} mode.")
         register_payload = self.buildBillingPayload(self.stoken)
-
+        time.sleep(2)
         # ---------- Posting to create an account ---------- #
-        register_post = self.s.post(url='https://www.solebox.com/index.php?lang=1&', headers=self.headers, data=register_payload)
+        # register_post = self.s.post(url='https://www.solebox.com/index.php?lang=1&', headers=self.headers, data=register_payload)
+        register_post = self.s.post(url='https://www.solebox.com/index.php?lang=1&', headers=headers_cpy, data=register_payload)
         if "Not possible to register" in register_post.text:
             with print_lock:
                 logMessage("ERROR", f"Unable to create an account. Solebox returned:\n\'Not possible to register {self.email}. Maybe you have already registered?\'")
@@ -473,17 +500,32 @@ class SoleboxGen():
             proxy_status = self.testWorkingProxies(print_lock)
             if not proxy_status:
                 return False
-
-        login_payload = {
-            "stoken": self.stoken,
-            "lang": 1,
-            "listtype": "",
-            "actcontrol": "account",
-            "fnc": "login_noredirect",
-            "cl": "account",
-            "lgn_usr": self.email,
-            "lgn_pwd": self.passwd,
-        }
+        
+        if self.useragent_type == "mobile":
+            login_payload = {
+                "stoken": self.stoken,
+                "lang": 1,
+                "listtype": "",
+                "actcontrol": "account",
+                "fnc": "login_noredirect",
+                "cl": "account",
+                "tpl": '',
+                "oxloadid": '',
+                "lgn_usr": "self.email",
+                "lgn_pwd": "self.passwd",
+                "lgn_cook": 1,
+            }
+        else:
+            login_payload = {
+                "stoken": self.stoken,
+                "lang": 1,
+                "listtype": "",
+                "actcontrol": "account",
+                "fnc": "login_noredirect",
+                "cl": "account",
+                "lgn_usr": self.email,
+                "lgn_pwd": self.passwd,
+            }
         try:
             p = self.s.post(url=login_url, headers=self.headers, data=login_payload)
         except:
@@ -502,19 +544,6 @@ class SoleboxGen():
             with print_lock:
                 logMessage("ERROR", f"Failed to log in as {self.email}. Status code {p.status_code}")
                 return None
-
-        #TODO Mobile mode:
-        # stoken: 7DD0CB5D
-        # lang: 1
-        # listtype: 
-        # actcontrol: account
-        # fnc: login_noredirect
-        # cl: account
-        # tpl: 
-        # oxloadid: 
-        # lgn_usr: self.email
-        # lgn_pwd: self.passwd
-        # lgn_cook: 1
 
     def updateShippingAddress(self, print_lock: threading.Lock, new_account: bool, email: str = None, passwd: str = None):
         # ---------------------------------------- This part executes only if the account isn't new ---------------------------------------- #
@@ -551,9 +580,11 @@ class SoleboxGen():
                 return False
         
         headers_cpy = self.headers
+        # headers_cpy["referer"] = random.choice(["https://www.solebox.com/en/my-address/", "https://www.solebox.com/meine-adressen/"])
         headers_cpy["referer"] = "https://www.solebox.com/en/my-address/"
 
         update_shipping_payload = self.buildShippingPayload(self.stoken)
+        time.sleep(2)
         # update_shipping_post = self.s.post(url='https://www.solebox.com/index.php?lang=1&', headers=self.headers, data=update_shipping_payload)
         update_shipping_post = self.s.post(url='https://www.solebox.com/index.php?lang=1&', headers=headers_cpy, data=update_shipping_payload)
 
