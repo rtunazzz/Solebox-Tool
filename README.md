@@ -18,7 +18,8 @@ DM me on Discord rtuna#4321 if you need any help setting this up. **BEFORE DMing
 2. download & unzip this the zip you donwloaded, open your CMD/Terminal and `cd` to this folder.
 3. run `pip install -r requirements.txt`
 4. Add your info into `userdata.json`
-5. Feel free to turn on/off any "jigging" in the `userdata.json` but **for some reason if you set `jig_first_line` to false, you'll run into errors and most likely won't be able to generate any accounts. Feel free to try it though! **
+5. Add proxies into `proxies.txt`
+6. Feel free to turn on/off any "jigging" in the `userdata.json` but **for some reason if you set `jig_first_line` to false, you'll run into errors and most likely won't be able to generate any accounts. Feel free to try it though! **
 
 ## To run:
 open your terminal, change your directory to this folder/repo and run:

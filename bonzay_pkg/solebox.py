@@ -413,10 +413,10 @@ class SoleboxGen():
                 with print_lock:
                     logMessage("ERROR", "Proxy banned, rotating proxy...")
             
-            if test_count > 50:
+            if test_count >= (len(self.proxy_list) - 10):
                 with print_lock:
                     logMessage("CRITICAL", "Retry limit exceeded. Load more proxies or generate new ones.")
-                break
+                return False
             test_count += 1
         return False
 
