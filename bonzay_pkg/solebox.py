@@ -376,6 +376,9 @@ class SoleboxGen():
             self.headers['user-agent'] = random.choice(all_useragents_list[1])
 
         self.proxy_list = loadProxies("./proxies.txt")
+        if not self.proxy_list:
+            logMessage("ERROR", "You did not load proxies. Put your proxies into the proxies.txt file before running.")
+            exit()
 
         self.s = requests.Session()
         self.stoken = None
