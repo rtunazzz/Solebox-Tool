@@ -8,6 +8,7 @@ from discord_webhook import DiscordWebhook, DiscordEmbed
 import os
 import threading
 import time
+import cloudscraper
 
 try:
     from bonzay_pkg.reusable import getTime, saveIntoFile, appendIntoFile, readFile, isProxyGood, loadProxies, loadUseragents
@@ -380,7 +381,8 @@ class SoleboxGen():
             logMessage("ERROR", "You did not load proxies. Put your proxies into the proxies.txt file before running.")
             exit()
 
-        self.s = requests.Session()
+        # self.s = requests.Session()
+        self.s = cloudscraper.create_scraper()
         self.stoken = None
 
     def testWorkingProxies(self, print_lock):
@@ -462,7 +464,7 @@ class SoleboxGen():
         with print_lock:
             logMessage("STATUS", f"Trying to create an account for {self.email}, using {self.useragent_type} mode.")
         register_payload = self.buildBillingPayload(self.stoken)
-        time.sleep(2)
+        time.sleep(random.randint(2,6))
         # ---------- Posting to create an account ---------- #
         # register_post = self.s.post(url='https://www.solebox.com/index.php?lang=1&', headers=self.headers, data=register_payload)
         register_post = self.s.post(url='https://www.solebox.com/index.php?lang=1&', headers=headers_cpy, data=register_payload)
@@ -476,7 +478,7 @@ class SoleboxGen():
             return False
         if register_post.status_code in (302, 200):
             with print_lock:
-                logMessage("SUCCESS", "Successfully created an account.")
+                logMessage("SUCCESS", f"Successfully created an account for {self.email}")
         else:
             with print_lock:
                 logMessage("ERROR", f"ERROR {register_post.status_code} occurred: Unable to create an account.")
@@ -587,7 +589,7 @@ class SoleboxGen():
         headers_cpy["referer"] = "https://www.solebox.com/en/my-address/"
 
         update_shipping_payload = self.buildShippingPayload(self.stoken)
-        time.sleep(2)
+        time.sleep(random.randint(2,6))
         # update_shipping_post = self.s.post(url='https://www.solebox.com/index.php?lang=1&', headers=self.headers, data=update_shipping_payload)
         update_shipping_post = self.s.post(url='https://www.solebox.com/index.php?lang=1&', headers=headers_cpy, data=update_shipping_payload)
 

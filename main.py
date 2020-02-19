@@ -16,6 +16,7 @@ https://github.com/rtunaboss/SoleboxAccountGenerator
 from colorama import Fore, Style, init
 import threading
 import time
+import random
 
 from bonzay_pkg.solebox import SoleboxGen
 from bonzay_pkg.reusable import readFile
@@ -82,14 +83,14 @@ def start():
             t = threading.Thread(target=SoleboxGenerateAccount)
             threads.append(t)
             t.start()
-            time.sleep(1)
+            time.sleep(random.randint(2,6))
                 
         for t in threads:
             t.join()
         print(Style.BRIGHT + "\nFinished generating Solebox accounts.")
 
     # ---------------------------------------- [2] - Solebox Valid Account Checker ---------------------------------------- #
-    if option == 2:
+    elif option == 2:
         print(Style.BRIGHT + Fore.CYAN + "SOLEBOX VALID ACCOUNT CHECKER")
         # ----- Load all accounts with shipping ----- #
         print("Loading accounts from solebox-valid.txt")
@@ -107,7 +108,7 @@ def start():
             t = threading.Thread(target=SoleboxCheckAccount, args=(username, password))
             threads.append(t)
             t.start()
-            time.sleep(1)
+            time.sleep(random.randint(2,6))
             
                 
         for t in threads:
@@ -116,7 +117,7 @@ def start():
 
 
     # ---------------------------------------- [3] - Solebox Shipping Address Checker ---------------------------------------- #
-    if option == 3:
+    elif option == 3:
         print(Style.BRIGHT + Fore.CYAN + "SOLEBOX SHIPPING ADDRESS CHECKER")
         # ----- Load all accounts with shipping ----- #
         print("Loading accounts from solebox-valid.txt")
@@ -133,7 +134,7 @@ def start():
             t = threading.Thread(target=SoleboxCheckShippingAddress, args=(username, password))
             threads.append(t)
             t.start()
-            time.sleep(1)
+            time.sleep(random.randint(2,6))
                 
         for t in threads:
             t.join()
