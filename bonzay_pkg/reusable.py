@@ -3,7 +3,7 @@ import threading
 import os
 import json
 import requests
-
+import time
 # ---------- Basic Functions ---------- #
 
 def getTime():
@@ -141,6 +141,31 @@ def appendIntoFile(filename: str, data):
             f.write(data)
     else:
         print(f"[ERROR - appendIntoFile] - Error writing into {filename}.")
+
+
+# ---------- Bot protection functions ---------- #
+
+def get_captcha_answer(api_key: str, site_key: str, website_url: str):
+
+    SITE_KEY = "6Lcj-R8TAAAAABs3FrRPuQhLMbp5QrHsHufzLf7b"  # site-key, read the 2captcha docs on how to get this
+
+    s = requests.Session()
+
+    # here we post site key to 2captcha to get captcha ID (and we parse it here too)
+    captcha2_url = f"http://2captcha.com/in.php?key={api_key}&method=userrecaptcha&googlekey={SITE_KEY}&pageurl={website_url}"
+    captcha_id = s.post(captcha2_url).text.split('|')[1]
+    # then we parse gresponse from 2captcha response
+    answer_url = f"http://2captcha.com/res.php?key={api_key}&action=get&id={captcha_id}"
+    recaptcha_answer = s.get(answer_url).text
+
+    logMessage("Status", "Solving captcha")
+    while 'CAPCHA_NOT_READY' in recaptcha_answer:
+        time.sleep(5)
+        recaptcha_answer = s.get(answer_url).text
+
+    recaptcha_answer = recaptcha_answer.split('|')[1]
+    logMessage("success", "Captcha successfully solved!")
+    return recaptcha_answer
 
 def loadUseragents():
     """

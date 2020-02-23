@@ -19,29 +19,38 @@ import time
 import random
 
 from bonzay_pkg.solebox import SoleboxGen
-from bonzay_pkg.reusable import readFile
+from bonzay_pkg.reusable import readFile, logMessage, loadProxies
 
 init(autoreset=True)
 print_lock = threading.Lock()
 
 # -------------------------------------------------------------------------------- FUNCTIONS -------------------------------------------------------------------------------- #
 
+print_lock = threading.Lock()
+PROXY_LIST = None
+
+def initialize_gen():
+    if not PROXY_LIST:
+        logMessage("ERROR", "You did not load proxies. Put your proxies into the proxies.txt file before running.")
+        exit()
+    return SoleboxGen(PROXY_LIST)
+
 def SoleboxGenerateAccount():
-    gen = SoleboxGen()
+    gen = initialize_gen()
     create_status = gen.generateAccount(print_lock)
     if create_status:
         gen.updateShippingAddress(print_lock, new_account=True)
 
 def SoleboxCheckAccount(email, passwd):
-    gen = SoleboxGen()
+    gen = initialize_gen()
     gen.checkAccount(print_lock, email, passwd)
 
 def SoleboxCheckShippingAddress(email, passwd):
-    gen = SoleboxGen()
+    gen = initialize_gen()
     gen.checkShippingAddress(print_lock, email=email, passwd=passwd)
 
 def SoleboxUpdateShippingExistingAccount(email, passwd):
-    gen = SoleboxGen()
+    gen = initialize_gen()
     gen.updateShippingAddress(print_lock, new_account=False, email=email, passwd=passwd)
 
 def start():
@@ -57,8 +66,10 @@ def start():
         option = input()
         try:
             option = int(option)
-            if type(option) is int:
+            if type(option) is int and option in range(1,3):
                 break
+            else:
+                print(f"{option} is not a valid option. Try again with a number from 1 to 3:")
         except:
             print("Not an integer. Try again:")
 
@@ -83,7 +94,7 @@ def start():
             t = threading.Thread(target=SoleboxGenerateAccount)
             threads.append(t)
             t.start()
-            time.sleep(random.randint(2,6))
+            time.sleep(random.randint(5,8))
                 
         for t in threads:
             t.join()
@@ -144,4 +155,5 @@ def start():
 # -------------------------------------------------------------------------------- RUNNING -------------------------------------------------------------------------------- #
 
 if __name__ == "__main__":
+    PROXY_LIST = loadProxies("./proxies.txt")
     start()

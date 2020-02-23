@@ -103,6 +103,7 @@ def parseStoken(req, print_lock):
             logMessage("ERROR", "Unable to get stoken.")
     return stoken
 
+
 def sendSoleboxWebhook(webhook_url, title, email, passwd):
     hook = DiscordWebhook(url=webhook_url, username="BONZAY Tools", avatar_url="https://avatars1.githubusercontent.com/u/38296319?s=460&v=4")
     color=15957463
@@ -123,36 +124,49 @@ def sendSoleboxWebhook(webhook_url, title, email, passwd):
 
 class SoleboxGen():
 
-    def __init__(self):
+    def __init__(self, proxy_list):
+
+        # ---------- General ---------- #
+        self.proxy_list = proxy_list
+
+        useragents = loadUseragents()
+        # ---------- Generation Type ---------- #
+        self.useragent_type = random.choice(["mobile", "desktop"])
+        if self.useragent_type == "mobile":
+            mobile = True
+            ua = random.choice(useragents[1])
+        else:
+            mobile=False
+            ua = random.choice(useragents[0])
         # ---------- Headers ---------- #
         SOLEBOX_URLS = [
+            "https://www.solebox.com/en/Apparel/",
             "https://www.solebox.com/",
             "https://www.solebox.com/en/New/",
             "https://www.solebox.com/en/Soon/",
             "https://www.solebox.com/en/Footwear/",
-            "https://www.solebox.com/en/Apparel/",
             "https://www.solebox.com/en/Accessories/",
             "https://www.solebox.com/index.php?lang=1&cl=brands",
             "https://www.solebox.com/en/Sale/",
             "https://www.solebox.com/blog/",
             "https://www.solebox.com/en/cart/",
         ]
-        self.headers = {
-            # "authority": "www.solebox.com",
-            # "method": "GET",
-            # "path": "/",
-            # "scheme": "https",
-            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-            "accept-encoding": "gzip, deflate, br",
-            "referer": random.choice(SOLEBOX_URLS),
-            "origin": "https://www.solebox.com/",
-            "accept-language": "en-GB,en-US;q=0.9,en;q=0.8,cs;q=0.7,de;q=0.6",
-            "sec-fetch-mode": "navigate",
-            "sec-fetch-site": "same-origin",
-            "sec-fetch-user": "?1",
+
+        # ---------- Creating a session ---------- #
+        self.s = cloudscraper.create_scraper(browser={'browser': 'chrome', 'mobile': mobile})
+        self.s.headers.update({
+            "cache-control": "max-age=0",
             "upgrade-insecure-requests": "1",
-            # "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36",
-        }
+            "user-agent": ua,
+            "sec-fetch-user": "?1",
+            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+            "sec-fetch-site": "same-origin",
+            "sec-fetch-mode": "navigate",
+            "referer": random.choice(SOLEBOX_URLS),
+            "accept-encoding": "gzip, deflate, br",
+            "accept-language": "en-GB,en-US;q=0.9,en;q=0.8,cs;q=0.7,de;q=0.6",
+        })
+        self.stoken = None
 
         # ---------- Loading user input data ---------- #
         config = readFile("./userdata.json")
@@ -186,6 +200,9 @@ class SoleboxGen():
         self.country_id = getCountryId(self.country_name)
         if self.country_id == None:
             quit()
+
+        # ---------- Jigging info ---------- #
+        self.jigInfo()
 
     def buildBillingPayload(self, stoken: str):
         if self.useragent_type == "mobile":
@@ -226,6 +243,7 @@ class SoleboxGen():
         else:
             register_payload = {
                 "stoken": stoken,
+                # "lang": random.choice([0,1]),
                 "lang": 1,
                 "listtype": "",
                 "actcontrol": "account",
@@ -364,27 +382,6 @@ class SoleboxGen():
 
         self.email = f'{get_first_name()}{random.randint(1,9999999)}@{self.catchall}'
 
-    def setup(self):
-        self.jigInfo()
-
-        self.useragent_type = random.choice(["mobile", "desktop"])
-        all_useragents_list = loadUseragents()
-        if self.useragent_type == "desktop":
-            # all_useragents_list[0] means desktop useragent list
-            self.headers['user-agent'] = random.choice(all_useragents_list[0])
-        else:
-            # all_useragents_list[1] means mobile useragent list
-            self.headers['user-agent'] = random.choice(all_useragents_list[1])
-
-        self.proxy_list = loadProxies("./proxies.txt")
-        if not self.proxy_list:
-            logMessage("ERROR", "You did not load proxies. Put your proxies into the proxies.txt file before running.")
-            exit()
-
-        # self.s = requests.Session()
-        self.s = cloudscraper.create_scraper()
-        self.stoken = None
-
     def testWorkingProxies(self, print_lock):
         """
 
@@ -399,9 +396,12 @@ class SoleboxGen():
             with print_lock:
                 logMessage("STATUS", "Checking proxy...")
             
-            # s.get('https://www.solebox.com/en/home/', headers=headers)
+            self.s.get("https://www.solebox.com/en/home/")
             try:
-                test = self.s.get(url='https://www.solebox.com/en/open-account/', headers=self.headers, timeout=5)
+                if self.useragent_type == "mobile":
+                    test = self.s.get(url="https://www.solebox.com/en/open-account/")
+                else:
+                    test = self.s.get(url="https://www.solebox.com/en/my-account/")
             except:
                 with print_lock:
                     logMessage("ERROR", "Proxy timed out, rotating proxy...")
@@ -411,13 +411,16 @@ class SoleboxGen():
                     logMessage("STATUS", "Proxy working...")
                 self.stoken = parseStoken(test, print_lock)
                 return True
+            elif test.url == "https://www.solebox.com/offline.html":
+                with print_lock:
+                    logMessage("ERROR", "Website is down...")
             elif "captcha.js" in test.text:
                 with print_lock:
                     logMessage("ERROR", "Encountered CloudFare (captcha), rotating proxy...")
             else:
                 with print_lock:
                     logMessage("ERROR", "Proxy banned, rotating proxy...")
-            
+            time.sleep(random.randint(1,3))
             if test_count >= (len(self.proxy_list) - 10):
                 with print_lock:
                     logMessage("CRITICAL", "Retry limit exceeded. Load more proxies or generate new ones.")
@@ -431,43 +434,36 @@ class SoleboxGen():
             - True (on success)
             - False (on failure)
         """
-        # ---------------------------------------- Setting up ---------------------------------------- #
-        self.setup()
-
-        with print_lock:
-            logMessage("STATUS", f"Generating account for {self.email}")
         
         # ---------- Proxy testing ---------- #
         proxy_status = self.testWorkingProxies(print_lock)
         if not proxy_status:
             return False
         
+        with print_lock:
+            logMessage("STATUS", f"Generating account for {self.email}")
+
         # ---------- Parsing stoken (if it's not obtained from proxy testing) ---------- #
         if self.stoken is None:
             try:
-                r = self.s.get("https://www.solebox.com/en/open-account/", headers=self.headers, timeout=5)
+                if self.useragent_type == "mobile":
+                    r = self.s.get(url="https://www.solebox.com/en/open-account/")
+                else:
+                    r = self.s.get(url="https://www.solebox.com/en/my-account/")
                 parseStoken(r, print_lock)
             except:
                 with print_lock:
                     logMessage("ERROR", "Unable to edit shipping details. Try again later or use different proxies.")
                 return False
 
-        headers_cpy = self.headers
-        if self.useragent_type == "mobile":
-            # headers_cpy["referer"] = random.choice(["https://www.solebox.com/konto-eroeffnen/", "https://www.solebox.com/en/open-account/"])
-            headers_cpy["referer"] = "https://www.solebox.com/en/open-account/"
-        else:
-            # headers_cpy["referer"] = random.choice(["https://www.solebox.com/mein-konto/", "https://www.solebox.com/en/my-account/"])
-            headers_cpy["referer"] = "https://www.solebox.com/en/my-account/"
-
         # ---------------------------------------- Creating an account ---------------------------------------- #
         with print_lock:
             logMessage("STATUS", f"Trying to create an account for {self.email}, using {self.useragent_type} mode.")
         register_payload = self.buildBillingPayload(self.stoken)
-        time.sleep(random.randint(2,6))
+        time.sleep(random.randint(5,10))
         # ---------- Posting to create an account ---------- #
-        # register_post = self.s.post(url='https://www.solebox.com/index.php?lang=1&', headers=self.headers, data=register_payload)
-        register_post = self.s.post(url='https://www.solebox.com/index.php?lang=1&', headers=headers_cpy, data=register_payload)
+
+        register_post = self.s.post(url='https://www.solebox.com/index.php?lang=1&', data=register_payload)
         if "Not possible to register" in register_post.text:
             with print_lock:
                 logMessage("ERROR", f"Unable to create an account. Solebox returned:\n\'Not possible to register {self.email}. Maybe you have already registered?\'")
@@ -532,7 +528,7 @@ class SoleboxGen():
                 "lgn_pwd": self.passwd,
             }
         try:
-            p = self.s.post(url=login_url, headers=self.headers, data=login_payload)
+            p = self.s.post(url=login_url, data=login_payload)
         except:
             with print_lock:
                 logMessage("ERROR", f"Failed to log in as {self.email}.")
@@ -554,7 +550,6 @@ class SoleboxGen():
         # ---------------------------------------- This part executes only if the account isn't new ---------------------------------------- #
         if not new_account:
             # ---------- Setup ---------- #
-            self.setup()
             if email != None:
                 self.email = email
             if passwd != None:
@@ -577,21 +572,20 @@ class SoleboxGen():
         # ---------- Parsing stoken (if it's not obtained from proxy testing) ---------- #
         if self.stoken is None:
             try:
-                r = self.s.get('https://www.solebox.com/en/open-account/', headers=self.headers, timeout=5)
+                r = self.s.get('https://www.solebox.com/en/open-account/')
                 parseStoken(r, print_lock)
             except:
                 with print_lock:
                     logMessage("ERROR", "Unable to edit shipping details. Try again later or use different proxies.")
                 return False
         
-        headers_cpy = self.headers
         # headers_cpy["referer"] = random.choice(["https://www.solebox.com/en/my-address/", "https://www.solebox.com/meine-adressen/"])
-        headers_cpy["referer"] = "https://www.solebox.com/en/my-address/"
+        # headers_cpy["referer"] = "https://www.solebox.com/en/my-address/"
 
         update_shipping_payload = self.buildShippingPayload(self.stoken)
-        time.sleep(random.randint(2,6))
-        # update_shipping_post = self.s.post(url='https://www.solebox.com/index.php?lang=1&', headers=self.headers, data=update_shipping_payload)
-        update_shipping_post = self.s.post(url='https://www.solebox.com/index.php?lang=1&', headers=headers_cpy, data=update_shipping_payload)
+        time.sleep(random.randint(5,10))
+        update_shipping_post = self.s.post(url='https://www.solebox.com/index.php?lang=1&', data=update_shipping_payload)
+        # update_shipping_post = self.s.post(url='https://www.solebox.com/index.php?lang=1&', headers=headers_cpy, data=update_shipping_payload)
 
         if "captcha.js" in update_shipping_post.text:
             with print_lock:
@@ -616,7 +610,6 @@ class SoleboxGen():
 
     def checkAccount(self, print_lock: threading.Lock, email, passwd):
         # ---------- Setup ---------- #
-        self.setup()
         self.email = email
         self.passwd = passwd
 
@@ -631,7 +624,7 @@ class SoleboxGen():
         # ---------- Parsing stoken (if it's not obtained from proxy testing) ---------- #
         if self.stoken is None:
             try:
-                r = self.s.get('https://www.solebox.com/en/open-account/', headers=self.headers, timeout=5)
+                r = self.s.get('https://www.solebox.com/en/open-account/')
                 parseStoken(r, print_lock)
             except:
                 with print_lock:
@@ -661,7 +654,6 @@ class SoleboxGen():
             - None  - on error
         """
         # ---------- Setup ---------- #
-        self.setup()
         if email != None:
             self.email = email
         if passwd != None:
@@ -679,7 +671,7 @@ class SoleboxGen():
         
         # ---------- Going to the shipping page ---------- #
         try:
-            r = self.s.get(url=address_url, headers=self.headers)
+            r = self.s.get(url=address_url)
         except:
             return False
         if r.status_code in (302,200):
@@ -695,3 +687,13 @@ class SoleboxGen():
                 return True
         return False
       
+if __name__ == "__main__":
+    print_lock = threading.Lock()
+    PROXY_LIST = loadProxies("./proxies.txt")
+    if not PROXY_LIST:
+        logMessage("ERROR", "You did not load proxies. Put your proxies into the proxies.txt file before running.")
+        exit()
+    gen = SoleboxGen(PROXY_LIST)
+    create_status = gen.generateAccount(print_lock)
+    if create_status:
+        gen.updateShippingAddress(print_lock, new_account=True)
