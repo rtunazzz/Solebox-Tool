@@ -675,9 +675,13 @@ class SoleboxGen():
         except:
             return False
         if r.status_code in (302,200):
-            soup = bs(r.text, "lxml")
-            address_selection = soup.find("select", {"id":"addressId", "name": "oxaddressid"})
-            options = address_selection.find_all("option", {"value": True})
+            try:
+                soup = bs(r.text, "lxml")
+                address_selection = soup.find("select", {"id":"addressId", "name": "oxaddressid"})
+                options = address_selection.find_all("option", {"value": True})
+            except:
+                logMessage("ERROR", f"Failed checking if {self.email} has a shipping address.")
+                return None
             # ---------- Checking if an account has a shipping address ---------- #
             if len(options) == 1:
                 logMessage("STATUS", f"Account {self.email} does NOT have a shipping address.")
