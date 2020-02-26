@@ -155,7 +155,6 @@ class SoleboxGen():
         # ---------- Creating a session ---------- #
         self.s = cloudscraper.create_scraper(browser={'browser': 'chrome', 'mobile': mobile})
         self.s.headers.update({
-            "cache-control": "max-age=0",
             "upgrade-insecure-requests": "1",
             "user-agent": ua,
             "sec-fetch-user": "?1",
