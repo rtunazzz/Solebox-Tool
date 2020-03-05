@@ -1,17 +1,5 @@
 # -------------------------------------------------------------------------------- SETUP & IMPORTS -------------------------------------------------------------------------------- #
 
-print('\n'*10)
-print(r'''
- ____    ___   _   _  _____    _  __   __
-| __ )  / _ \ | \ | ||__  /   / \ \ \ / /
-|  _ \ | | | ||  \| |  / /   / _ \ \ V / 
-| |_) || |_| || |\  | / /_  / ___ \ | |  
-|____/  \___/ |_| \_|/____|/_/   \_\|_|  
------
-https://github.com/rtunaboss/SoleboxAccountGenerator
-• developed by: rtuna#4321 | @rtunazzz
-• for personal use only
------''')
 
 from colorama import Fore, Style, init
 import threading
@@ -23,6 +11,27 @@ from bonzay_pkg.reusable import readFile, logMessage, loadProxies
 
 init(autoreset=True)
 print_lock = threading.Lock()
+
+print('\n'*50)
+print(Fore.MAGENTA + '''       ,.,
+      MMMM_    ,..,
+        "_ "__"MMMMM          ,...,,
+ ,..., __." --"    ,.,     _-"MMMMMMM
+MMMMMM"___ "_._   MMM"_."" _ """"""
+ """""    "" , \_.   "_. ."
+        ,., _"__ \__./ ."
+       MMMMM_"  "_    ./
+        \'\'\'\'      (    )
+ ._______________.-\'____"---._.
+  \                          /
+   \________________________/
+   (_)                    (_)''')
+print(Fore.MAGENTA + "   BONZAY Tools™ · Solebox tool")
+print(r'''-----
+https://github.com/rtunaboss/SoleboxAccountGenerator
+• developed by: rtuna#4321 | @rtunazzz
+• for personal use only
+-----''')
 
 # -------------------------------------------------------------------------------- FUNCTIONS -------------------------------------------------------------------------------- #
 
@@ -54,7 +63,7 @@ def SoleboxUpdateShippingExistingAccount(email, passwd):
     gen.updateShippingAddress(print_lock, new_account=False, email=email, passwd=passwd)
 
 def start():
-    print(Style.BRIGHT + Fore.CYAN + "Welcome to BONZAY Tools!")
+    print(Style.BRIGHT + Fore.CYAN + "Welcome to BONZAY Tools™!")
     print(Fore.LIGHTYELLOW_EX + "Please select an option:")
     print(Fore.LIGHTYELLOW_EX + "[1] - Generate Solebox accounts")
     print(Fore.LIGHTYELLOW_EX + "[2] - Check valid Solebox accounts")
@@ -94,7 +103,7 @@ def start():
             t = threading.Thread(target=SoleboxGenerateAccount)
             threads.append(t)
             t.start()
-            time.sleep(random.randint(5,8))
+            time.sleep(random.randint(1,3))
                 
         for t in threads:
             t.join()
@@ -119,7 +128,7 @@ def start():
             t = threading.Thread(target=SoleboxCheckAccount, args=(username, password))
             threads.append(t)
             t.start()
-            time.sleep(random.randint(2,6))
+            time.sleep(random.randint(1,3))
             
                 
         for t in threads:
@@ -145,7 +154,7 @@ def start():
             t = threading.Thread(target=SoleboxCheckShippingAddress, args=(username, password))
             threads.append(t)
             t.start()
-            time.sleep(random.randint(2,6))
+            time.sleep(random.randint(1,3))
                 
         for t in threads:
             t.join()
@@ -156,4 +165,5 @@ def start():
 
 if __name__ == "__main__":
     PROXY_LIST = loadProxies("./proxies.txt")
+    print("-----")
     start()

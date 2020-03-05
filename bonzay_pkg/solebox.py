@@ -114,7 +114,7 @@ def sendSoleboxWebhook(webhook_url, title, email, passwd):
         url="https://github.com/rtunaboss/SoleboxAccountGenerator",
     )
     embed.set_timestamp()
-    embed.set_footer(text="BONZAY Tools",icon_url="https://cdn.discordapp.com/attachments/527830358767566848/622854816120569887/Bonzay.png")
+    embed.set_footer(text="BONZAY Tools ",icon_url="https://cdn.discordapp.com/avatars/682885901843562545/be7c712b6576fb811c7a6c2cc263aa3c.webp")
     embed.add_embed_field(name="Username", value=f"{email}")
     embed.add_embed_field(name="Password", value=f"||{passwd}||", inline=False)
     hook.add_embed(embed)
@@ -383,7 +383,6 @@ class SoleboxGen():
 
     def testWorkingProxies(self, print_lock):
         """
-
         Returns:
             True    - if a working proxy was found
             False   - if a working proxy was NOT found
@@ -394,8 +393,10 @@ class SoleboxGen():
             self.s.proxies = random.choice(self.proxy_list)
             with print_lock:
                 logMessage("STATUS", "Checking proxy...")
-            
-            self.s.get("https://www.solebox.com/en/home/")
+            try:
+                self.s.get("https://www.solebox.com/en/home/")
+            except:
+                continue
             try:
                 if self.useragent_type == "mobile":
                     test = self.s.get(url="https://www.solebox.com/en/open-account/")
@@ -419,7 +420,7 @@ class SoleboxGen():
             else:
                 with print_lock:
                     logMessage("ERROR", "Proxy banned, rotating proxy...")
-            time.sleep(random.randint(1,3))
+            time.sleep(random.randint(1,2))
             if test_count >= (len(self.proxy_list) - 10):
                 with print_lock:
                     logMessage("CRITICAL", "Retry limit exceeded. Load more proxies or generate new ones.")
@@ -459,7 +460,7 @@ class SoleboxGen():
         with print_lock:
             logMessage("STATUS", f"Trying to create an account for {self.email}, using {self.useragent_type} mode.")
         register_payload = self.buildBillingPayload(self.stoken)
-        time.sleep(random.randint(5,10))
+        time.sleep(random.randint(1,4))
         # ---------- Posting to create an account ---------- #
 
         register_post = self.s.post(url='https://www.solebox.com/index.php?lang=1&', data=register_payload)
@@ -582,7 +583,7 @@ class SoleboxGen():
         # headers_cpy["referer"] = "https://www.solebox.com/en/my-address/"
 
         update_shipping_payload = self.buildShippingPayload(self.stoken)
-        time.sleep(random.randint(5,10))
+        time.sleep(random.randint(1,4))
         update_shipping_post = self.s.post(url='https://www.solebox.com/index.php?lang=1&', data=update_shipping_payload)
         # update_shipping_post = self.s.post(url='https://www.solebox.com/index.php?lang=1&', headers=headers_cpy, data=update_shipping_payload)
 

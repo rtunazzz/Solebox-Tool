@@ -48,7 +48,7 @@ def loadProxies(filename):
         file_contents = f.read()
         file_contents = file_contents.split('\n')
     formatted_proxy_list = []
-    logMessage("info", "Parsing proxies")
+    print("Parsing proxies")
     try:
         try:
             # Userpass
@@ -67,9 +67,9 @@ def loadProxies(filename):
                     proxies = {'http': 'http://' + temp,  'https': 'http://' + temp}
                     formatted_proxy_list.append(proxies)
 
-        logMessage("info", "Successfully parsed proxies.")
+        print("Successfully parsed proxies.")
     except Exception as e:
-        logMessage("critical", f"Failed to parse proxies. Exception: {e}")
+        print(f"Failed to parse proxies. Exception: {e}")
         return None
     return formatted_proxy_list
 
