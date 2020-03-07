@@ -154,30 +154,30 @@ class SoleboxGen():
 
         # ---------- Creating a session ---------- #
         self.s = cloudscraper.create_scraper(browser={'browser': 'chrome', 'mobile': mobile})
-        self.s.headers.update({
-            "Accept":"*/*",
-            "Accept-Charset":"utf-8,*",
-            "Accept-Encoding":"gzip,deflate,br",
-            "Connection":"keep-alive",
-            # "Host":"www.solebox.com",
-            "Referer":random.choice(SOLEBOX_URLS),
-            "User-Agent":ua,
-            # "Via":"1.0 translate.google.com TWSFE/0.9",
-            # "X-Forwarded-For":"74.21.19.212",
-        })
-
         # self.s.headers.update({
-        #     "Upgrade-Insecure-Requests": "1",
-        #     # "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36",
-        #     "User-Agent": ua,
-        #     "Sec-Fetch-Dest": "document",
-        #     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-        #     "Sec-Fetch-Site": "none",
-        #     "Sec-Fetch-Mode": "navigate",
-        #     # "sec-fetch-user": "?1",
-        #     "Accept-Encoding": "gzip, deflate, br",
-        #     "Accept-Language": "en-GB,en-US;q=0.9,en;q=0.8,cs;q=0.7,de;q=0.6",
+        #     "Accept":"*/*",
+        #     "Accept-Charset":"utf-8,*",
+        #     "Accept-Encoding":"gzip,deflate,br",
+        #     "Connection":"keep-alive",
+        #     # "Host":"www.solebox.com",
+        #     "Referer":random.choice(SOLEBOX_URLS),
+        #     "User-Agent":ua,
+        #     # "Via":"1.0 translate.google.com TWSFE/0.9",
+        #     # "X-Forwarded-For":"74.21.19.212",
         # })
+
+        self.s.headers.update({
+            "Upgrade-Insecure-Requests": "1",
+            # "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36",
+            "User-Agent": ua,
+            "Sec-Fetch-Dest": "document",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+            "sec-fetch-site": "none",
+            "sec-fetch-mode": "navigate",
+            "sec-fetch-user": "?1",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Accept-Language": "en-GB,en-US;q=0.9,en;q=0.8,cs;q=0.7,de;q=0.6",
+        })
         self.stoken = None
 
         # ---------- Loading user input data ---------- #
