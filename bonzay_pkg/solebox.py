@@ -154,30 +154,18 @@ class SoleboxGen():
 
         # ---------- Creating a session ---------- #
         self.s = cloudscraper.create_scraper(browser={'browser': 'chrome', 'mobile': mobile})
-        # self.s.headers.update({
-        #     "Accept":"*/*",
-        #     "Accept-Charset":"utf-8,*",
-        #     "Accept-Encoding":"gzip,deflate,br",
-        #     "Connection":"keep-alive",
-        #     # "Host":"www.solebox.com",
-        #     "Referer":random.choice(SOLEBOX_URLS),
-        #     "User-Agent":ua,
-        #     # "Via":"1.0 translate.google.com TWSFE/0.9",
-        #     # "X-Forwarded-For":"74.21.19.212",
-        # })
-
         self.s.headers.update({
-            "Upgrade-Insecure-Requests": "1",
-            # "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36",
-            "User-Agent": ua,
-            "sec-fetch-dest": "document",
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-            "sec-fetch-site": "none",
-            "sec-fetch-mode": "navigate",
-            "sec-fetch-user": "?1",
-            "Accept-Encoding": "gzip, deflate, br",
-            "Accept-Language": "en-GB,en-US;q=0.9,en;q=0.8,cs;q=0.7,de;q=0.6",
+            "Accept":"*/*",
+            "Accept-Charset":"utf-8,*",
+            "Accept-Encoding":"gzip,deflate,br",
+            "Connection":"keep-alive",
+            # "Host":"www.solebox.com",
+            "Referer":random.choice(SOLEBOX_URLS),
+            "User-Agent":ua,
         })
+
+        
+        
         self.stoken = None
 
         # ---------- Loading user input data ---------- #
@@ -384,7 +372,7 @@ class SoleboxGen():
             self.last_name = get_last_name()
 
         if jig_phone_number:
-            self.phone_num = f'+1{random.randint(300,999)}{random.randint(300,999)}{random.randint(300,999)}{random.randint(0,9)}'
+            self.phone_num = f'+{random.randint(1,450)}{random.randint(300,999)}{random.randint(300,999)}{random.randint(300,999)}{random.randint(0,9)}'
 
         if jig_first_line:
             self.address_first_line = f'{2*(chr(random.randint(97,97+25)).upper() + chr(random.randint(97,97+25)).upper())} {self.address_first_line}'
@@ -392,7 +380,12 @@ class SoleboxGen():
         if self.address_second_line == '' and jig_second_line:
             self.address_second_line = f'{random.choice(linetwolist)} {random.randint(1,20)}{chr(random.randint(97,97+25)).upper()}'
 
-        self.email = f'{get_first_name()}{random.randint(1,9999999)}@{self.catchall}'
+        self.email = random.choice([
+            f"{get_first_name()}{random.randint(1,9999999)}@{self.catchall}",
+            f"{get_last_name()}{random.randint(1,9999999)}@{self.catchall}",
+            f"{get_first_name()}.{get_last_name()}{random.randint(1,9999999)}@{self.catchall}",
+            f"{get_first_name()}{get_last_name()}{random.randint(1,9999999)}@{self.catchall}",
+            ])
 
     def testWorkingProxies(self, print_lock):
         """
@@ -614,6 +607,7 @@ class SoleboxGen():
                 else:
                     message = "Shipping details updated successfully!"
                 sendSoleboxWebhook(self.webhook_url, message, self.email, self.passwd)
+            return True
 
         else:
             with print_lock:

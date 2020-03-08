@@ -37,7 +37,7 @@ https://github.com/rtunaboss/SoleboxAccountGenerator
 
 print_lock = threading.Lock()
 PROXY_LIST = None
-
+SUCCESS_COUNT = 0
 def initialize_gen():
     if not PROXY_LIST:
         logMessage("ERROR", "You did not load proxies. Put your proxies into the proxies.txt file before running.")
@@ -45,10 +45,13 @@ def initialize_gen():
     return SoleboxGen(PROXY_LIST)
 
 def SoleboxGenerateAccount():
+    global SUCCESS_COUNT
     gen = initialize_gen()
     create_status = gen.generateAccount(print_lock)
     if create_status:
-        gen.updateShippingAddress(print_lock, new_account=True)
+        s = gen.updateShippingAddress(print_lock, new_account=True)
+        if s:
+            SUCCESS_COUNT += 1
 
 def SoleboxCheckAccount(email, passwd):
     gen = initialize_gen()
@@ -107,7 +110,8 @@ def start():
                 
         for t in threads:
             t.join()
-        print(Style.BRIGHT + "\nFinished generating Solebox accounts.")
+        print("\nFinished generating Solebox accounts.")
+        print(Style.BRIGHT + f"\nGenerated {SUCCESS_COUNT}/{how_many} accounts!")
 
     # ---------------------------------------- [2] - Solebox Valid Account Checker ---------------------------------------- #
     elif option == 2:
