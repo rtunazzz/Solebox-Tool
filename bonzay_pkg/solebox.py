@@ -11,9 +11,9 @@ import time
 import cloudscraper
 
 try:
-    from bonzay_pkg.reusable import getTime, saveIntoFile, appendIntoFile, readFile, isProxyGood, loadProxies, loadUseragents
+    from bonzay_pkg.reusable import getTime, saveIntoFile, appendToFile, readFile, isProxyGood, loadProxies, loadUseragents
 except:
-    from reusable import getTime, saveIntoFile, appendIntoFile, readFile, isProxyGood, loadProxies, loadUseragents
+    from reusable import getTime, saveIntoFile, appendToFile, readFile, isProxyGood, loadProxies, loadUseragents
 
 init(autoreset=True)
 
@@ -154,6 +154,7 @@ class SoleboxGen():
 
         # ---------- Creating a session ---------- #
         self.s = cloudscraper.create_scraper(browser={'browser': 'chrome', 'mobile': mobile})
+        self.s.headers.clear()
         self.s.headers.update({
             "Accept":"*/*",
             "Accept-Charset":"utf-8,*",
@@ -163,7 +164,6 @@ class SoleboxGen():
             "Referer":random.choice(SOLEBOX_URLS),
             "User-Agent":ua,
         })
-
         
         
         self.stoken = None
@@ -400,7 +400,7 @@ class SoleboxGen():
             with print_lock:
                 logMessage("STATUS", "Checking proxy...")
             try:
-                self.s.get("https://www.solebox.com/en/home/")
+                self.s.get("https://www.solebox.com/en/home/", timeout=5)
             except:
                 continue
             try:
@@ -434,7 +434,7 @@ class SoleboxGen():
             test_count += 1
         return False
 
-    def generateAccount(self, print_lock: threading.Lock):
+    def generateAccount(self, print_lock: threading.Lock, no_shipping=False):
         """
         Returns:
             - True (on success)
@@ -481,6 +481,8 @@ class SoleboxGen():
         if register_post.status_code in (302, 200):
             with print_lock:
                 logMessage("SUCCESS", f"Successfully created an account for {self.email}")
+            if no_shipping:
+                appendToFile("./accounts/solebox-no-shipping.txt", f"{self.email}:{self.passwd}\n")
         else:
             with print_lock:
                 logMessage("ERROR", f"ERROR {register_post.status_code} occurred: Unable to create an account.")
@@ -596,11 +598,13 @@ class SoleboxGen():
         if "captcha.js" in update_shipping_post.text:
             with print_lock:
                 logMessage("ERROR", "Unable to edit shipping details - encountered Cloudfare. (captcha)")
+            if new_account:
+                appendToFile("./accounts/solebox-no-shipping.txt", f"{self.email}:{self.passwd}\n")
             return False
         if update_shipping_post.status_code in (302,200):
             with print_lock:
                 logMessage("SUCCESS", f"Successfully updated account's shipping details for {self.email}.")
-            appendIntoFile("./accounts/solebox-valid.txt", f"{self.email}:{self.passwd}\n")
+            appendToFile("./accounts/solebox-valid.txt", f"{self.email}:{self.passwd}\n")
             if self.webhook_url.strip() != '':
                 if new_account:
                     message = "Account successfully created!"
@@ -613,7 +617,7 @@ class SoleboxGen():
             with print_lock:
                 logMessage("ERROR", f"Error {update_shipping_post.status_code} occurred: Unable to edit shipping details.")
             if new_account:
-                appendIntoFile("./accounts/solebox-no-shipping.txt", f"{self.email}:{self.passwd}\n")
+                appendToFile("./accounts/solebox-no-shipping.txt", f"{self.email}:{self.passwd}\n")
 
     def checkAccount(self, print_lock: threading.Lock, email, passwd):
         # ---------- Setup ---------- #

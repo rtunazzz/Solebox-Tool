@@ -129,7 +129,7 @@ def saveIntoFile(filename: str, data):
     else:
         print(f"[ERROR - saveIntoFile] - Error writing into {filename}.")
 
-def appendIntoFile(filename: str, data):
+def appendToFile(filename: str, data):
     """Appends data into a file"""
     filetype = filename.split('.')[-1]
 
