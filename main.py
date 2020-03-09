@@ -86,7 +86,7 @@ def start():
         option = input()
         try:
             option = int(option)
-            if type(option) is int and option in range(1,4):
+            if type(option) is int and option in range(1,5):
                 break
             else:
                 print(f"{option} is not a valid option. Try again with a number from 1 to 4:")
