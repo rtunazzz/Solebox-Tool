@@ -76,7 +76,7 @@ def start():
     print(Style.BRIGHT + Fore.CYAN + "Welcome to BONZAY Tools™!")
     print(Fore.LIGHTYELLOW_EX + "Please select an option:")
     print(Fore.LIGHTYELLOW_EX + "[1] - Generate Solebox accounts (with a shipping address)")
-    print(Fore.LIGHTYELLOW_EX + "[2] - Generate Solebox accounts (with " + Style.BRIGHT + "NO shipping address" + Style.NORMAL + ")")
+    print(Fore.LIGHTYELLOW_EX + "[2] - Generate Solebox accounts (with " + Style.BRIGHT + Fore.LIGHTYELLOW_EX + "NO shipping address" + Style.NORMAL + Fore.LIGHTYELLOW_EX + ")")
     print(Fore.LIGHTYELLOW_EX + "[3] - Check Solebox accounts' shipping addresses")
     print(Fore.LIGHTYELLOW_EX + "[4] - Check valid Solebox accounts")
     print("------")

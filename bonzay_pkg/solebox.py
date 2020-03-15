@@ -153,18 +153,38 @@ class SoleboxGen():
         ]
 
         # ---------- Creating a session ---------- #
-        self.s = cloudscraper.create_scraper(browser={'browser': 'chrome', 'mobile': mobile})
-        self.s.headers.clear()
-        self.s.headers.update({
-            "Accept":"*/*",
-            "Accept-Charset":"utf-8,*",
-            "Accept-Encoding":"gzip,deflate,br",
-            "Connection":"keep-alive",
-            # "Host":"www.solebox.com",
-            "Referer":random.choice(SOLEBOX_URLS),
-            "User-Agent":ua,
-        })
+        self.s = cloudscraper.create_scraper(
+            browser={'browser': 'chrome', 'mobile': mobile},
+            # recaptcha={
+            #     'provider': '2captcha',
+            #     'api_key': 'your_2captcha_api_key'
+            # }
+            )
         
+        # self.s.headers.clear()
+        # self.s.headers.update({
+        #     "Accept":"*/*",
+        #     "Accept-Charset":"utf-8,*",
+        #     "Accept-Encoding":"gzip,deflate,br",
+        #     "Connection":"keep-alive",
+        #     # "Host":"www.solebox.com",
+        #     "Referer":random.choice(SOLEBOX_URLS),
+        #     "User-Agent":ua,
+        # })
+
+        self.s.headers.update({
+                "cache-control".title():"max-age=0",
+                "upgrade-insecure-requests".title():"1",
+                "content-type".title():"application/x-www-form-urlencoded",
+                "user-agent".title():ua,
+                "sec-fetch-dest".title():"document",
+                "accept".title():"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+                "sec-fetch-site".title():"same-origin",
+                "sec-fetch-mode".title():"navigate",
+                "sec-fetch-user".title():"?1",
+                "accept-encoding".title():"gzip, deflate, br",
+                "accept-language".title():"en-GB,en-US;q=0.9,en;q=0.8,cs;q=0.7,de;q=0.6",
+            })
         
         self.stoken = None
 
@@ -401,7 +421,9 @@ class SoleboxGen():
                 logMessage("STATUS", "Checking proxy...")
             try:
                 self.s.get("https://www.solebox.com/en/home/", timeout=5)
-            except:
+            except Exception as e:
+                logMessage("ERROR", "Proxy not working, switching proxy...")
+                print(e)
                 continue
             try:
                 if self.useragent_type == "mobile":
