@@ -4,13 +4,14 @@
 
 Here is a [demo](https://i.imgur.com/eEcF5R0.mp4)
 
+## Update March 13th 2020
+
+The gen is currently not working because of Solebox changing their security. Working on an update! Stay tuned to my social media (ideally [Twitter](https://twitter.com/rtunazzz)) if you want to know when an update is out.
+
 **Use of proxies is NECESSARY.**
 
 DM me on Discord rtuna#4321 if you need any help setting this up. **BEFORE DMing ME, READ THROUGH THIS FILE**
 
-## Update Feb/8/2020
-
-I completely rewrote the whole generator, it can now also **check if accounts are valid** (Accounts to check are loaded from `solebox-valid.txt`) and **check if an account has a shipping address** (accounts also get loaded from `solebox-valid.txt`)
 
 ## Before running
 
