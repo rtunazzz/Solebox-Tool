@@ -28,7 +28,7 @@ MMMMMM"___ "_._   MMM"_."" _ """"""
    (_)                    (_)''')
 print(Fore.YELLOW + "   BONZAY Tools™ · Solebox tool")
 print(r'''-----
-https://github.com/rtunaboss/SoleboxAccountGenerator
+https://github.com/rtunazzz/SoleboxAccountGenerator
 • developed by: rtuna#4321 | @rtunazzz
 • for personal use only
 -----''')
