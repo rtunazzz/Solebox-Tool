@@ -11,22 +11,40 @@ import time
 import cloudscraper
 
 try:
-    from bonzay_pkg.reusable import getTime, saveIntoFile, appendToFile, readFile, isProxyGood, loadProxies, loadUseragents
+    from bonzay_pkg.reusable import (
+        getTime,
+        saveIntoFile,
+        appendToFile,
+        readFile,
+        isProxyGood,
+        loadProxies,
+        loadUseragents,
+    )
 except:
-    from reusable import getTime, saveIntoFile, appendToFile, readFile, isProxyGood, loadProxies, loadUseragents
+    from reusable import (
+        getTime,
+        saveIntoFile,
+        appendToFile,
+        readFile,
+        isProxyGood,
+        loadProxies,
+        loadUseragents,
+    )
 
 init(autoreset=True)
 
 # -------------------------------------------------------------------------------- SOLEBOX SPECIFIC FUNCTIONS -------------------------------------------------------------------------------- #
 
+
 def logMessage(status: str, message: str):
-    status=f"[{status}]"
+    status = f"[{status}]"
     if "success" in status.lower():
         print(Fore.GREEN + f"{getTime():<25}" + f"{status.upper():<10} -> {message}")
     elif "error" in status.lower():
         print(Fore.RED + f"{getTime():<25}" + f"{status.upper():<10} -> {message}")
     else:
         print(f"{getTime():<25}" + f"{status.upper():<10} -> {message}")
+
 
 def scrapeCountryIds(headers: dict):
     """
@@ -40,21 +58,23 @@ def scrapeCountryIds(headers: dict):
     country_data = {}
     logMessage("STATUS", "Scraping country IDs...")
     s = requests.Session()
-    r = s.get(url='https://www.solebox.com/', headers=headers)
-    soup = bs(r.text, 'lxml')
-    countr_selection = soup.find('select', {'id':'invCountrySelect'})
+    r = s.get(url="https://www.solebox.com/", headers=headers)
+    soup = bs(r.text, "lxml")
+    countr_selection = soup.find("select", {"id": "invCountrySelect"})
+
     country_values = countr_selection.contents
     for val in country_values:
         # scraped info is separate by new lines which we want to skip
-        if val == '\n':
+        if val == "\n":
             continue
         else:
-            country_id = val['value']
+            country_id = val["value"]
             country_name = val.text
             country_data[country_name] = country_id
 
     saveIntoFile("countrydata.json", country_data)
     logMessage("SUCCESS", "Country IDs scraped!")
+
 
 def getCountryId(country_name: str):
     """
@@ -68,33 +88,39 @@ def getCountryId(country_name: str):
         - None                  - if not found
     """
     if os.stat("countrydata.json").st_size == 0:
-        scrapeCountryIds({
-                'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-                'accept-encoding': 'gzip, deflate, br',
-                'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8,cs;q=0.7,de;q=0.6',
+        scrapeCountryIds(
+            {
+                "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+                "accept-encoding": "gzip, deflate, br",
+                "accept-language": "en-GB,en-US;q=0.9,en;q=0.8,cs;q=0.7,de;q=0.6",
                 # 'cache-control': 'max-age=0',
                 # 'sec-fetch-mode': 'navigate',
                 # 'sec-fetch-site': 'none',
-                'referer' : "https://www.google.com/",
+                "referer": "https://www.google.com/",
                 # 'sec-fetch-user': '?1',
                 # 'origin': 'https://www.solebox.com',
                 # 'upgrade-insecure-requests': '1',
                 # 'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36',
-            })
+            }
+        )
     country_data = readFile("countrydata.json")
     try:
         country_id = country_data[country_name]
         return country_id
     except:
-        logMessage("ERROR", "Error getting country_id, check your country name in userdata.json!")
+        logMessage(
+            "ERROR",
+            "Error getting country_id, check your country name in userdata.json!",
+        )
         return None
 
+
 def parseStoken(req, print_lock):
-    soup = bs(req.text, 'lxml')
+    soup = bs(req.text, "lxml")
     with print_lock:
         logMessage("STATUS", "Parsing stoken...")
     try:
-        stoken = soup.find('input', {'name': 'stoken'})['value']
+        stoken = soup.find("input", {"name": "stoken"})["value"]
         with print_lock:
             logMessage("SUCCESS", f"Successfully parsed stoken: {stoken}!")
     except:
@@ -105,25 +131,33 @@ def parseStoken(req, print_lock):
 
 
 def sendSoleboxWebhook(webhook_url, title, email, passwd):
-    hook = DiscordWebhook(url=webhook_url, username="BONZAY Tools", avatar_url="https://avatars1.githubusercontent.com/u/38296319?s=460&v=4")
-    color=15957463
+    hook = DiscordWebhook(
+        url=webhook_url,
+        username="BONZAY Tools",
+        avatar_url="https://avatars1.githubusercontent.com/u/38296319?s=460&v=4",
+    )
+    color = 15957463
 
     embed = DiscordEmbed(
-        title = title,
+        title=title,
         color=color,
-        url="https://github.com/rtunaboss/SoleboxAccountGenerator",
+        url="https://github.com/rtunazzz/SoleboxAccountGenerator",
     )
     embed.set_timestamp()
-    embed.set_footer(text="BONZAY Tools ",icon_url="https://cdn.discordapp.com/avatars/682885901843562545/be7c712b6576fb811c7a6c2cc263aa3c.webp")
+    embed.set_footer(
+        text="BONZAY Tools ",
+        icon_url="https://cdn.discordapp.com/avatars/682885901843562545/be7c712b6576fb811c7a6c2cc263aa3c.webp",
+    )
     embed.add_embed_field(name="Username", value=f"{email}")
     embed.add_embed_field(name="Password", value=f"||{passwd}||", inline=False)
     hook.add_embed(embed)
     hook.execute()
 
+
 # -------------------------------------------------------------------------------- GEN CLASS -------------------------------------------------------------------------------- #
 
-class SoleboxGen():
 
+class SoleboxGen:
     def __init__(self, proxy_list):
 
         # ---------- General ---------- #
@@ -154,13 +188,13 @@ class SoleboxGen():
 
         # ---------- Creating a session ---------- #
         self.s = cloudscraper.create_scraper(
-            browser={'browser': 'chrome', 'mobile': mobile},
+            browser={"browser": "chrome", "mobile": mobile},
             # recaptcha={
             #     'provider': '2captcha',
             #     'api_key': 'your_2captcha_api_key'
             # }
-            )
-        
+        )
+
         # self.s.headers.clear()
         # self.s.headers.update({
         #     "Accept":"*/*",
@@ -172,20 +206,22 @@ class SoleboxGen():
         #     "User-Agent":ua,
         # })
 
-        self.s.headers.update({
-                "cache-control".title():"max-age=0",
-                "upgrade-insecure-requests".title():"1",
-                "content-type".title():"application/x-www-form-urlencoded",
-                "user-agent".title():ua,
-                "sec-fetch-dest".title():"document",
-                "accept".title():"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-                "sec-fetch-site".title():"same-origin",
-                "sec-fetch-mode".title():"navigate",
-                "sec-fetch-user".title():"?1",
-                "accept-encoding".title():"gzip, deflate, br",
-                "accept-language".title():"en-GB,en-US;q=0.9,en;q=0.8,cs;q=0.7,de;q=0.6",
-            })
-        
+        self.s.headers.update(
+            {
+                "cache-control".title(): "max-age=0",
+                "upgrade-insecure-requests".title(): "1",
+                "content-type".title(): "application/x-www-form-urlencoded",
+                "user-agent".title(): ua,
+                "sec-fetch-dest".title(): "document",
+                "accept".title(): "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+                "sec-fetch-site".title(): "same-origin",
+                "sec-fetch-mode".title(): "navigate",
+                "sec-fetch-user".title(): "?1",
+                "accept-encoding".title(): "gzip, deflate, br",
+                "accept-language".title(): "en-GB,en-US;q=0.9,en;q=0.8,cs;q=0.7,de;q=0.6",
+            }
+        )
+
         self.stoken = None
 
         # ---------- Loading user input data ---------- #
@@ -199,10 +235,10 @@ class SoleboxGen():
 
         self.catchall = userdata["catchall"]
 
-        if self.catchall.strip() == '':
+        if self.catchall.strip() == "":
             self.catchall = "gmail.com"
-        if '@' in self.catchall:
-            self.catchall = self.catchall.replace('@', '')
+        if "@" in self.catchall:
+            self.catchall = self.catchall.replace("@", "")
 
         self.passwd = userdata["passwd"]
 
@@ -227,38 +263,38 @@ class SoleboxGen():
     def buildBillingPayload(self, stoken: str):
         if self.useragent_type == "mobile":
             register_payload = {
-                'stoken': stoken,
-                'lang': 1,
-                'actcontrol': 'register',
-                'fnc': 'registeruser',
-                'cl': 'register',
-                'lgn_cook': 0,
-                'reloadaddress': '',
-                'option': 3,
-                'lgn_usr': self.email,
-                'lgn_pwd': self.passwd,
-                'lgn_pwd2': self.passwd,
-                'blnewssubscribed': 0,
-                'invadr[oxuser__oxsal]': random.choice(['MR', 'MRS']),
-                'invadr[oxuser__oxfname]': self.first_name,
-                'invadr[oxuser__oxlname]': self.last_name,
-                'invadr[oxuser__oxcompany]': '',
-                'invadr[oxuser__oxaddinfo]': self.address_second_line,
-                'invadr[oxuser__oxstreet]': self.address_first_line,
-                'invadr[oxuser__oxstreetnr]': self.house_number,
-                'invadr[oxuser__oxzip]': self.zipcode,
-                'invadr[oxuser__oxcity]': self.city,
-                'invadr[oxuser__oxustid]': '',
-                'invadr[oxuser__oxcountryid]': self.country_id,
-                'invadr[oxuser__oxstateid]': self.us_state,
-                'invadr[oxuser__oxfon]': self.phone_num,
-                'invadr[oxuser__oxfax]': '',
-                'invadr[oxuser__oxmobfon]': '',
-                'invadr[oxuser__oxprivfon]': '',
-                "invadr[oxuser__oxbirthdate][day]": random.randint(1,27),
-                "invadr[oxuser__oxbirthdate][month]": random.randint(1,12),
-                "invadr[oxuser__oxbirthdate][year]": random.randint(1950,2000),
-                'save': '',
+                "stoken": stoken,
+                "lang": 1,
+                "actcontrol": "register",
+                "fnc": "registeruser",
+                "cl": "register",
+                "lgn_cook": 0,
+                "reloadaddress": "",
+                "option": 3,
+                "lgn_usr": self.email,
+                "lgn_pwd": self.passwd,
+                "lgn_pwd2": self.passwd,
+                "blnewssubscribed": 0,
+                "invadr[oxuser__oxsal]": random.choice(["MR", "MRS"]),
+                "invadr[oxuser__oxfname]": self.first_name,
+                "invadr[oxuser__oxlname]": self.last_name,
+                "invadr[oxuser__oxcompany]": "",
+                "invadr[oxuser__oxaddinfo]": self.address_second_line,
+                "invadr[oxuser__oxstreet]": self.address_first_line,
+                "invadr[oxuser__oxstreetnr]": self.house_number,
+                "invadr[oxuser__oxzip]": self.zipcode,
+                "invadr[oxuser__oxcity]": self.city,
+                "invadr[oxuser__oxustid]": "",
+                "invadr[oxuser__oxcountryid]": self.country_id,
+                "invadr[oxuser__oxstateid]": self.us_state,
+                "invadr[oxuser__oxfon]": self.phone_num,
+                "invadr[oxuser__oxfax]": "",
+                "invadr[oxuser__oxmobfon]": "",
+                "invadr[oxuser__oxprivfon]": "",
+                "invadr[oxuser__oxbirthdate][day]": random.randint(1, 27),
+                "invadr[oxuser__oxbirthdate][month]": random.randint(1, 12),
+                "invadr[oxuser__oxbirthdate][year]": random.randint(1950, 2000),
+                "save": "",
             }
         else:
             register_payload = {
@@ -271,7 +307,7 @@ class SoleboxGen():
                 "fnc": "createuser",
                 "reloadaddress": "",
                 "blshowshipaddress": 1,
-                "invadr[oxuser__oxsal]": random.choice(['MR', 'MRS']),
+                "invadr[oxuser__oxsal]": random.choice(["MR", "MRS"]),
                 "invadr[oxuser__oxfname]": self.first_name,
                 "invadr[oxuser__oxlname]": self.last_name,
                 "invadr[oxuser__oxstreet]": self.address_first_line,
@@ -281,9 +317,9 @@ class SoleboxGen():
                 "invadr[oxuser__oxcity]": self.city,
                 "invadr[oxuser__oxcountryid]": self.country_id,
                 "invadr[oxuser__oxstateid]": self.us_state,
-                "invadr[oxuser__oxbirthdate][day]": random.randint(1,27),
-                "invadr[oxuser__oxbirthdate][month]": random.randint(1,12),
-                "invadr[oxuser__oxbirthdate][year]": random.randint(1950,2000),
+                "invadr[oxuser__oxbirthdate][day]": random.randint(1, 27),
+                "invadr[oxuser__oxbirthdate][month]": random.randint(1, 12),
+                "invadr[oxuser__oxbirthdate][year]": random.randint(1950, 2000),
                 "invadr[oxuser__oxfon]": self.phone_num,
                 "lgn_usr": self.email,
                 "lgn_pwd": self.passwd,
@@ -316,9 +352,9 @@ class SoleboxGen():
                 "invadr[oxuser__oxcity]": self.city,
                 "invadr[oxuser__oxcountryid]": self.country_id,
                 "invadr[oxuser__oxstateid]": self.us_state,
-                "invadr[oxuser__oxbirthdate][day]": random.randint(1,27),
-                "invadr[oxuser__oxbirthdate][month]": random.randint(1,12),
-                "invadr[oxuser__oxbirthdate][year]": random.randint(1950,2000),
+                "invadr[oxuser__oxbirthdate][day]": random.randint(1, 27),
+                "invadr[oxuser__oxbirthdate][month]": random.randint(1, 12),
+                "invadr[oxuser__oxbirthdate][year]": random.randint(1950, 2000),
                 "invadr[oxuser__oxfon]": self.phone_num,
                 "changeClass": "account_user",
                 "oxaddressid": -1,
@@ -326,7 +362,9 @@ class SoleboxGen():
                 "deladr[oxaddress__oxfname]": self.first_name,
                 "deladr[oxaddress__oxlname]": self.last_name,
                 "deladr[oxaddress__oxcompany]": "",
-                "deladr[oxaddress__oxstreet]": self.address_first_line + ' ' + self.house_number,
+                "deladr[oxaddress__oxstreet]": self.address_first_line
+                + " "
+                + self.house_number,
                 "deladr[oxaddress__oxstreetnr]": self.address_second_line,
                 "deladr[oxaddress__oxzip]": self.zipcode,
                 "deladr[oxaddress__oxcity]": self.city,
@@ -354,9 +392,9 @@ class SoleboxGen():
                 "invadr[oxuser__oxcity]": self.city,
                 "invadr[oxuser__oxcountryid]": self.country_id,
                 "invadr[oxuser__oxstateid]": self.us_state,
-                "invadr[oxuser__oxbirthdate][day]": random.randint(1,27),
-                "invadr[oxuser__oxbirthdate][month]": random.randint(1,12),
-                "invadr[oxuser__oxbirthdate][year]": random.randint(1950,2000),
+                "invadr[oxuser__oxbirthdate][day]": random.randint(1, 27),
+                "invadr[oxuser__oxbirthdate][month]": random.randint(1, 12),
+                "invadr[oxuser__oxbirthdate][year]": random.randint(1950, 2000),
                 "invadr[oxuser__oxfon]": self.phone_num,
                 "changeClass": "account_user",
                 "oxaddressid": -1,
@@ -372,13 +410,23 @@ class SoleboxGen():
                 "deladr[oxaddress__oxcountryid]": self.country_id,
                 "deladr[oxaddress__oxstateid]": self.us_state,
                 "deladr[oxaddress__oxfon]": self.phone_num,
-                "userform" : "",
+                "userform": "",
             }
 
     def jigInfo(self):
 
-        linetwolist =['apt', 'apartment', 'dorm', 'suite', 'unit', 'house', 'unt', 'room', 'floor']
-        
+        linetwolist = [
+            "apt",
+            "apartment",
+            "dorm",
+            "suite",
+            "unit",
+            "house",
+            "unt",
+            "room",
+            "floor",
+        ]
+
         jig_first_name = self.settings["jig_first_name"]
         jig_last_name = self.settings["jig_last_name"]
 
@@ -392,20 +440,22 @@ class SoleboxGen():
             self.last_name = get_last_name()
 
         if jig_phone_number:
-            self.phone_num = f'+{random.randint(1,450)}{random.randint(300,999)}{random.randint(300,999)}{random.randint(300,999)}{random.randint(0,9)}'
+            self.phone_num = f"+{random.randint(1,450)}{random.randint(300,999)}{random.randint(300,999)}{random.randint(300,999)}{random.randint(0,9)}"
 
         if jig_first_line:
-            self.address_first_line = f'{2*(chr(random.randint(97,97+25)).upper() + chr(random.randint(97,97+25)).upper())} {self.address_first_line}'
+            self.address_first_line = f"{2*(chr(random.randint(97,97+25)).upper() + chr(random.randint(97,97+25)).upper())} {self.address_first_line}"
 
-        if self.address_second_line == '' and jig_second_line:
-            self.address_second_line = f'{random.choice(linetwolist)} {random.randint(1,20)}{chr(random.randint(97,97+25)).upper()}'
+        if self.address_second_line == "" and jig_second_line:
+            self.address_second_line = f"{random.choice(linetwolist)} {random.randint(1,20)}{chr(random.randint(97,97+25)).upper()}"
 
-        self.email = random.choice([
-            f"{get_first_name()}{random.randint(1,9999999)}@{self.catchall}",
-            f"{get_last_name()}{random.randint(1,9999999)}@{self.catchall}",
-            f"{get_first_name()}.{get_last_name()}{random.randint(1,9999999)}@{self.catchall}",
-            f"{get_first_name()}{get_last_name()}{random.randint(1,9999999)}@{self.catchall}",
-            ])
+        self.email = random.choice(
+            [
+                f"{get_first_name()}{random.randint(1,9999999)}@{self.catchall}",
+                f"{get_last_name()}{random.randint(1,9999999)}@{self.catchall}",
+                f"{get_first_name()}.{get_last_name()}{random.randint(1,9999999)}@{self.catchall}",
+                f"{get_first_name()}{get_last_name()}{random.randint(1,9999999)}@{self.catchall}",
+            ]
+        )
 
     def testWorkingProxies(self, print_lock):
         """
@@ -444,14 +494,19 @@ class SoleboxGen():
                     logMessage("ERROR", "Website is down...")
             elif "captcha.js" in test.text:
                 with print_lock:
-                    logMessage("ERROR", "Encountered CloudFare (captcha), rotating proxy...")
+                    logMessage(
+                        "ERROR", "Encountered CloudFare (captcha), rotating proxy..."
+                    )
             else:
                 with print_lock:
                     logMessage("ERROR", "Proxy banned, rotating proxy...")
-            time.sleep(random.randint(1,2))
+            time.sleep(random.randint(1, 2))
             if test_count >= (len(self.proxy_list) - 10):
                 with print_lock:
-                    logMessage("CRITICAL", "Retry limit exceeded. Load more proxies or generate new ones.")
+                    logMessage(
+                        "CRITICAL",
+                        "Retry limit exceeded. Load more proxies or generate new ones.",
+                    )
                 return False
             test_count += 1
         return False
@@ -462,12 +517,12 @@ class SoleboxGen():
             - True (on success)
             - False (on failure)
         """
-        
+
         # ---------- Proxy testing ---------- #
         proxy_status = self.testWorkingProxies(print_lock)
         if not proxy_status:
             return False
-        
+
         with print_lock:
             logMessage("STATUS", f"Generating account for {self.email}")
 
@@ -481,38 +536,60 @@ class SoleboxGen():
                 parseStoken(r, print_lock)
             except:
                 with print_lock:
-                    logMessage("ERROR", "Unable to edit shipping details. Try again later or use different proxies.")
+                    logMessage(
+                        "ERROR",
+                        "Unable to edit shipping details. Try again later or use different proxies.",
+                    )
                 return False
 
         # ---------------------------------------- Creating an account ---------------------------------------- #
         with print_lock:
-            logMessage("STATUS", f"Trying to create an account for {self.email}, using {self.useragent_type} mode.")
+            logMessage(
+                "STATUS",
+                f"Trying to create an account for {self.email}, using {self.useragent_type} mode.",
+            )
         register_payload = self.buildBillingPayload(self.stoken)
-        time.sleep(random.randint(1,4))
+        time.sleep(random.randint(1, 4))
         # ---------- Posting to create an account ---------- #
 
-        register_post = self.s.post(url='https://www.solebox.com/index.php?lang=1&', data=register_payload)
+        register_post = self.s.post(
+            url="https://www.solebox.com/index.php?lang=1&", data=register_payload
+        )
         if "Not possible to register" in register_post.text:
             with print_lock:
-                logMessage("ERROR", f"Unable to create an account. Solebox returned:\n\'Not possible to register {self.email}. Maybe you have already registered?\'")
+                logMessage(
+                    "ERROR",
+                    f"Unable to create an account. Solebox returned:\n'Not possible to register {self.email}. Maybe you have already registered?'",
+                )
             return False
         if "captcha.js" in register_post.text:
             with print_lock:
-                logMessage("ERROR", "Unable to generate account - encountered Cloudfare. (captcha)")
+                logMessage(
+                    "ERROR",
+                    "Unable to generate account - encountered Cloudfare. (captcha)",
+                )
             return False
         if register_post.status_code in (302, 200):
             with print_lock:
-                logMessage("SUCCESS", f"Successfully created an account for {self.email}")
+                logMessage(
+                    "SUCCESS", f"Successfully created an account for {self.email}"
+                )
             if no_shipping:
-                appendToFile("./accounts/solebox-no-shipping.txt", f"{self.email}:{self.passwd}\n")
+                appendToFile(
+                    "./accounts/solebox-no-shipping.txt",
+                    f"{self.email}:{self.passwd}\n",
+                )
         else:
             with print_lock:
-                logMessage("ERROR", f"ERROR {register_post.status_code} occurred: Unable to create an account.")
+                logMessage(
+                    "ERROR",
+                    f"ERROR {register_post.status_code} occurred: Unable to create an account.",
+                )
             return False
         return True
 
         # ---------------------------------------- Updating an account ---------------------------------------- #
-        
+
     def login(self, print_lock: threading.Lock):
         """
 
@@ -531,7 +608,7 @@ class SoleboxGen():
             proxy_status = self.testWorkingProxies(print_lock)
             if not proxy_status:
                 return False
-        
+
         if self.useragent_type == "mobile":
             login_payload = {
                 "stoken": self.stoken,
@@ -540,8 +617,8 @@ class SoleboxGen():
                 "actcontrol": "account",
                 "fnc": "login_noredirect",
                 "cl": "account",
-                "tpl": '',
-                "oxloadid": '',
+                "tpl": "",
+                "oxloadid": "",
                 "lgn_usr": "self.email",
                 "lgn_pwd": "self.passwd",
                 "lgn_cook": 1,
@@ -563,7 +640,10 @@ class SoleboxGen():
             with print_lock:
                 logMessage("ERROR", f"Failed to log in as {self.email}.")
             return False
-        if p.status_code in (302, 200) and "Your solebox Dashboard".lower() in p.text.lower():
+        if (
+            p.status_code in (302, 200)
+            and "Your solebox Dashboard".lower() in p.text.lower()
+        ):
             with print_lock:
                 logMessage("SUCCESS", f"Logged in successfully as {self.email}.")
                 return True
@@ -573,10 +653,19 @@ class SoleboxGen():
                 return False
         else:
             with print_lock:
-                logMessage("ERROR", f"Failed to log in as {self.email}. Status code {p.status_code}")
+                logMessage(
+                    "ERROR",
+                    f"Failed to log in as {self.email}. Status code {p.status_code}",
+                )
                 return None
 
-    def updateShippingAddress(self, print_lock: threading.Lock, new_account: bool, email: str = None, passwd: str = None):
+    def updateShippingAddress(
+        self,
+        print_lock: threading.Lock,
+        new_account: bool,
+        email: str = None,
+        passwd: str = None,
+    ):
         # ---------------------------------------- This part executes only if the account isn't new ---------------------------------------- #
         if not new_account:
             # ---------- Setup ---------- #
@@ -589,7 +678,7 @@ class SoleboxGen():
             proxy_status = self.testWorkingProxies(print_lock)
             if not proxy_status:
                 return False
-            
+
             # ---------- Logging in ---------- #
             login_status = self.login(print_lock)
             if login_status == False:
@@ -598,36 +687,53 @@ class SoleboxGen():
         # ---------------------------------------- Updating the shipping address ---------------------------------------- #
         with print_lock:
             logMessage("STATUS", f"Updating shipping address for {self.email}...")
-        
+
         # ---------- Parsing stoken (if it's not obtained from proxy testing) ---------- #
         if self.stoken is None:
             try:
-                r = self.s.get('https://www.solebox.com/en/open-account/')
+                r = self.s.get("https://www.solebox.com/en/open-account/")
                 parseStoken(r, print_lock)
             except:
                 with print_lock:
-                    logMessage("ERROR", "Unable to edit shipping details. Try again later or use different proxies.")
+                    logMessage(
+                        "ERROR",
+                        "Unable to edit shipping details. Try again later or use different proxies.",
+                    )
                 return False
-        
+
         # headers_cpy["referer"] = random.choice(["https://www.solebox.com/en/my-address/", "https://www.solebox.com/meine-adressen/"])
         # headers_cpy["referer"] = "https://www.solebox.com/en/my-address/"
 
         update_shipping_payload = self.buildShippingPayload(self.stoken)
-        time.sleep(random.randint(1,4))
-        update_shipping_post = self.s.post(url='https://www.solebox.com/index.php?lang=1&', data=update_shipping_payload)
+        time.sleep(random.randint(1, 4))
+        update_shipping_post = self.s.post(
+            url="https://www.solebox.com/index.php?lang=1&",
+            data=update_shipping_payload,
+        )
         # update_shipping_post = self.s.post(url='https://www.solebox.com/index.php?lang=1&', headers=headers_cpy, data=update_shipping_payload)
 
         if "captcha.js" in update_shipping_post.text:
             with print_lock:
-                logMessage("ERROR", "Unable to edit shipping details - encountered Cloudfare. (captcha)")
+                logMessage(
+                    "ERROR",
+                    "Unable to edit shipping details - encountered Cloudfare. (captcha)",
+                )
             if new_account:
-                appendToFile("./accounts/solebox-no-shipping.txt", f"{self.email}:{self.passwd}\n")
+                appendToFile(
+                    "./accounts/solebox-no-shipping.txt",
+                    f"{self.email}:{self.passwd}\n",
+                )
             return False
-        if update_shipping_post.status_code in (302,200):
+        if update_shipping_post.status_code in (302, 200):
             with print_lock:
-                logMessage("SUCCESS", f"Successfully updated account's shipping details for {self.email}.")
-            appendToFile("./accounts/solebox-valid.txt", f"{self.email}:{self.passwd}\n")
-            if self.webhook_url.strip() != '':
+                logMessage(
+                    "SUCCESS",
+                    f"Successfully updated account's shipping details for {self.email}.",
+                )
+            appendToFile(
+                "./accounts/solebox-valid.txt", f"{self.email}:{self.passwd}\n"
+            )
+            if self.webhook_url.strip() != "":
                 if new_account:
                     message = "Account successfully created!"
                 else:
@@ -637,9 +743,15 @@ class SoleboxGen():
 
         else:
             with print_lock:
-                logMessage("ERROR", f"Error {update_shipping_post.status_code} occurred: Unable to edit shipping details.")
+                logMessage(
+                    "ERROR",
+                    f"Error {update_shipping_post.status_code} occurred: Unable to edit shipping details.",
+                )
             if new_account:
-                appendToFile("./accounts/solebox-no-shipping.txt", f"{self.email}:{self.passwd}\n")
+                appendToFile(
+                    "./accounts/solebox-no-shipping.txt",
+                    f"{self.email}:{self.passwd}\n",
+                )
 
     def checkAccount(self, print_lock: threading.Lock, email, passwd):
         # ---------- Setup ---------- #
@@ -657,11 +769,14 @@ class SoleboxGen():
         # ---------- Parsing stoken (if it's not obtained from proxy testing) ---------- #
         if self.stoken is None:
             try:
-                r = self.s.get('https://www.solebox.com/en/open-account/')
+                r = self.s.get("https://www.solebox.com/en/open-account/")
                 parseStoken(r, print_lock)
             except:
                 with print_lock:
-                    logMessage("ERROR", "Unable to edit shipping details. Try again later or use different proxies.")
+                    logMessage(
+                        "ERROR",
+                        "Unable to edit shipping details. Try again later or use different proxies.",
+                    )
                 return False
 
         # ---------- Logging in ---------- #
@@ -677,8 +792,10 @@ class SoleboxGen():
             with print_lock:
                 logMessage("ERROR", f"Account {self.email} is NOT working.")
             return False
-    
-    def checkShippingAddress(self, print_lock: threading.Lock, email: str = None, passwd: str = None):
+
+    def checkShippingAddress(
+        self, print_lock: threading.Lock, email: str = None, passwd: str = None
+    ):
         """
 
         Returns:
@@ -694,41 +811,55 @@ class SoleboxGen():
         address_url = "https://www.solebox.com/en/my-address/"
 
         with print_lock:
-            logMessage("STATUS", f"Checking if account {self.email} has a shipping address...")
-        
+            logMessage(
+                "STATUS", f"Checking if account {self.email} has a shipping address..."
+            )
+
         # ---------- Logging in ---------- #
         # We don't need to proxy test bcs we test the proxy while logging in
         login_status = self.login(print_lock)
         if login_status == False:
             return None
-        
+
         # ---------- Going to the shipping page ---------- #
         try:
             r = self.s.get(url=address_url)
         except:
             return False
-        if r.status_code in (302,200):
+        if r.status_code in (302, 200):
             try:
                 soup = bs(r.text, "lxml")
-                address_selection = soup.find("select", {"id":"addressId", "name": "oxaddressid"})
+                address_selection = soup.find(
+                    "select", {"id": "addressId", "name": "oxaddressid"}
+                )
                 options = address_selection.find_all("option", {"value": True})
             except:
-                logMessage("ERROR", f"Failed checking if {self.email} has a shipping address.")
+                logMessage(
+                    "ERROR", f"Failed checking if {self.email} has a shipping address."
+                )
                 return None
             # ---------- Checking if an account has a shipping address ---------- #
             if len(options) == 1:
-                logMessage("STATUS", f"Account {self.email} does NOT have a shipping address.")
+                logMessage(
+                    "STATUS", f"Account {self.email} does NOT have a shipping address."
+                )
                 return False
             else:
-                logMessage("SUCCESS", f"Account {self.email} DOES have a shipping address.")
+                logMessage(
+                    "SUCCESS", f"Account {self.email} DOES have a shipping address."
+                )
                 return True
         return False
-      
+
+
 if __name__ == "__main__":
     print_lock = threading.Lock()
     PROXY_LIST = loadProxies("./proxies.txt")
     if not PROXY_LIST:
-        logMessage("ERROR", "You did not load proxies. Put your proxies into the proxies.txt file before running.")
+        logMessage(
+            "ERROR",
+            "You did not load proxies. Put your proxies into the proxies.txt file before running.",
+        )
         exit()
     gen = SoleboxGen(PROXY_LIST)
     create_status = gen.generateAccount(print_lock)
