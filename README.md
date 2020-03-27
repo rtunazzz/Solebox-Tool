@@ -34,14 +34,14 @@ open your terminal, change your directory to this folder/repo and run:
 ## Common errors
 
 1. The script closes itself after you input the number of accounts you want to generate? YOU DIDN'T FOLLOW THE INSTURCTIONS AND YOU'RE RUNNING IT THE WRONG WAY, FOLLOW [THESE STEPS](https://github.com/rtunazzz/SoleboxAccountGenerator#before-running)
-2. `[FATAL ERROR] -> "Some dependencies are not installed."` = you don't have any of the dependencies installed. Make sure you did everything in [Before running](https://github.com/rtunazzz/SoleboxAccountGenerator#before-running). If that doesn't fix it, try running:
+2. `No module named XXX` = you don't have some of the dependencies installed. Make sure you did everything in [Before running](https://github.com/rtunazzz/SoleboxAccountGenerator#before-running). If that doesn't help, try running:
      - on Windows `py -m pip install -r requirements.txt`
      - on Mac `python3 -m pip install -r requirements.txt`
 
-3. `'pip' is not recognized as an internal or external command, operable program or batch file.` or anything related to this -> either you don't have Python in Path (`setx PATH "%PATH%;C:\Python38\Scripts"` - ONLY IF YOU'RE ON WINDOWS). If that doesn't help, try running:
+3. `'pip' is not recognized as an internal or external command, operable program or batch file.` or anything related to this -> you probably don't have Python in your PATH variable (`setx PATH "%PATH%;C:\Python38\Scripts"` - ONLY IF YOU'RE ON WINDOWS). If that doesn't help, try running:
      - on Windows `py -m pip install -r requirements.txt`
      - on Mac `python3 -m pip install -r requirements.txt`
-4. I keep getting `keyerror firstname` = you replaced something you weren't supposed to replace in the `userdata.json` file. Make sure it's filled in like this:
+4. Anything related to a `keyerror XXX` = There is something wrong with your `userdata.json` file. Make sure it's filled in like this:
 
 ```json
 {
@@ -69,8 +69,8 @@ open your terminal, change your directory to this folder/repo and run:
 }
 ```
 
-5. Script was working fine but now I just get `403` errors all the time?
-     - Regenerate proxies (make sure you try both static and rotating)
+5. Script was working fine but now I just get `Cloudfare` errors all the time?
+     - Regenerate proxies (make sure to try both static and rotating)
      - if that doesn't help, contact me. Solebox most likely changed their security and an update will be needed.
 
 ## Where do I find generated accounts?
