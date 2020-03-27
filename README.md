@@ -4,9 +4,10 @@
 
 Here is a [demo](https://i.imgur.com/eEcF5R0.mp4)
 
-## Update March 13th 2020
+## Update March 27th 2020
 
-The gen is currently not working because of Solebox changing their security. Working on an update! Stay tuned to my social media (ideally [Twitter](https://twitter.com/rtunazzz)) if you want to know when an update is out.
+The gen is back up and working, 2captcha implementation was not needed. All it takes is to gen your accounts on a day, when there is **no release** and the site isn't under heavy traffic!
+If you would like to stay up to date regarding any updates, feel free to follow me on [Twitter](https://twitter.com/rtunazzz).
 
 **Use of proxies is NECESSARY.**
 
