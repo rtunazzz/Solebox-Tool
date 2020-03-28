@@ -636,6 +636,9 @@ class SoleboxGen:
             }
         try:
             p = self.s.post(url=login_url, data=login_payload)
+            if "wrong e-mail" in p.text:
+                logMessage("ERROR", f"Failed to log in as {self.email}.")
+                return False
         except:
             with print_lock:
                 logMessage("ERROR", f"Failed to log in as {self.email}.")
