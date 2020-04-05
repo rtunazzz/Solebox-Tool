@@ -208,15 +208,16 @@ class SoleboxGen:
 
         self.s.headers.update(
             {
-                "cache-control".title(): "max-age=0",
+                # "cache-control".title(): "max-age=0",
                 "upgrade-insecure-requests".title(): "1",
-                "content-type".title(): "application/x-www-form-urlencoded",
+                "pragma".title(): "no-cache",
+                # "content-type".title(): "application/x-www-form-urlencoded",
                 "user-agent".title(): ua,
                 "sec-fetch-dest".title(): "document",
                 "accept".title(): "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-                "sec-fetch-site".title(): "same-origin",
-                "sec-fetch-mode".title(): "navigate",
-                "sec-fetch-user".title(): "?1",
+                # "sec-fetch-site".title(): "same-origin",
+                # "sec-fetch-mode".title(): "navigate",
+                # "sec-fetch-user".title(): "?1",
                 "accept-encoding".title(): "gzip, deflate, br",
                 "accept-language".title(): "en-GB,en-US;q=0.9,en;q=0.8,cs;q=0.7,de;q=0.6",
             }
@@ -228,6 +229,7 @@ class SoleboxGen:
         config = readFile("./userdata.json")
         userdata = config["profile"]
         self.settings = config["settings"]
+        self.jig_settings = config["advanced_jigging"]
 
         self.first_name = userdata["first_name"]
         self.last_name = userdata["last_name"]
@@ -434,6 +436,8 @@ class SoleboxGen:
         jig_second_line = self.settings["jig_second_line"]
         jig_phone_number = self.settings["jig_phone_number"]
 
+
+
         if jig_first_name:
             self.first_name = get_first_name()
         if jig_last_name:
@@ -447,15 +451,13 @@ class SoleboxGen:
 
         if self.address_second_line == "" and jig_second_line:
             self.address_second_line = f"{random.choice(linetwolist)} {random.randint(1,20)}{chr(random.randint(97,97+25)).upper()}"
+        try:
+            int_setting = int(self.jig_settings["max_num_of_random_numbers_behing_email"])
+            max_ints_in_email = (10**int_setting)-1
+        except:
+            max_ints_in_email = 999
 
-        self.email = random.choice(
-            [
-                f"{get_first_name()}{random.randint(1,9999999)}@{self.catchall}",
-                f"{get_last_name()}{random.randint(1,9999999)}@{self.catchall}",
-                f"{get_first_name()}.{get_last_name()}{random.randint(1,9999999)}@{self.catchall}",
-                f"{get_first_name()}{get_last_name()}{random.randint(1,9999999)}@{self.catchall}",
-            ]
-        )
+        self.email = f"{get_last_name()}{get_last_name()}{random.randint(1,max_ints_in_email)}@{self.catchall}"
 
     def testWorkingProxies(self, print_lock):
         """

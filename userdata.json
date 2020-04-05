@@ -1,7 +1,7 @@
 {
     "profile" : {
-        "first_name": "",
-        "last_name": "",
+        "first_name": "John",
+        "last_name": "Snow",
         "phone_num": "",
         "catchall": "",
         "passwd": "",
@@ -20,5 +20,8 @@
         "jig_first_line": true,
         "jig_second_line": true,
         "jig_phone_number": true
+    },
+    "advanced_jigging" : {
+        "max_num_of_random_numbers_behing_email" : 99999
     }
 }
