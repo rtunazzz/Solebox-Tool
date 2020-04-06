@@ -153,7 +153,10 @@ def sendSoleboxAccountWebhook(webhook_url, title, email, passwd):
     hook.add_embed(embed)
     hook.execute()
 
-def sendSoleboxOrderWebhook(webhook_url, order_num, date, status, product_name, product_img, tracking_url):
+
+def sendSoleboxOrderWebhook(
+    webhook_url, order_num, date, status, product_name, product_img, tracking_url
+):
     hook = DiscordWebhook(
         url=webhook_url,
         username="Solebox Tool by @rtunazzz",
@@ -166,7 +169,7 @@ def sendSoleboxOrderWebhook(webhook_url, order_num, date, status, product_name, 
         color=color,
         url="https://github.com/rtunazzz/SoleboxAccountGenerator",
     )
-    embed.set_thumbnail(url = product_img)
+    embed.set_thumbnail(url=product_img)
     embed.set_timestamp()
     embed.set_footer(
         text="@rtunazzz | rtuna#4321",
@@ -461,8 +464,6 @@ class SoleboxGen:
         jig_second_line = self.settings["jig_second_line"]
         jig_phone_number = self.settings["jig_phone_number"]
 
-
-
         if jig_first_name:
             self.first_name = get_first_name()
         if jig_last_name:
@@ -477,8 +478,10 @@ class SoleboxGen:
         if self.address_second_line == "" and jig_second_line:
             self.address_second_line = f"{random.choice(linetwolist)} {random.randint(1,20)}{chr(random.randint(97,97+25)).upper()}"
         try:
-            int_setting = int(self.jig_settings["max_num_of_random_numbers_behing_email"])
-            max_ints_in_email = (10**int_setting)-1
+            int_setting = int(
+                self.jig_settings["max_num_of_random_numbers_behing_email"]
+            )
+            max_ints_in_email = (10 ** int_setting) - 1
         except:
             max_ints_in_email = 999
 
@@ -575,12 +578,19 @@ class SoleboxGen:
                 f"Trying to create an account for {self.email}, using {self.useragent_type} mode.",
             )
         register_payload = self.buildBillingPayload(self.stoken)
-        time.sleep(random.randint(3,10))
+        time.sleep(random.randint(3, 10))
         # ---------- Posting to create an account ---------- #
+        try:
+            register_post = self.s.post(
+                url="https://www.solebox.com/index.php?lang=1&", data=register_payload
+            )
+        except:
+            logMessage(
+                "ERROR",
+                "Unable to generate account, request failed.",
+            )
+            return False
 
-        register_post = self.s.post(
-            url="https://www.solebox.com/index.php?lang=1&", data=register_payload
-        )
         if "Not possible to register" in register_post.text:
             with print_lock:
                 logMessage(
@@ -734,11 +744,18 @@ class SoleboxGen:
         # headers_cpy["referer"] = "https://www.solebox.com/en/my-address/"
 
         update_shipping_payload = self.buildShippingPayload(self.stoken)
-        time.sleep(random.randint(3,10))
-        update_shipping_post = self.s.post(
-            url="https://www.solebox.com/index.php?lang=1&",
-            data=update_shipping_payload,
-        )
+        time.sleep(random.randint(3, 10))
+        try:
+            update_shipping_post = self.s.post(
+                url="https://www.solebox.com/index.php?lang=1&",
+                data=update_shipping_payload,
+            )
+        except:
+            logMessage(
+                "ERROR",
+                "Unable to edit shipping details - request failed.",
+            )
+            return False
         # update_shipping_post = self.s.post(url='https://www.solebox.com/index.php?lang=1&', headers=headers_cpy, data=update_shipping_payload)
 
         if "captcha.js" in update_shipping_post.text:
@@ -767,7 +784,9 @@ class SoleboxGen:
                     message = "Account successfully created!"
                 else:
                     message = "Shipping details updated successfully!"
-                sendSoleboxAccountWebhook(self.webhook_url, message, self.email, self.passwd)
+                sendSoleboxAccountWebhook(
+                    self.webhook_url, message, self.email, self.passwd
+                )
             return True
 
         else:
@@ -879,9 +898,9 @@ class SoleboxGen:
                 )
                 return True
         return False
-    
+
     def checkOrder(self, email, passwd, print_lock: threading.Lock) -> bool:
-         # ---------- Setup ---------- #
+        # ---------- Setup ---------- #
         self.email = email
         self.passwd = passwd
 
@@ -889,12 +908,16 @@ class SoleboxGen:
             return False
         logMessage("Status", f"Fetching orders for {self.email}")
         # time.sleep(random.randint(1,3))
-        r = self.s.get("https://www.solebox.com/en/order-history/")
-        if r.status_code not in range(200,210):
+        try:
+            r = self.s.get("https://www.solebox.com/en/order-history/")
+        except:
+            logMessage("Error", "Couldn't get the order history. Try again.")
+
+        if r.status_code not in range(200, 210):
             logMessage("Error", f"Failed checking order status for {self.email}")
         try:
             soup = bs(r.text, "lxml")
-            order_list = soup.find("table", {"class":"orderList"})
+            order_list = soup.find("table", {"class": "orderList"})
         except:
             logMessage("Error", "Failed parsing order data.")
             return False
@@ -904,14 +927,16 @@ class SoleboxGen:
             return False
 
         all_orders = order_list.find_all("tr")
-        last_order = all_orders[1] # 0 is the table names
+        last_order = all_orders[1]  # 0 is the table names
         order_data_table = last_order.find_all("td")
         order_date = order_data_table[0].text
         order_num = order_data_table[1].text
-        logMessage("Success", f"Found an order with the number {order_num} from {order_date}")
+        logMessage(
+            "Success", f"Found an order with the number {order_num} from {order_date}"
+        )
         order_status = order_data_table[3].text.strip()
 
-        order_url = last_order.find("a", {"href":True})["href"]
+        order_url = last_order.find("a", {"href": True})["href"]
         # time.sleep(random.randint(3,10))
         try:
             logMessage("Status", "Getting order details...")
@@ -922,28 +947,34 @@ class SoleboxGen:
             logMessage("Error", "Failed to get order details.")
             return False
 
-        order_details_html = soup.find("div", {"class":"orderDetails"})
-        tracking_url = order_details_html.find("a", {"target":"_blank", "href":True})["href"]
+        order_details_html = soup.find("div", {"class": "orderDetails"})
+        tracking_url = order_details_html.find("a", {"target": "_blank", "href": True})[
+            "href"
+        ]
 
-        product_data_html = soup.find("tr", {"class":"basketItem"})
-        href = product_data_html.find("a", {"rel":"nofollow"})
-        product_img_data = href.find("img", {"src":True})
+        product_data_html = soup.find("tr", {"class": "basketItem"})
+        href = product_data_html.find("a", {"rel": "nofollow"})
+        product_img_data = href.find("img", {"src": True})
         product_name = product_img_data["alt"]
         product_img_url = product_img_data["src"]
 
-        sendSoleboxOrderWebhook(self.webhook_url, order_num, order_date, order_status, product_name, product_img_url, tracking_url)
+        sendSoleboxOrderWebhook(
+            self.webhook_url,
+            order_num,
+            order_date,
+            order_status,
+            product_name,
+            product_img_url,
+            tracking_url,
+        )
         logMessage("Status", f"Sent webhook with more order details + tracking.")
         return True
-
-
-        
-
 
 
 
 # After logging in, go to:
 # https://www.solebox.com/en/order-history/
-# 
+#
 
 if __name__ == "__main__":
     print_lock = threading.Lock()
@@ -957,6 +988,4 @@ if __name__ == "__main__":
     gen = SoleboxGen(PROXY_LIST)
     # create_status = gen.generateAccount(print_lock)
     # if create_status:
-    #     gen.updateShippingAddress(print_lock, new_account=True)
-    
-    create_status = gen.checkOrder("MelvinJackson5429568467@atommail.net", "ArturHnat99", print_lock)
+    #     gen.updateShippingAddress(print_lock, new_account=True
