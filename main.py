@@ -72,7 +72,6 @@ def SoleboxGenerateAccountNoShipping():
     if create_status:
         SUCCESS_COUNT += 1
 
-
 def SoleboxCheckAccount(email, passwd):
     gen = initialize_gen()
     gen.checkAccount(print_lock, email, passwd)
@@ -87,6 +86,9 @@ def SoleboxUpdateShippingExistingAccount(email, passwd):
     gen = initialize_gen()
     gen.updateShippingAddress(print_lock, new_account=False, email=email, passwd=passwd)
 
+def SoleboxCheckOrder(email, passwd):
+    gen = initialize_gen()
+    create_status = gen.checkOrder(email, passwd, print_lock)
 
 def start():
     print(Style.BRIGHT + Fore.CYAN + "Welcome to BONZAY Tools™!")
@@ -107,6 +109,7 @@ def start():
     )
     print(Fore.LIGHTYELLOW_EX + "[3] - Check Solebox accounts' shipping addresses")
     print(Fore.LIGHTYELLOW_EX + "[4] - Check valid Solebox accounts")
+    print(Fore.LIGHTYELLOW_EX + "[5] - Check Solebox orders")
     print("------")
 
     # ----- Get input (which option) ----- #
@@ -114,11 +117,11 @@ def start():
         option = input()
         try:
             option = int(option)
-            if type(option) is int and option in range(1, 5):
+            if type(option) is int and option in range(1, 6):
                 break
             else:
                 print(
-                    f"{option} is not a valid option. Try again with a number from 1 to 4:"
+                    f"{option} is not a valid option. Try again with a number from 1 to 5:"
                 )
         except:
             print("Not an integer. Try again:")
@@ -143,7 +146,7 @@ def start():
             t = threading.Thread(target=SoleboxGenerateAccount)
             threads.append(t)
             t.start()
-            time.sleep(random.randint(1, 3))
+            time.sleep(random.randint(3, 6))
 
         for t in threads:
             t.join()
@@ -170,7 +173,7 @@ def start():
             t = threading.Thread(target=SoleboxGenerateAccountNoShipping)
             threads.append(t)
             t.start()
-            time.sleep(random.randint(1, 3))
+            time.sleep(random.randint(3, 6))
 
         for t in threads:
             t.join()
@@ -197,7 +200,7 @@ def start():
             )
             threads.append(t)
             t.start()
-            time.sleep(random.randint(1, 3))
+            time.sleep(random.randint(3, 6))
 
         for t in threads:
             t.join()
@@ -209,7 +212,7 @@ def start():
     elif option == 4:
         print(Style.BRIGHT + Fore.CYAN + "SOLEBOX VALID ACCOUNT CHECKER")
         # ----- Load all accounts with shipping ----- #
-        print("Loading accounts from solebox-valid.txt")
+        print("Loading accounts from ./accounts/solebox-valid.txt")
         f = readFile("./accounts/solebox-valid.txt")
         accounts = f.split("\n")
 
@@ -224,7 +227,30 @@ def start():
             t = threading.Thread(target=SoleboxCheckAccount, args=(username, password))
             threads.append(t)
             t.start()
-            time.sleep(random.randint(1, 3))
+            time.sleep(random.randint(3, 6))
+
+        for t in threads:
+            t.join()
+        print(Style.BRIGHT + "\nFinished checking Solebox accounts.")
+    elif option == 5:
+        print(Style.BRIGHT + Fore.CYAN + "SOLEBOX ORDER CHECKER")
+        # ----- Load all accounts with shipping ----- #
+        print("Loading accounts from ./accounts/accounts-orders.txt")
+        f = readFile("./accounts/accounts-orders.txt")
+        accounts = f.split("\n")
+
+        print(Style.BRIGHT + "Starting to check Solebox orders...")
+        # ----- Create one thread for each account ----- #
+        threads = []
+        for account in accounts:
+            if account.strip() == "":
+                continue
+            # check if there's no newline in password
+            email, password = account.split(":")
+            t = threading.Thread(target=SoleboxCheckOrder, args=(email, password))
+            threads.append(t)
+            t.start()
+            time.sleep(random.randint(3, 6))
 
         for t in threads:
             t.join()

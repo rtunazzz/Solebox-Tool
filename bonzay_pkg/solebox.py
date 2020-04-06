@@ -72,13 +72,13 @@ def scrapeCountryIds(headers: dict):
             country_name = val.text
             country_data[country_name] = country_id
 
-    saveIntoFile("countrydata.json", country_data)
+    saveIntoFile("./data/countrydata.json", country_data)
     logMessage("SUCCESS", "Country IDs scraped!")
 
 
 def getCountryId(country_name: str):
     """
-    Reads file `countrydata.json` and returns a value matched with `country_name`
+    Reads file `./data/countrydata.json` and returns a value matched with `country_name`
 
     Args:
         - country_name {str}    - Name of the country you want to get the ID for
@@ -87,7 +87,7 @@ def getCountryId(country_name: str):
         - country_id {str}      - ID of the country (if found)
         - None                  - if not found
     """
-    if os.stat("countrydata.json").st_size == 0:
+    if os.stat("./data/countrydata.json").st_size == 0:
         scrapeCountryIds(
             {
                 "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
@@ -103,7 +103,7 @@ def getCountryId(country_name: str):
                 # 'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36',
             }
         )
-    country_data = readFile("countrydata.json")
+    country_data = readFile("./data/countrydata.json")
     try:
         country_id = country_data[country_name]
         return country_id
@@ -130,13 +130,13 @@ def parseStoken(req, print_lock):
     return stoken
 
 
-def sendSoleboxWebhook(webhook_url, title, email, passwd):
+def sendSoleboxAccountWebhook(webhook_url, title, email, passwd):
     hook = DiscordWebhook(
         url=webhook_url,
-        username="BONZAY Tools",
+        username="Solebox Tool by @rtunazzz",
         avatar_url="https://avatars1.githubusercontent.com/u/38296319?s=460&v=4",
     )
-    color = 15957463
+    color = 0xAB79F2
 
     embed = DiscordEmbed(
         title=title,
@@ -145,11 +145,36 @@ def sendSoleboxWebhook(webhook_url, title, email, passwd):
     )
     embed.set_timestamp()
     embed.set_footer(
-        text="BONZAY Tools ",
-        icon_url="https://cdn.discordapp.com/avatars/682885901843562545/be7c712b6576fb811c7a6c2cc263aa3c.webp",
+        text="@rtunazzz | rtuna#4321",
+        icon_url="https://avatars1.githubusercontent.com/u/38296319?s=460&v=4",
     )
     embed.add_embed_field(name="Username", value=f"{email}")
     embed.add_embed_field(name="Password", value=f"||{passwd}||", inline=False)
+    hook.add_embed(embed)
+    hook.execute()
+
+def sendSoleboxOrderWebhook(webhook_url, order_num, date, status, product_name, product_img, tracking_url):
+    hook = DiscordWebhook(
+        url=webhook_url,
+        username="Solebox Tool by @rtunazzz",
+        avatar_url="https://avatars1.githubusercontent.com/u/38296319?s=460&v=4",
+    )
+    color = 0xAB79F2
+
+    embed = DiscordEmbed(
+        title=f"Order details from {date} - {product_name}",
+        color=color,
+        url="https://github.com/rtunazzz/SoleboxAccountGenerator",
+    )
+    embed.set_thumbnail(url = product_img)
+    embed.set_timestamp()
+    embed.set_footer(
+        text="@rtunazzz | rtuna#4321",
+        icon_url="https://avatars1.githubusercontent.com/u/38296319?s=460&v=4",
+    )
+    embed.add_embed_field(name="Order Status", value=f"{status}")
+    embed.add_embed_field(name="Order Num", value=f"||{order_num}||", inline=False)
+    embed.add_embed_field(name="Tracking", value=f"Track [HERE]({tracking_url})")
     hook.add_embed(embed)
     hook.execute()
 
@@ -473,9 +498,8 @@ class SoleboxGen:
                 logMessage("STATUS", "Checking proxy...")
             try:
                 self.s.get("https://www.solebox.com/en/home/", timeout=5)
-            except Exception as e:
+            except:
                 logMessage("ERROR", "Proxy not working, switching proxy...")
-                print(e)
                 continue
             try:
                 if self.useragent_type == "mobile":
@@ -551,7 +575,7 @@ class SoleboxGen:
                 f"Trying to create an account for {self.email}, using {self.useragent_type} mode.",
             )
         register_payload = self.buildBillingPayload(self.stoken)
-        time.sleep(random.randint(1, 4))
+        time.sleep(random.randint(3,10))
         # ---------- Posting to create an account ---------- #
 
         register_post = self.s.post(
@@ -600,8 +624,6 @@ class SoleboxGen:
             False   - if logging in wasn't successful
             None    - if logging in failed
         """
-        with print_lock:
-            logMessage("STATUS", f"Trying to log in as {self.email}.")
         login_url = "https://www.solebox.com/index.php?lang=1&"
 
         # ---------- If there's no stoken, that means that we haven't tested proxies for the website yet, so we have to test ---------- #
@@ -636,6 +658,8 @@ class SoleboxGen:
                 "lgn_usr": self.email,
                 "lgn_pwd": self.passwd,
             }
+        with print_lock:
+            logMessage("STATUS", f"Trying to log in as {self.email}.")
         try:
             p = self.s.post(url=login_url, data=login_payload)
             if "wrong e-mail" in p.text:
@@ -710,7 +734,7 @@ class SoleboxGen:
         # headers_cpy["referer"] = "https://www.solebox.com/en/my-address/"
 
         update_shipping_payload = self.buildShippingPayload(self.stoken)
-        time.sleep(random.randint(1, 4))
+        time.sleep(random.randint(3,10))
         update_shipping_post = self.s.post(
             url="https://www.solebox.com/index.php?lang=1&",
             data=update_shipping_payload,
@@ -743,7 +767,7 @@ class SoleboxGen:
                     message = "Account successfully created!"
                 else:
                     message = "Shipping details updated successfully!"
-                sendSoleboxWebhook(self.webhook_url, message, self.email, self.passwd)
+                sendSoleboxAccountWebhook(self.webhook_url, message, self.email, self.passwd)
             return True
 
         else:
@@ -855,7 +879,71 @@ class SoleboxGen:
                 )
                 return True
         return False
+    
+    def checkOrder(self, email, passwd, print_lock: threading.Lock) -> bool:
+         # ---------- Setup ---------- #
+        self.email = email
+        self.passwd = passwd
 
+        if not self.login(print_lock):
+            return False
+        logMessage("Status", f"Fetching orders for {self.email}")
+        # time.sleep(random.randint(1,3))
+        r = self.s.get("https://www.solebox.com/en/order-history/")
+        if r.status_code not in range(200,210):
+            logMessage("Error", f"Failed checking order status for {self.email}")
+        try:
+            soup = bs(r.text, "lxml")
+            order_list = soup.find("table", {"class":"orderList"})
+        except:
+            logMessage("Error", "Failed parsing order data.")
+            return False
+
+        if order_list == None:
+            logMessage("Status", f"No orders found for {self.email}")
+            return False
+
+        all_orders = order_list.find_all("tr")
+        last_order = all_orders[1] # 0 is the table names
+        order_data_table = last_order.find_all("td")
+        order_date = order_data_table[0].text
+        order_num = order_data_table[1].text
+        logMessage("Success", f"Found an order with the number {order_num} from {order_date}")
+        order_status = order_data_table[3].text.strip()
+
+        order_url = last_order.find("a", {"href":True})["href"]
+        # time.sleep(random.randint(3,10))
+        try:
+            logMessage("Status", "Getting order details...")
+            r = self.s.get(order_url)
+            soup = bs(r.text, "lxml")
+        except Exception as e:
+            print(e)
+            logMessage("Error", "Failed to get order details.")
+            return False
+
+        order_details_html = soup.find("div", {"class":"orderDetails"})
+        tracking_url = order_details_html.find("a", {"target":"_blank", "href":True})["href"]
+
+        product_data_html = soup.find("tr", {"class":"basketItem"})
+        href = product_data_html.find("a", {"rel":"nofollow"})
+        product_img_data = href.find("img", {"src":True})
+        product_name = product_img_data["alt"]
+        product_img_url = product_img_data["src"]
+
+        sendSoleboxOrderWebhook(self.webhook_url, order_num, order_date, order_status, product_name, product_img_url, tracking_url)
+        logMessage("Status", f"Sent webhook with more order details + tracking.")
+        return True
+
+
+        
+
+
+
+
+# After logging in, go to:
+# https://www.solebox.com/en/order-history/
+# 
 
 if __name__ == "__main__":
     print_lock = threading.Lock()
@@ -867,6 +955,8 @@ if __name__ == "__main__":
         )
         exit()
     gen = SoleboxGen(PROXY_LIST)
-    create_status = gen.generateAccount(print_lock)
-    if create_status:
-        gen.updateShippingAddress(print_lock, new_account=True)
+    # create_status = gen.generateAccount(print_lock)
+    # if create_status:
+    #     gen.updateShippingAddress(print_lock, new_account=True)
+    
+    create_status = gen.checkOrder("MelvinJackson5429568467@atommail.net", "ArturHnat99", print_lock)
