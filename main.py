@@ -72,6 +72,7 @@ def SoleboxGenerateAccountNoShipping():
     if create_status:
         SUCCESS_COUNT += 1
 
+
 def SoleboxCheckAccount(email, passwd):
     gen = initialize_gen()
     gen.checkAccount(print_lock, email, passwd)
@@ -86,9 +87,11 @@ def SoleboxUpdateShippingExistingAccount(email, passwd):
     gen = initialize_gen()
     gen.updateShippingAddress(print_lock, new_account=False, email=email, passwd=passwd)
 
+
 def SoleboxCheckOrder(email, passwd):
     gen = initialize_gen()
-    create_status = gen.checkOrder(email, passwd, print_lock)
+    gen.checkOrder(email, passwd, print_lock)
+
 
 def start():
     print(Style.BRIGHT + Fore.CYAN + "Welcome to BONZAY Tools™!")

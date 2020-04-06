@@ -217,10 +217,6 @@ class SoleboxGen:
         # ---------- Creating a session ---------- #
         self.s = cloudscraper.create_scraper(
             browser={"browser": "chrome", "mobile": mobile},
-            # recaptcha={
-            #     'provider': '2captcha',
-            #     'api_key': 'your_2captcha_api_key'
-            # }
         )
 
         # self.s.headers.clear()
@@ -586,8 +582,7 @@ class SoleboxGen:
             )
         except:
             logMessage(
-                "ERROR",
-                "Unable to generate account, request failed.",
+                "ERROR", "Unable to generate account, request failed.",
             )
             return False
 
@@ -752,8 +747,7 @@ class SoleboxGen:
             )
         except:
             logMessage(
-                "ERROR",
-                "Unable to edit shipping details - request failed.",
+                "ERROR", "Unable to edit shipping details - request failed.",
             )
             return False
         # update_shipping_post = self.s.post(url='https://www.solebox.com/index.php?lang=1&', headers=headers_cpy, data=update_shipping_payload)
@@ -969,7 +963,6 @@ class SoleboxGen:
         )
         logMessage("Status", f"Sent webhook with more order details + tracking.")
         return True
-
 
 
 # After logging in, go to:
