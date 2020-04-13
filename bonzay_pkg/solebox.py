@@ -1,14 +1,15 @@
-import requests
 import json
-from bs4 import BeautifulSoup as bs
-from names import get_first_name, get_last_name
-from colorama import Fore, Style, init
-import random
-from discord_webhook import DiscordWebhook, DiscordEmbed
 import os
+import random
 import threading
 import time
+
 import cloudscraper
+import requests
+from bs4 import BeautifulSoup as bs
+from colorama import Fore, Style, init
+from discord_webhook import DiscordEmbed, DiscordWebhook
+from names import get_first_name, get_last_name
 
 try:
     from bonzay_pkg.reusable import (
@@ -36,7 +37,16 @@ init(autoreset=True)
 # -------------------------------------------------------------------------------- SOLEBOX SPECIFIC FUNCTIONS -------------------------------------------------------------------------------- #
 
 
-def logMessage(status: str, message: str):
+def logMessage(status: str, message: str) -> None:
+    """Basic logging function
+    
+    Arguments:
+        status {str} -- status message
+        message {str} -- the actual message
+    
+    Returns: 
+        None
+    """
     status = f"[{status}]"
     if "success" in status.lower():
         print(Fore.GREEN + f"{getTime():<25}" + f"{status.upper():<10} -> {message}")
@@ -46,12 +56,13 @@ def logMessage(status: str, message: str):
         print(f"{getTime():<25}" + f"{status.upper():<10} -> {message}")
 
 
-def scrapeCountryIds(headers: dict):
+def scrapeCountryIds(headers: dict) -> None:
     """
     Scrapes country IDs from Solebox's website
 
-    Args:
-        headers {dict}  - Headers that are sent with the requests to scrape the IDs
+    Arguments:
+        headers {dict} -- Headers that are sent with the requests to scrape the IDs
+    
     Returns: 
         None
     """
@@ -76,16 +87,16 @@ def scrapeCountryIds(headers: dict):
     logMessage("SUCCESS", "Country IDs scraped!")
 
 
-def getCountryId(country_name: str):
+def getCountryId(country_name: str) -> str or None:
     """
     Reads file `./data/countrydata.json` and returns a value matched with `country_name`
 
-    Args:
-        - country_name {str}    - Name of the country you want to get the ID for
+    Arguments:
+        country_name {str} -- Name of the country you want to get the ID for
 
     Returns:
-        - country_id {str}      - ID of the country (if found)
-        - None                  - if not found
+        str -- ID of the country (if found)
+        None -- if not found
     """
     if os.stat("./data/countrydata.json").st_size == 0:
         scrapeCountryIds(
@@ -100,7 +111,7 @@ def getCountryId(country_name: str):
                 # 'sec-fetch-user': '?1',
                 # 'origin': 'https://www.solebox.com',
                 # 'upgrade-insecure-requests': '1',
-                # 'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36',
+                "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36",
             }
         )
     country_data = readFile("./data/countrydata.json")
@@ -115,7 +126,16 @@ def getCountryId(country_name: str):
         return None
 
 
-def parseStoken(req, print_lock):
+def parseStoken(req: requests.Response, print_lock: threading.Lock) -> str:
+    """Parses out and returns an `stoken` from the Response object provided.
+    
+    Arguments:
+        req {requests.Response} -- Solebox request Response object
+        print_lock {threading.Lock} -- print lock for keeping each print on one line
+    
+    Returns:
+        str -- stoken
+    """
     soup = bs(req.text, "lxml")
     with print_lock:
         logMessage("STATUS", "Parsing stoken...")
@@ -130,7 +150,17 @@ def parseStoken(req, print_lock):
     return stoken
 
 
-def sendSoleboxAccountWebhook(webhook_url, title, email, passwd):
+def sendSoleboxAccountWebhook(
+    webhook_url: str, title: str, email: str, passwd: str
+) -> None:
+    """Sends a discord webhook to the `webhook_url`.
+    
+    Arguments:
+        webhook_url {str} -- URL of a Discord webhook
+        title {str} -- Title of the embed that's going to be sent
+        email {str} -- Solebox account email
+        passwd {str} -- Solebox account password
+    """
     hook = DiscordWebhook(
         url=webhook_url,
         username="Solebox Tool by @rtunazzz",
@@ -155,8 +185,28 @@ def sendSoleboxAccountWebhook(webhook_url, title, email, passwd):
 
 
 def sendSoleboxOrderWebhook(
-    webhook_url, order_num, date, status, product_name, product_img, tracking_url
-):
+    webhook_url: str,
+    order_num: str,
+    date: str,
+    status: str,
+    product_name: str,
+    product_img: str,
+    tracking_url: str,
+) -> None:
+    """Sends an embed message to the Discord webhook specified.
+
+    Arguments:
+        webhook_url {str} -- Webhook URL
+        order_num {str} -- Order number
+        date {str} -- Date the order was placed on
+        status {str} -- Status of the order
+        product_name {str} -- Product name
+        product_img {str} -- Product image URL
+        tracking_url {str} -- Tracking (usually UPS) URL
+
+    Returns:
+        None
+    """
     hook = DiscordWebhook(
         url=webhook_url,
         username="Solebox Tool by @rtunazzz",
@@ -186,10 +236,20 @@ def sendSoleboxOrderWebhook(
 
 
 class SoleboxGen:
-    def __init__(self, proxy_list):
-
+    """Class used to hold all SoleboxGen related methods and objects.
+    
+    Constructor Arguments:
+        proxy_list {list} -- list of proxies
+    """
+    def __init__(self : SoleboxGen, proxy_list : list(dict)):
+        """Constructor for the `SoleboxGen` class
+        
+        Arguments:
+            self {SoleboxGen} -- The object
+            proxy_list {list} -- list of proxies
+        """
         # ---------- General ---------- #
-        self.proxy_list = proxy_list
+        self.proxy_list : list(dict) = proxy_list
 
         useragents = loadUseragents()
         # ---------- Generation Type ---------- #
@@ -201,34 +261,23 @@ class SoleboxGen:
             mobile = False
             ua = random.choice(useragents[0])
         # ---------- Headers ---------- #
-        SOLEBOX_URLS = [
-            "https://www.solebox.com/en/Apparel/",
-            "https://www.solebox.com/",
-            "https://www.solebox.com/en/New/",
-            "https://www.solebox.com/en/Soon/",
-            "https://www.solebox.com/en/Footwear/",
-            "https://www.solebox.com/en/Accessories/",
-            "https://www.solebox.com/index.php?lang=1&cl=brands",
-            "https://www.solebox.com/en/Sale/",
-            "https://www.solebox.com/blog/",
-            "https://www.solebox.com/en/cart/",
-        ]
+        # SOLEBOX_URLS = [
+        #     "https://www.solebox.com/en/Apparel/",
+        #     "https://www.solebox.com/",
+        #     "https://www.solebox.com/en/New/",
+        #     "https://www.solebox.com/en/Soon/",
+        #     "https://www.solebox.com/en/Footwear/",
+        #     "https://www.solebox.com/en/Accessories/",
+        #     "https://www.solebox.com/index.php?lang=1&cl=brands",
+        #     "https://www.solebox.com/en/Sale/",
+        #     "https://www.solebox.com/blog/",
+        #     "https://www.solebox.com/en/cart/",
+        # ]
 
         # ---------- Creating a session ---------- #
         self.s = cloudscraper.create_scraper(
             browser={"browser": "chrome", "mobile": mobile},
         )
-
-        # self.s.headers.clear()
-        # self.s.headers.update({
-        #     "Accept":"*/*",
-        #     "Accept-Charset":"utf-8,*",
-        #     "Accept-Encoding":"gzip,deflate,br",
-        #     "Connection":"keep-alive",
-        #     # "Host":"www.solebox.com",
-        #     "Referer":random.choice(SOLEBOX_URLS),
-        #     "User-Agent":ua,
-        # })
 
         self.s.headers.update(
             {
@@ -254,6 +303,13 @@ class SoleboxGen:
         userdata = config["profile"]
         self.settings = config["settings"]
         self.jig_settings = config["advanced_jigging"]
+
+        if self.jig_settings["max_num_of_random_numbers_behing_email"] > 10:
+            logMessage(
+                "Critical",
+                "Make sure the max_num_of_random_numbers_behing_email in userdata.json is set to less than 10!",
+            )
+            exit()
 
         self.first_name = userdata["first_name"]
         self.last_name = userdata["last_name"]
