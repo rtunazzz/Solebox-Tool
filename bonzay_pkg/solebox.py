@@ -241,15 +241,15 @@ class SoleboxGen:
     Constructor Arguments:
         proxy_list {list} -- list of proxies
     """
-    def __init__(self : SoleboxGen, proxy_list : list(dict)):
+
+    def __init__(self, proxy_list):
         """Constructor for the `SoleboxGen` class
         
         Arguments:
-            self {SoleboxGen} -- The object
             proxy_list {list} -- list of proxies
         """
         # ---------- General ---------- #
-        self.proxy_list : list(dict) = proxy_list
+        self.proxy_list = proxy_list
 
         useragents = loadUseragents()
         # ---------- Generation Type ---------- #
@@ -342,7 +342,15 @@ class SoleboxGen:
         # ---------- Jigging info ---------- #
         self.jigInfo()
 
-    def buildBillingPayload(self, stoken: str):
+    def buildBillingPayload(self, stoken: str) -> dict:
+        """Builds a billing payload
+        
+        Arguments:
+            stoken {str} -- stoken
+        
+        Returns:
+            dict -- The billing payload
+        """
         if self.useragent_type == "mobile":
             register_payload = {
                 "stoken": stoken,
@@ -411,7 +419,15 @@ class SoleboxGen:
 
         return register_payload
 
-    def buildShippingPayload(self, stoken: str):
+    def buildShippingPayload(self, stoken: str) -> dict:
+        """Builds a shipping payload
+        
+        Arguments:
+            stoken {str} -- stoken
+        
+        Returns:
+            dict -- The shipping payload
+        """
         title = random.choice(["MR", "MRS"])
 
         if self.useragent_type == "mobile":
@@ -495,8 +511,9 @@ class SoleboxGen:
                 "userform": "",
             }
 
-    def jigInfo(self):
-
+    def jigInfo(self) -> None:
+        """Jigs user's information
+        """
         linetwolist = [
             "apt",
             "apartment",
@@ -539,11 +556,14 @@ class SoleboxGen:
 
         self.email = f"{get_last_name()}{get_last_name()}{random.randint(1,max_ints_in_email)}@{self.catchall}"
 
-    def testWorkingProxies(self, print_lock):
-        """
+    def testWorkingProxies(self, print_lock: threading.Lock) -> bool:
+        """Tests if there are any working proxies in the `self.proxy_list` variable
+        
+        Arguments:
+            print_lock {threading.Lock} -- print lock for keeping each print on one line
+        
         Returns:
-            True    - if a working proxy was found
-            False   - if a working proxy was NOT found
+            bool -- True if we found a working one, otherwise False
         """
         # ---------- Proxy testing ---------- #
         test_count = 0
@@ -592,11 +612,19 @@ class SoleboxGen:
             test_count += 1
         return False
 
-    def generateAccount(self, print_lock: threading.Lock, no_shipping=False):
-        """
+    def generateAccount(
+        self, print_lock: threading.Lock, no_shipping: bool = False
+    ) -> bool:
+        """Generates a Solebox account
+        
+        Arguments:
+            print_lock {threading.Lock} -- print lock for keeping each print on one line
+        
+        Keyword Arguments:
+            no_shipping {bool} -- Whether or not will we try to add a shipping address to the newly created account (default: {False})
+        
         Returns:
-            - True (on success)
-            - False (on failure)
+            bool -- True on success, False on failure
         """
 
         # ---------- Proxy testing ---------- #
@@ -677,13 +705,14 @@ class SoleboxGen:
 
         # ---------------------------------------- Updating an account ---------------------------------------- #
 
-    def login(self, print_lock: threading.Lock):
-        """
-
+    def login(self, print_lock: threading.Lock) -> bool:
+        """Tries to log into a Solebox account with the username of `self.username` and password of `self.passwd`
+        
+        Arguments:
+            print_lock {threading.Lock} -- print lock for keeping each print on one line
+        
         Returns:
-            True    - if successfully logged in
-            False   - if logging in wasn't successful
-            None    - if logging in failed
+            bool -- True on success, False on failure
         """
         login_url = "https://www.solebox.com/index.php?lang=1&"
 
@@ -704,8 +733,8 @@ class SoleboxGen:
                 "cl": "account",
                 "tpl": "",
                 "oxloadid": "",
-                "lgn_usr": "self.email",
-                "lgn_pwd": "self.passwd",
+                "lgn_usr": self.email,
+                "lgn_pwd": self.passwd,
                 "lgn_cook": 1,
             }
         else:
@@ -747,7 +776,7 @@ class SoleboxGen:
                     "ERROR",
                     f"Failed to log in as {self.email}. Status code {p.status_code}",
                 )
-                return None
+                return False
 
     def updateShippingAddress(
         self,
@@ -755,7 +784,20 @@ class SoleboxGen:
         new_account: bool,
         email: str = None,
         passwd: str = None,
-    ):
+    ) -> bool:
+        """Function that updates a shipping address of an account.
+        
+        Arguments:
+            print_lock {threading.Lock} -- print lock for keeping each print on one line
+            new_account {bool} -- Whether we are just trying to update a shipping address to an old existing account (False) or to a new one (True)
+        
+        Keyword Arguments:
+            email {str} -- login email (default: {None})
+            passwd {str} -- login password (default: {None})
+        
+        Returns:
+            bool -- True on success, False on failure
+        """
         # ---------------------------------------- This part executes only if the account isn't new ---------------------------------------- #
         if not new_account:
             # ---------- Setup ---------- #
@@ -850,6 +892,8 @@ class SoleboxGen:
                     "./accounts/solebox-no-shipping.txt",
                     f"{self.email}:{self.passwd}\n",
                 )
+
+    # TODO Finish adding comments below
 
     def checkAccount(self, print_lock: threading.Lock, email, passwd):
         # ---------- Setup ---------- #
@@ -1035,6 +1079,4 @@ if __name__ == "__main__":
         )
         exit()
     gen = SoleboxGen(PROXY_LIST)
-    # create_status = gen.generateAccount(print_lock)
-    # if create_status:
-    #     gen.updateShippingAddress(print_lock, new_account=True
+    create_status = gen.generateAccount(print_lock)
