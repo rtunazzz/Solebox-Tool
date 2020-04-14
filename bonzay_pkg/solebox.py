@@ -34,7 +34,7 @@ except:
 
 init(autoreset=True)
 
-# -------------------------------------------------------------------------------- SOLEBOX SPECIFIC FUNCTIONS -------------------------------------------------------------------------------- #
+# ================================================================== SOLEBOX SPECIFIC FUNCTIONS ================================================================== #
 
 
 def logMessage(status: str, message: str) -> None:
@@ -171,7 +171,7 @@ def sendSoleboxAccountWebhook(
     embed = DiscordEmbed(
         title=title,
         color=color,
-        url="https://github.com/rtunazzz/SoleboxAccountGenerator",
+        url="https://github.com/rtunazzz/Solebox-Tool",
     )
     embed.set_timestamp()
     embed.set_footer(
@@ -217,7 +217,7 @@ def sendSoleboxOrderWebhook(
     embed = DiscordEmbed(
         title=f"Order details from {date} - {product_name}",
         color=color,
-        url="https://github.com/rtunazzz/SoleboxAccountGenerator",
+        url="https://github.com/rtunazzz/Solebox-Tool",
     )
     embed.set_thumbnail(url=product_img)
     embed.set_timestamp()
@@ -232,7 +232,7 @@ def sendSoleboxOrderWebhook(
     hook.execute()
 
 
-# -------------------------------------------------------------------------------- GEN CLASS -------------------------------------------------------------------------------- #
+# ================================================================== GEN CLASS ================================================================== #
 
 
 class SoleboxGen:

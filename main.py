@@ -1,13 +1,12 @@
 # -------------------------------------------------------------------------------- SETUP & IMPORTS -------------------------------------------------------------------------------- #
-
-
-from colorama import Fore, Style, init
+import random
 import threading
 import time
-import random
 
+from colorama import Fore, Style, init
+
+from bonzay_pkg.reusable import loadProxies, logMessage, readFile
 from bonzay_pkg.solebox import SoleboxGen
-from bonzay_pkg.reusable import readFile, logMessage, loadProxies
 
 init(autoreset=True)
 print_lock = threading.Lock()
@@ -15,27 +14,20 @@ print_lock = threading.Lock()
 print("\n" * 50)
 print(
     Fore.YELLOW
-    + r'''       ,.,
-      MMMM_    ,..,
-        "_ "__"MMMMM          ,...,,
- ,..., __." --"    ,.,     _-"MMMMMMM
-MMMMMM"___ "_._   MMM"_."" _ """"""
- """""    "" , \_.   "_. ."
-        ,., _"__ \__./ ."
-       MMMMM_"  "_    ./
-        \'\'\'\'      (    )
- ._______________.-\'____"---._.
-  \                          /
-   \________________________/
-   (_)                    (_)'''
+    + r'''
+ ____        _      _                 _____           _ 
+/ ___|  ___ | | ___| |__   _____  __ |_   _|__   ___ | |
+\___ \ / _ \| |/ _ \ '_ \ / _ \ \/ /   | |/ _ \ / _ \| |
+ ___) | (_) | |  __/ |_) | (_) >  <    | | (_) | (_) | |
+|____/ \___/|_|\___|_.__/ \___/_/\_\   |_|\___/ \___/|_|'''
 )
-print(Fore.YELLOW + "   BONZAY Tools™ · Solebox tool")
+print('\n')
 print(
-    r"""-----
-https://github.com/rtunazzz/SoleboxAccountGenerator
-• developed by: rtuna#4321 | @rtunazzz
-• for personal use only
------"""
+    r"""--------------------------------------------------------
+· https://github.com/rtunazzz/Solebox-Tool
+· developed by: rtuna#4321 | @rtunazzz
+· for personal use only
+--------------------------------------------------------"""
 )
 
 # -------------------------------------------------------------------------------- FUNCTIONS -------------------------------------------------------------------------------- #
@@ -94,8 +86,8 @@ def SoleboxCheckOrder(email, passwd):
 
 
 def start():
-    print(Style.BRIGHT + Fore.CYAN + "Welcome to BONZAY Tools™!")
-    print(Fore.LIGHTYELLOW_EX + "Please select an option:")
+    print(Style.BRIGHT + Fore.CYAN + "Welcome to the Solebox Tool™!")
+    print(Fore.MAGENTA + "Please select an option:")
     print(
         Fore.LIGHTYELLOW_EX
         + "[1] - Generate Solebox accounts (with a shipping address)"
@@ -113,7 +105,7 @@ def start():
     print(Fore.LIGHTYELLOW_EX + "[3] - Check Solebox accounts' shipping addresses")
     print(Fore.LIGHTYELLOW_EX + "[4] - Check valid Solebox accounts")
     print(Fore.LIGHTYELLOW_EX + "[5] - Check Solebox orders")
-    print("------")
+    print("--------------------------------------------------------")
 
     # ----- Get input (which option) ----- #
     while 1:
@@ -264,5 +256,5 @@ def start():
 
 if __name__ == "__main__":
     PROXY_LIST = loadProxies("./proxies.txt")
-    print("-----")
+    print("--------------------------------------------------------")
     start()

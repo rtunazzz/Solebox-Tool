@@ -1,31 +1,23 @@
-<p align="center"><img width=50% src="https://i.imgur.com/xncrVHK.png"></p>
+<p align="center"><img width=80% src="https://i.imgur.com/IGGUkII.png"></p>
 
-# Account Generator
+## Updates
+If you would like to stay up to date regarding any future updates, follow me on [Twitter](https://twitter.com/rtunazzz)!
 
-Here is a [demo](https://i.imgur.com/eEcF5R0.mp4)
+## Before you start
+- Use of proxies is **NECESSARY**.
+- If you can't set it up or you are having problems, **read through this file** and if you are still struggling after that, feel free to message me on Discord (`rtuna#4321`)
 
-## Update March 27th 2020
-
-The gen is back up and working, 2captcha implementation was not needed. All it takes is to gen your accounts on a day, when there is **no release** and the site isn't under heavy traffic!
-If you would like to stay up to date regarding any updates, feel free to follow me on [Twitter](https://twitter.com/rtunazzz).
-
-**Use of proxies is NECESSARY.**
-
-DM me on Discord rtuna#4321 if you need any help setting this up. **BEFORE DMing ME, READ THROUGH THIS FILE**
-
-
-## Before running
-
-1. Make sure you have Python (preferably 3.8.0) installed
+## Setup
+1. Make sure you have Python (preferably 3.8+) installed
 2. download & unzip this the zip you donwloaded, open your CMD/Terminal and `cd` to this folder.
 3. run `pip install -r requirements.txt`
 4. Add your info into `userdata.json`
 5. Add proxies into `proxies.txt`
-6. Feel free to turn on/off any "jigging" in the `userdata.json` but **for some reason if you set `jig_first_line` to false, you'll run into errors and most likely won't be able to generate any accounts. Feel free to try it though!**
+6. Feel free to turn on/off any "jigging" in the `userdata.json` but **for some reason if you set `jig_first_line` to false, you'll run into errors and most likely won't be able to generate any accounts!**
 
-## To run
+## Running
 
-open your terminal, change your directory to this folder/repo and run:
+After you set everything up (see above), open your terminal, change your directory to this folder/repo (if you haven't done already) and run:
 
 - on Mac: `python3 main.py`
 
@@ -33,16 +25,16 @@ open your terminal, change your directory to this folder/repo and run:
 
 ## Common errors
 
-1. The script closes itself after you input the number of accounts you want to generate? YOU DIDN'T FOLLOW THE INSTURCTIONS AND YOU'RE RUNNING IT THE WRONG WAY, FOLLOW [THESE STEPS](https://github.com/rtunazzz/SoleboxAccountGenerator#before-running)
-2. `No module named XXX` = you don't have some of the dependencies installed. Make sure you did everything in [Before running](https://github.com/rtunazzz/SoleboxAccountGenerator#before-running). If that doesn't help, try running:
+1. The script closes itself
+    -  You didn't follow the instructions and you are running it the wrong way. Follow [these steps](https://github.com/rtunazzz/Solebox-Tool#before-running).
+2. `No module named XXX` = you don't have some of the dependencies installed. Make sure you did everything in [Before running](https://github.com/rtunazzz/Solebox-Tool#before-running). If that doesn't help, try running:
      - on Windows `py -m pip install -r requirements.txt`
      - on Mac `python3 -m pip install -r requirements.txt`
 
-3. `'pip' is not recognized as an internal or external command, operable program or batch file.` or anything related to this -> you probably don't have Python in your PATH variable (`setx PATH "%PATH%;C:\Python38\Scripts"` - ONLY IF YOU'RE ON WINDOWS). If that doesn't help, try running:
+3. `'pip' is not recognized as an internal or external command, operable program or batch file.` or anything similar to that
      - on Windows `py -m pip install -r requirements.txt`
      - on Mac `python3 -m pip install -r requirements.txt`
-4. Anything related to a `keyerror XXX` = There is something wrong with your `userdata.json` file. Make sure it's filled in like this:
-
+4. Anything related to a `keyerror XXX` = There is something wrong with your `userdata.json` file. Make sure **there are no extra spaces and that you didn't delete any commas!** It should be filled in like this:
 ```json
 {
     "profile" : {
@@ -69,24 +61,15 @@ open your terminal, change your directory to this folder/repo and run:
 }
 ```
 
-5. Script was working fine but now I just get `Cloudfare` errors all the time?
-     - Regenerate proxies (make sure to try both static and rotating)
-     - if that doesn't help, contact me. Solebox most likely changed their security and an update will be needed.
-
-## Where do I find generated accounts?
-
-- If everything goes smoothly, accounts should be in the **accounts folder** in `solebox-valid.txt` as well as if you have a webhook setup, you'll get a Discord notification.
-- if an error occurs when trying to update a shipping address, they'll be in the **accounts folder** `solebox-no-shipping.txt` and you'll need to update shipping address manually (or just gen new ones 😝)
-
-## Notes
-
-- If you don't have a catchall, feel free to leave the catchall field blank but you won't get confirmation emails (it will just create an account with a random gmail)
-
 ## FAQ
+### What is `cd` and how do I use it?
+Check out [this](https://www.techwalla.com/articles/how-to-use-quotcdquot-command-in-command-prompt-window) article.
+### How do I install Python?
+[This should help you install it](https://realpython.com/installing-python/)
+### I am getting `[ERROR] -> Encountered CloudFare` all the time, what do I do?
+Switch proxies or wait a bit and try again. **This also happens frequently when the site is under a heavy load** (When a restock/drop happens etc.)
+### Where do I find generated accounts?
+If everything goes smoothly, accounts will be in the **accounts folder** in `solebox-valid.txt` as well as if you have a webhook set up, you'll get a Discord notification. Accounts with no shipping address are saved into `solebox-no-shipping.txt`.
 
-- What is `cd` and how do I use it?
-  - From [wikipedia](https://en.wikipedia.org/wiki/Cd_(command)): "the `cd` command is a command-line shell command used to change the current working directory" -  so what you need to do is change your working directory, to the Folder (or directory) of this script.
-- How do I install Python?
-  - [This should help you](https://realpython.com/installing-python/)
-- I am getting `[ERROR] -> Bad request. Satus code 403` or `[ERROR] -> Encountered CloudFare...` all the time, what do I do?
-  - Keep trying and or switch proxies. This also happens frequently when the site is under a heavy load (When a restock/drop happens etc.)
+
+Made by [__rtuna__](https://twitter.com/rtunazzz).
