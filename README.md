@@ -1,5 +1,7 @@
 <p align="center"><img width=80% src="https://i.imgur.com/VVjWRkP.png"></p>
 
+![](https://i.imgur.com/kNsc2qu.png)
+
 ## Updates
 If you would like to stay up to date regarding any future updates, follow me on [Twitter](https://twitter.com/rtunazzz)!
 
